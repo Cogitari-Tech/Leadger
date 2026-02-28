@@ -1,4 +1,5 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { lazy } from "react";
 import { moduleRegistry } from "./modules/registry";
 import { AppLayout } from "./shared/components/layout/AppLayout";
 import { AuthGuard } from "./modules/auth/components/AuthGuard";
@@ -9,9 +10,27 @@ import { AcceptInvitePage } from "./modules/auth/pages/AcceptInvitePage";
 import { AuthCallbackPage } from "./modules/auth/pages/AuthCallbackPage";
 import { TwoFactorChallenge } from "./modules/auth/pages/TwoFactorChallenge";
 import { TwoFactorSetup } from "./modules/auth/components/TwoFactorSetup";
+import { VerifyEmailPage } from "./modules/auth/pages/VerifyEmailPage";
+import { PendingApprovalPage } from "./modules/auth/pages/PendingApprovalPage";
+
+// The new Landing Page
+import { LandingPage } from "./modules/public/pages/LandingPage";
+
+const ExecutiveDashboard = lazy(
+  () => import("./modules/dashboard/pages/ExecutiveDashboard"),
+);
+const ProfilePage = lazy(() => import("./modules/profile/pages/ProfilePage"));
+const OnboardingWizard = lazy(
+  () => import("./modules/admin/pages/OnboardingWizard"),
+);
 
 export const createAppRouter = () =>
   createBrowserRouter([
+    // Public Marketing Route
+    {
+      path: "/",
+      element: <LandingPage />,
+    },
     // Public Routes (no auth required)
     {
       path: "/login",
@@ -28,6 +47,14 @@ export const createAppRouter = () =>
     {
       path: "/forgot-password",
       element: <ForgotPasswordPage />,
+    },
+    {
+      path: "/verify-email",
+      element: <VerifyEmailPage />,
+    },
+    {
+      path: "/pending-approval",
+      element: <PendingApprovalPage />,
     },
     {
       path: "/invite/:token",
@@ -71,9 +98,18 @@ export const createAppRouter = () =>
         </AuthGuard>
       ),
     },
+    // Onboarding (Auth required, standalone layout — no sidebar)
+    {
+      path: "/onboarding",
+      element: (
+        <AuthGuard>
+          <OnboardingWizard />
+        </AuthGuard>
+      ),
+    },
     // Protected Routes (auth + full layout required)
     {
-      path: "/",
+      path: "/dashboard",
       element: (
         <AuthGuard>
           <AppLayout />
@@ -81,17 +117,19 @@ export const createAppRouter = () =>
       ),
       children: [
         {
-          path: "/",
-          element: (
-            <div className="p-8">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                Bem-vindo ao Cogitari Governance
-              </h1>
-            </div>
-          ),
+          index: true,
+          element: <ExecutiveDashboard />,
+        },
+        {
+          path: "profile",
+          element: <ProfilePage />,
         },
         ...moduleRegistry.getAllRoutes(),
       ],
+    },
+    {
+      path: "*",
+      element: <Navigate to="/dashboard" replace />,
     },
   ]);
 

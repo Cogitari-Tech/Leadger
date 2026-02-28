@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
-import { Button } from "./Button";
 
 export const ThemeToggle = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    // Check local storage or system preference
     const storedTheme = localStorage.getItem("theme");
     if (
       storedTheme === "dark" ||
@@ -34,22 +32,21 @@ export const ThemeToggle = () => {
   };
 
   return (
-    <Button
-      variant="ghost"
+    <button
       onClick={toggleTheme}
-      className={`relative overflow-hidden rounded-full w-10 h-10 p-0 flex items-center justify-center transition-all duration-300 shadow-sm border
+      aria-label={`Alternar para modo ${theme === "light" ? "escuro" : "claro"}`}
+      className={`relative overflow-hidden rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300 border cursor-pointer
         ${
           theme === "light"
-            ? "bg-white border-slate-200 text-amber-500 hover:bg-slate-50 hover:text-amber-600 hover:border-amber-200"
-            : "bg-slate-800 border-slate-700 text-brand-400 hover:bg-slate-700 hover:text-brand-300 hover:border-brand-500/50"
+            ? "bg-white border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-300"
+            : "bg-slate-800 border-slate-600 shadow-md hover:bg-slate-700 hover:border-sky-500/50"
         }`}
-      title={`Alternar para modo ${theme === "light" ? "escuro" : "claro"}`}
     >
       {theme === "light" ? (
-        <Moon className="w-5 h-5 transition-transform hover:-rotate-12" />
+        <Moon className="w-5 h-5 text-slate-600 hover:text-slate-800 transition-colors" />
       ) : (
-        <Sun className="w-5 h-5 transition-transform hover:rotate-90 duration-500" />
+        <Sun className="w-5 h-5 text-amber-400 hover:text-amber-300 transition-colors" />
       )}
-    </Button>
+    </button>
   );
 };

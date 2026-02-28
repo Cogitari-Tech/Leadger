@@ -145,7 +145,15 @@ export function useReportGenerator() {
   const [report, setReport] = useState<AuditReport>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) return JSON.parse(saved) as AuditReport;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          ...createEmptyReport(),
+          ...parsed,
+          findings: parsed.findings || [createEmptyFinding()],
+          signatures: parsed.signatures || [],
+        };
+      }
     } catch {
       /* ignore corrupt data */
     }

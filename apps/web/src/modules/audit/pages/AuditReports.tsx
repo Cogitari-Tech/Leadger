@@ -80,7 +80,7 @@ export default function AuditReports() {
   };
 
   const filteredReports = reports.filter((r) =>
-    r.program?.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    (r.program?.name || "").toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (

@@ -8,20 +8,36 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../../../config/supabase";
-import type { AuthState, AuthUser, Tenant, Role } from "../types/auth.types";
+import type {
+  AuthState,
+  AuthUser,
+  Tenant,
+  Role,
+  SignupMode,
+} from "../types/auth.types";
 
 interface AuthContextType extends AuthState {
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (
     email: string,
     password: string,
-    metadata?: { name?: string; companyName?: string },
+    metadata?: {
+      name?: string;
+      companyName?: string;
+      signup_mode?: SignupMode;
+      invite_token?: string;
+    },
   ) => Promise<{ error: Error | null; data?: any }>;
   signInWithGoogle: () => Promise<void>;
   signInWithGitHub: () => Promise<void>;
   signOut: () => Promise<void>;
   can: (permission: string) => boolean;
   hasRole: (roleName: string) => boolean;
+  searchTenants: (query: string) => Promise<Tenant[]>;
+  requestAccess: (
+    tenantId: string,
+    message?: string,
+  ) => Promise<{ error: Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -80,25 +96,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .single();
           tenant = tenantData;
 
-          // Fetch member + role
+          // Fetch member (without role join — avoids PostgREST FK ambiguity)
           const { data: memberData } = await supabase
             .from("tenant_members")
-            .select("*, role:roles(*)")
+            .select("*")
             .eq("tenant_id", actualTenantId)
             .eq("user_id", supabaseUser.id)
             .eq("status", "active")
             .single();
 
-          if (memberData?.role) {
-            role = memberData.role as Role;
+          if (memberData?.role_id) {
+            // Fetch role separately
+            const { data: roleData } = await supabase
+              .from("roles")
+              .select("*")
+              .eq("id", memberData.role_id)
+              .single();
+
+            if (roleData) {
+              role = roleData as Role;
+            }
 
             // Admin and Owner get all permissions
-            if (role.name === "admin" || role.name === "owner") {
+            if (role && (role.name === "admin" || role.name === "owner")) {
               const { data: allPerms } = await supabase
                 .from("permissions")
                 .select("code");
               permissions = allPerms?.map((p) => p.code) ?? [];
-            } else {
+            } else if (role) {
               // Fetch role permissions
               const { data: rolePerms } = await supabase
                 .from("role_permissions")
@@ -185,7 +210,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (
     email: string,
     password: string,
-    metadata?: { name?: string; companyName?: string },
+    metadata?: {
+      name?: string;
+      companyName?: string;
+      signup_mode?: SignupMode;
+      invite_token?: string;
+    },
   ) => {
     setState((prev) => ({ ...prev, loading: true }));
     const { data, error } = await supabase.auth.signUp({
@@ -195,13 +225,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: {
           name: metadata?.name,
           companyName: metadata?.companyName,
+          signup_mode: metadata?.signup_mode || "create",
+          invite_token: metadata?.invite_token,
         },
       },
     });
 
-    // In local dev without SMTP, Supabase returns "Error sending confirmation email"
-    // but actualy creates the user in the database.
-    // We treat it as success to allow the flow to proceed manually.
     if (error && error.message.includes("Error sending confirmation email")) {
       setState((prev) => ({ ...prev, loading: false }));
       return { error: null, data };
@@ -256,6 +285,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         can,
         hasRole,
+        searchTenants: async (query: string): Promise<Tenant[]> => {
+          const { data } = await supabase
+            .from("tenants")
+            .select("*")
+            .or(`slug.ilike.%${query}%,name.ilike.%${query}%`)
+            .eq("is_private", false)
+            .limit(10);
+          return (data ?? []) as Tenant[];
+        },
+        requestAccess: async (tenantId: string, message?: string) => {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (!user) return { error: new Error("Não autenticado") };
+          const { error } = await supabase.from("access_requests").insert({
+            tenant_id: tenantId,
+            user_id: user.id,
+            message: message || null,
+          });
+          return { error: error as Error | null };
+        },
       }}
     >
       {children}

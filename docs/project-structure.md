@@ -13,6 +13,12 @@ cogitari-platform/
 │       │   ├── router.tsx                     # Lazy loading routes
 │       │   │
 │       │   ├── modules/                       # 🔥 MÓDULOS ISOLADOS
+│       │   │   ├── auth/                      # 🔐 Gestão Auth & Multi-Tenant
+│       │   │   │   ├── pages/
+│       │   │   │   │   ├── RegisterPage.tsx
+│       │   │   │   │   └── TeamManagement.tsx
+│       │   │   │   ├── components/
+│       │   │   │   │   └── OnboardingWizard.tsx
 │       │   │   ├── audit/                     # Auditoria
 │       │   │   │   ├── pages/
 │       │   │   │   │   ├── AuditEditor.tsx
@@ -178,23 +184,27 @@ cogitari-platform/
 ## 🎯 Princípios SOLID Aplicados
 
 ### 1️⃣ **Single Responsibility Principle (SRP)**
+
 Cada módulo tem uma única responsabilidade:
+
 - `audit/` → Gestão de auditorias
 - `finance/` → Controle financeiro
 - `compliance/` → Análises estratégicas
 
 ### 2️⃣ **Open/Closed Principle (OCP)**
+
 Sistema aberto para extensão (novos módulos), fechado para modificação:
+
 ```typescript
 // packages/core/src/usecases/audit/ValidateSignatures.ts
 export class ValidateSignatures {
   constructor(private rules: ValidationRule[]) {}
-  
+
   execute(audit: Audit): ValidationResult {
-    return this.rules.reduce((result, rule) => 
-      rule.validate(audit, result), 
-      { valid: true, errors: [] }
-    );
+    return this.rules.reduce((result, rule) => rule.validate(audit, result), {
+      valid: true,
+      errors: [],
+    });
   }
 }
 
@@ -204,7 +214,9 @@ const validator = new ValidateSignatures([mondayRule, signatureRule]);
 ```
 
 ### 3️⃣ **Liskov Substitution Principle (LSP)**
+
 Interfaces claras para repositórios:
+
 ```typescript
 // packages/core/src/repositories/IAuditRepository.ts
 export interface IAuditRepository {
@@ -220,7 +232,9 @@ export interface IAuditRepository {
 ```
 
 ### 4️⃣ **Interface Segregation Principle (ISP)**
+
 Interfaces específicas por funcionalidade:
+
 ```typescript
 export interface IPDFGenerator {
   generate(content: string): Promise<Blob>;
@@ -236,7 +250,9 @@ export interface IStorageProvider {
 ```
 
 ### 5️⃣ **Dependency Inversion Principle (DIP)**
+
 Dependa de abstrações, não de implementações:
+
 ```typescript
 // ❌ ERRADO (alto acoplamento):
 class AuditService {
@@ -272,17 +288,18 @@ export interface ModuleConfig {
 export const moduleRegistry = new Map<string, ModuleConfig>();
 
 // Registrar módulos dinamicamente:
-import auditConfig from './audit/module.config';
-import financeConfig from './finance/module.config';
+import auditConfig from "./audit/module.config";
+import financeConfig from "./finance/module.config";
 
-moduleRegistry.set('audit', auditConfig);
-moduleRegistry.set('finance', financeConfig);
+moduleRegistry.set("audit", auditConfig);
+moduleRegistry.set("finance", financeConfig);
 
 // Lazy loading no router:
 export function createAppRouter() {
-  const routes = Array.from(moduleRegistry.values())
-    .flatMap(module => module.routes);
-  
+  const routes = Array.from(moduleRegistry.values()).flatMap(
+    (module) => module.routes,
+  );
+
   return createBrowserRouter(routes);
 }
 ```
@@ -355,8 +372,8 @@ CREATE TABLE swot_analyses (
 
 -- Row Level Security (RLS)
 ALTER TABLE audits ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can only see their audits" 
-  ON audits FOR SELECT 
+CREATE POLICY "Users can only see their audits"
+  ON audits FOR SELECT
   USING (created_by = auth.uid());
 ```
 
@@ -366,20 +383,20 @@ CREATE POLICY "Users can only see their audits"
 
 ```typescript
 // shared/utils/security.ts
-import DOMPurify from 'isomorphic-dompurify';
+import DOMPurify from "isomorphic-dompurify";
 
 export const sanitizeInput = (input: string): string => {
-  return DOMPurify.sanitize(input, { 
-    ALLOWED_TAGS: [], 
-    ALLOWED_ATTR: [] 
+  return DOMPurify.sanitize(input, {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: [],
   });
 };
 
 // Validação de CNPJ
 export const validateCNPJ = (cnpj: string): boolean => {
-  const cleaned = cnpj.replace(/\D/g, '');
+  const cleaned = cnpj.replace(/\D/g, "");
   if (cleaned.length !== 14) return false;
-  
+
   // Algoritmo de validação do CNPJ
   // (implementação completa omitida por brevidade)
   return true;
@@ -397,15 +414,16 @@ export const generateSignature = (userId: string, action: string): string => {
 ## 📊 Exemplos de Novos Módulos
 
 ### Módulo Finance - Controle de Caixa
+
 ```typescript
 // modules/finance/pages/CashFlow.tsx
 export function CashFlow() {
   const { transactions, addTransaction } = useFinance();
-  
+
   return (
     <div className="p-8">
       <h1>Fluxo de Caixa</h1>
-      
+
       {/* Gráfico de entradas/saídas */}
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={transactions}>
@@ -413,10 +431,10 @@ export function CashFlow() {
           <Line type="monotone" dataKey="outflow" stroke="#ef4444" />
         </LineChart>
       </ResponsiveContainer>
-      
+
       {/* Tabela de transações */}
       <TransactionTable transactions={transactions} />
-      
+
       {/* Formulário de nova transação */}
       <TransactionForm onSubmit={addTransaction} />
     </div>
@@ -425,6 +443,7 @@ export function CashFlow() {
 ```
 
 ### Módulo Compliance - SWOT
+
 ```typescript
 // modules/compliance/pages/SwotAnalysis.tsx
 export function SwotAnalysis() {
@@ -434,28 +453,28 @@ export function SwotAnalysis() {
     opportunities: [],
     threats: []
   });
-  
+
   return (
     <div className="grid grid-cols-2 gap-4 p-8">
-      <SwotQuadrant 
-        title="Forças" 
-        items={swot.strengths} 
+      <SwotQuadrant
+        title="Forças"
+        items={swot.strengths}
         color="green"
         onAdd={(item) => setSwot({...swot, strengths: [...swot.strengths, item]})}
       />
-      <SwotQuadrant 
-        title="Fraquezas" 
-        items={swot.weaknesses} 
+      <SwotQuadrant
+        title="Fraquezas"
+        items={swot.weaknesses}
         color="red"
       />
-      <SwotQuadrant 
-        title="Oportunidades" 
-        items={swot.opportunities} 
+      <SwotQuadrant
+        title="Oportunidades"
+        items={swot.opportunities}
         color="blue"
       />
-      <SwotQuadrant 
-        title="Ameaças" 
-        items={swot.threats} 
+      <SwotQuadrant
+        title="Ameaças"
+        items={swot.threats}
         color="orange"
       />
     </div>
@@ -494,12 +513,14 @@ pnpm build
 ## 📦 Migração do Código Legado
 
 **Estratégia: Strangler Fig Pattern**
+
 1. Manter SPA atual funcionando
 2. Criar novos módulos em paralelo
 3. Migrar feature por feature
 4. Desativar partes antigas gradualmente
 
 **Prioridade de Migração:**
+
 1. ✅ Módulo Audit (já existe, refatorar)
 2. 🆕 Módulo Finance (novo, implementar do zero)
 3. 🆕 Módulo Compliance (novo, implementar do zero)

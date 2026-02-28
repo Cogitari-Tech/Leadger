@@ -51,8 +51,8 @@ export function useAudit() {
       .order("name");
 
     if (err) throw err;
-    store.setFrameworks(data ?? []);
-  }, [store]);
+    useAuditStore.getState().setFrameworks(data ?? []);
+  }, []);
 
   // ─── Programs ──────────────────────────────────────────
   const loadPrograms = useCallback(async () => {
@@ -65,7 +65,7 @@ export function useAudit() {
         .order("created_at", { ascending: false });
 
       if (err) throw err;
-      store.setPrograms(data ?? []);
+      useAuditStore.getState().setPrograms(data ?? []);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Erro ao carregar programas",
@@ -73,7 +73,7 @@ export function useAudit() {
     } finally {
       setLoading(false);
     }
-  }, [store]);
+  }, []);
 
   const createProgram = useCallback(
     async (input: CreateProgramInput) => {
@@ -88,7 +88,7 @@ export function useAudit() {
           .single();
 
         if (err) throw err;
-        store.addProgram(data as AuditProgram);
+        useAuditStore.getState().addProgram(data as AuditProgram);
         return data;
       } catch (err) {
         const msg =
@@ -112,7 +112,7 @@ export function useAudit() {
           .eq("id", id);
 
         if (err) throw err;
-        store.updateProgram(id, updates);
+        useAuditStore.getState().updateProgram(id, updates);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Erro ao atualizar");
         throw err;
@@ -133,7 +133,7 @@ export function useAudit() {
           .eq("id", id);
 
         if (err) throw err;
-        store.removeProgram(id);
+        useAuditStore.getState().removeProgram(id);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Erro ao excluir");
         throw err;
@@ -341,13 +341,13 @@ export function useAudit() {
         .order("created_at", { ascending: false });
 
       if (err) throw err;
-      store.setFindings(data ?? []);
+      useAuditStore.getState().setFindings(data ?? []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao carregar achados");
     } finally {
       setLoading(false);
     }
-  }, [store]);
+  }, []);
 
   const createFinding = useCallback(
     async (input: CreateFindingInput) => {
@@ -360,7 +360,7 @@ export function useAudit() {
           .single();
 
         if (err) throw err;
-        store.addFinding(data as AuditFinding);
+        useAuditStore.getState().addFinding(data as AuditFinding);
         return data;
       } catch (err) {
         setError(err instanceof Error ? err.message : "Erro ao criar achado");
@@ -380,7 +380,7 @@ export function useAudit() {
         .eq("id", id);
 
       if (err) throw err;
-      store.updateFinding(id, updates);
+      useAuditStore.getState().updateFinding(id, updates);
     },
     [store],
   );
@@ -398,7 +398,7 @@ export function useAudit() {
         .order("created_at", { ascending: false });
 
       if (err) throw err;
-      store.setActionPlans(data ?? []);
+      useAuditStore.getState().setActionPlans(data ?? []);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Erro ao carregar planos de ação",
@@ -406,7 +406,7 @@ export function useAudit() {
     } finally {
       setLoading(false);
     }
-  }, [store]);
+  }, []);
 
   const createActionPlan = useCallback(
     async (input: CreateActionPlanInput) => {
@@ -419,7 +419,7 @@ export function useAudit() {
           .single();
 
         if (err) throw err;
-        store.addActionPlan(data as AuditActionPlan);
+        useAuditStore.getState().addActionPlan(data as AuditActionPlan);
         return data;
       } catch (err) {
         setError(
@@ -441,7 +441,7 @@ export function useAudit() {
         .eq("id", id);
 
       if (err) throw err;
-      store.updateActionPlan(id, updates);
+      useAuditStore.getState().updateActionPlan(id, updates);
     },
     [store],
   );
@@ -506,15 +506,16 @@ export function useAudit() {
           }
         }
 
-        // Change status to under_review
-        const { error: pErr } = await supabase
-          .from("audit_programs")
-          .update({ status: "under_review" })
-          .eq("id", auditId);
+        // Use RPC to submit and log activity
+        const { error: pErr } = await supabase.rpc("submit_audit_for_review", {
+          p_audit_id: auditId,
+        });
 
         if (pErr) throw pErr;
 
-        store.updateProgram(auditId, { status: "under_review" });
+        useAuditStore
+          .getState()
+          .updateProgram(auditId, { status: "under_review" });
       } finally {
         setLoading(false);
       }
@@ -572,21 +573,36 @@ export function useAudit() {
 
         if (vErr) throw vErr;
 
-        // Change status to approved
-        const { error: pErr } = await supabase
-          .from("audit_programs")
-          .update({ status: "approved" })
-          .eq("id", auditId);
+        // Change status to approved using RPC
+        const { error: pErr } = await supabase.rpc("approve_audit", {
+          p_audit_id: auditId,
+        });
 
         if (pErr) throw pErr;
 
-        store.updateProgram(auditId, { status: "approved" });
+        useAuditStore.getState().updateProgram(auditId, { status: "approved" });
       } finally {
         setLoading(false);
       }
     },
     [getTenantId, store],
   );
+
+  const rejectAudit = useCallback(async (auditId: string, feedback: string) => {
+    setLoading(true);
+    try {
+      const { error: err } = await supabase.rpc("reject_audit_with_feedback", {
+        p_audit_id: auditId,
+        p_feedback: feedback,
+      });
+      if (err) throw err;
+      useAuditStore
+        .getState()
+        .updateProgram(auditId, { status: "in_progress" });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // ─── Bootstrap ─────────────────────────────────────────
   useEffect(() => {
@@ -630,6 +646,7 @@ export function useAudit() {
     deleteEvidence,
     submitAuditForReview,
     approveAudit,
+    rejectAudit,
 
     // Action Plans
     loadActionPlans,

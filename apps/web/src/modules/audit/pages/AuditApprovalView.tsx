@@ -12,6 +12,8 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
+import { Modal } from "@/shared/components/ui/Modal";
+import { AuditTimeline } from "../components/AuditTimeline";
 import { useAudit } from "../hooks/useAudit";
 import type {
   AuditProgram,
@@ -58,6 +60,7 @@ export default function AuditApprovalView() {
     loadItemResponses,
     loadItemEvidences,
     approveAudit,
+    rejectAudit,
     findings,
     loading,
     error,
@@ -68,6 +71,8 @@ export default function AuditApprovalView() {
   const [responses, setResponses] = useState<AuditItemResponse[]>([]);
   const [evidences, setEvidences] = useState<AuditItemEvidence[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
 
   // Filter findings for this specific program
   const programFindings = findings.filter((f) => f.program_id === programId);
@@ -181,17 +186,50 @@ export default function AuditApprovalView() {
   };
 
   const handleReject = () => {
-    // Basic Reject functionality simulation for now (requires adjusting status locally or a quick update)
-    // Normally we'd call a rejectAudit hook which changes status back to in_progress
-    alert(
-      "Funcionalidade de devolução será implementada junto à mensageria. Apenas a aprovação direta está concluída.",
-    );
+    setIsRejectModalOpen(true);
+  };
+
+  const confirmReject = async () => {
+    if (!programId || !program || !rejectReason.trim()) return;
+    try {
+      await rejectAudit(programId, rejectReason);
+      setRejectReason("");
+      setIsRejectModalOpen(false);
+      navigate("/audit/programs");
+    } catch (err: any) {
+      alert(err.message || "Erro ao devolver auditoria.");
+    }
   };
 
   if (!program) {
     return (
-      <div className="flex items-center justify-center p-12">
-        Carregando auditoria...
+      <div className="space-y-10 pb-20">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <button
+              onClick={() => navigate("/audit/programs")}
+              className="flex items-center gap-2 text-sm text-muted-foreground/60 hover:text-foreground font-bold uppercase tracking-widest mb-4 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" /> Voltar
+            </button>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                <ShieldCheck className="w-6 h-6 text-amber-500" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight font-display mb-1">
+                  Aprovação de Auditoria
+                </h1>
+                <p className="text-muted-foreground font-medium text-sm">
+                  Carregando programa...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="h-64 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        </div>
       </div>
     );
   }
@@ -298,6 +336,13 @@ export default function AuditApprovalView() {
             reportadas e certificadas pelo auditor.
           </p>
         </div>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold font-display px-2">
+          Histórico da Auditoria
+        </h3>
+        <AuditTimeline auditId={programId as string} />
       </div>
 
       {/* Items List (Read Only) */}
@@ -425,6 +470,43 @@ export default function AuditApprovalView() {
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={isRejectModalOpen}
+        onClose={() => setIsRejectModalOpen(false)}
+        title="Devolver Auditoria (Correção)"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-foreground/80">
+            Informe o motivo da devolução. Este feedback será registrado no
+            histórico da auditoria e o auditor será notificado para realizar as
+            correções necessárias.
+          </p>
+          <textarea
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            className="w-full min-h-[120px] p-3 rounded-xl bg-slate-900/50 dark:bg-black/50 border border-white/10 focus:ring-2 focus:ring-primary/20 text-sm custom-scrollbar text-foreground"
+            placeholder="Descreva detalhadamente o que precisa ser corrigido..."
+          />
+          <div className="flex justify-end gap-3 pt-2 border-t border-white/10 mt-4">
+            <Button
+              variant="ghost"
+              onClick={() => setIsRejectModalOpen(false)}
+              className="rounded-xl px-4 mt-4"
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="primary"
+              onClick={confirmReject}
+              disabled={!rejectReason.trim() || loading}
+              className="rounded-xl px-4 mt-4 bg-amber-500 hover:bg-amber-600 border-0 shadow-lg shadow-amber-500/20 text-white"
+            >
+              {loading ? "Processando..." : "Confirmar Devolução"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

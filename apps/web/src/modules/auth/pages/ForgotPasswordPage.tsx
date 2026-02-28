@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { supabase } from "../../../config/supabase";
 import { Activity, ShieldCheck, Database } from "lucide-react";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
+import { Link } from "react-router-dom";
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -157,8 +158,8 @@ export function ForgotPasswordPage() {
                 siga as instruções para redefinir sua senha.
               </p>
               <div className="pt-6">
-                <a
-                  href="/login"
+                <Link
+                  to="/login"
                   className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:brightness-110 transition-colors uppercase tracking-widest"
                 >
                   <svg
@@ -175,7 +176,7 @@ export function ForgotPasswordPage() {
                     />
                   </svg>
                   Voltar ao login
-                </a>
+                </Link>
               </div>
             </div>
           ) : (
@@ -226,12 +227,12 @@ export function ForgotPasswordPage() {
               </form>
 
               <div className="pt-6 text-center">
-                <a
-                  href="/login"
-                  className="text-[11px] font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest"
+                <Link
+                  to="/"
+                  className="font-bold uppercase tracking-widest text-brand-500 transition-colors hover:text-brand-400"
                 >
                   ← Voltar à Autenticação
-                </a>
+                </Link>
               </div>
             </>
           )}

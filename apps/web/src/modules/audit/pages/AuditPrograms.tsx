@@ -143,8 +143,8 @@ export default function AuditPrograms() {
 
       {/* Programs List */}
       {loading && programs.length === 0 ? (
-        <div className="flex items-center justify-center h-64 text-muted-foreground font-medium uppercase tracking-widest text-xs">
-          Carregando programas...
+        <div className="h-64 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
         </div>
       ) : programs.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-24 glass-card bg-white/5 dark:bg-black/20 backdrop-blur-xl rounded-[3rem] border border-white/5 soft-shadow text-center">
