@@ -29,6 +29,9 @@ export type AuditProgramFrequency =
 export type AuditProgramStatus =
   | "draft"
   | "in_progress"
+  | "under_review"
+  | "approved"
+  | "archived"
   | "completed"
   | "cancelled";
 
@@ -42,6 +45,7 @@ export interface AuditProgram {
   status: AuditProgramStatus;
   start_date: string | null;
   end_date: string | null;
+  project_id?: string | null;
   responsible_id: string | null;
   created_by: string;
   created_at: string;
@@ -71,8 +75,51 @@ export interface AuditProgramChecklist {
   control?: AuditFrameworkControl;
 }
 
+export type AuditResponseStatus =
+  | "conforme"
+  | "nao_conforme"
+  | "parcial"
+  | "n_a";
+
+export interface AuditItemResponse {
+  id: string;
+  audit_id: string;
+  checklist_item_id: string;
+  status: AuditResponseStatus;
+  justification: string | null;
+  responded_by: string;
+  responded_at: string;
+  tenant_id: string;
+}
+
+export interface AuditItemEvidence {
+  id: string;
+  audit_item_response_id: string;
+  file_path: string;
+  file_name: string;
+  uploaded_by: string;
+  uploaded_at: string;
+  tenant_id: string;
+}
+
+export interface AuditVersion {
+  id: string;
+  audit_id: string;
+  version_number: number;
+  pdf_path: string | null;
+  doc_hash: string;
+  approved_by: string;
+  approved_at: string;
+  tenant_id: string;
+}
+
 export type FindingRiskLevel = "critical" | "high" | "medium" | "low";
-export type FindingStatus = "open" | "in_progress" | "resolved" | "accepted";
+export type FindingStatus =
+  | "draft"
+  | "open"
+  | "in_progress"
+  | "resolved"
+  | "accepted";
 
 export interface AuditFinding {
   id: string;
@@ -82,11 +129,14 @@ export interface AuditFinding {
   description: string | null;
   risk_level: FindingRiskLevel;
   status: FindingStatus;
+  project_id?: string | null;
   due_date: string | null;
   assigned_to: string | null;
   created_by: string;
   created_at: string;
   resolved_at: string | null;
+  source_type?: "manual" | "github";
+  source_url?: string;
   // Joined
   program?: AuditProgram;
 }
@@ -134,6 +184,7 @@ export interface CreateProgramInput {
   description?: string;
   framework_id?: string;
   frequency: AuditProgramFrequency;
+  project_id?: string | null;
   start_date?: string;
   end_date?: string;
 }
@@ -145,6 +196,8 @@ export interface CreateFindingInput {
   description?: string;
   risk_level: FindingRiskLevel;
   due_date?: string;
+  source_type?: "manual" | "github";
+  source_url?: string;
 }
 
 export interface CreateActionPlanInput {
@@ -188,7 +241,8 @@ export type TaskCategory =
   | "HR/Recruitment"
   | "Finance/Billing"
   | "Legal/Privacy"
-  | "Data Science/AI";
+  | "Data Science/AI"
+  | "GitHub Governance";
 
 export type ImpactArea =
   | "Segurança"
@@ -200,7 +254,8 @@ export type ImpactArea =
   | "Estratégico"
   | "Experiência do Usuário"
   | "Conformidade Regulatória"
-  | "Recursos Humanos";
+  | "Recursos Humanos"
+  | "Governança de Código";
 
 /** 5W2H methodology applied to audit findings */
 export interface Finding5W2H {

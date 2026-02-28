@@ -22,7 +22,7 @@ Antes de criar as credenciais, o Google exige a configuração da tela que será
 3. Na etapa **OAuth consent screen**:
    - **App name**: `Cogitari Management`
    - **User support email**: Selecione o seu e-mail
-   - **App logo**: (Opcional) Faça upload do logo do Amuri Audit
+   - **App logo**: (Opcional) Faça upload do logo do Cogitari Governance
    - **Authorized domains**: Adicione `cogitari.com.br` e `supabase.co` (para os callbacks)
    - **Developer contact information**: Seu e-mail ou e-mail da equipe
 4. Na etapa **Scopes**, clique em **Add or Remove Scopes**.

@@ -26,22 +26,22 @@ export const financeModuleConfig: ModuleConfig = {
   // Rotas do módulo (lazy loaded)
   routes: [
     {
-      path: "/finance",
+      path: "finance",
       element: <FinanceDashboard />,
       handle: { title: "Dashboard Financeiro" },
     },
     {
-      path: "/finance/cash-flow",
+      path: "finance/cash-flow",
       element: <CashFlow />,
       handle: { title: "Fluxo de Caixa" },
     },
     {
-      path: "/finance/balance-sheet",
+      path: "finance/balance-sheet",
       element: <BalanceSheet />,
       handle: { title: "Balanço Patrimonial" },
     },
     {
-      path: "/finance/income-statement",
+      path: "finance/income-statement",
       element: <IncomeStatement />,
       handle: { title: "DRE" },
     },
@@ -51,22 +51,22 @@ export const financeModuleConfig: ModuleConfig = {
   navigation: [
     {
       label: "Visão Geral",
-      path: "/finance",
+      path: "finance",
       icon: "LayoutDashboard",
     },
     {
       label: "Fluxo de Caixa",
-      path: "/finance/cash-flow",
+      path: "finance/cash-flow",
       icon: "TrendingUp",
     },
     {
       label: "Balanço Patrimonial",
-      path: "/finance/balance-sheet",
+      path: "finance/balance-sheet",
       icon: "BarChart3",
     },
     {
       label: "DRE",
-      path: "/finance/income-statement",
+      path: "finance/income-statement",
       icon: "FileText",
     },
   ],

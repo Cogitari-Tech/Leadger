@@ -10,10 +10,11 @@ interface AuthGuardProps {
 /**
  * Protects routes from unauthenticated access.
  * Redirects to /login if no session is found.
+ * Redirects to /verify-email if user email is not confirmed.
  * Enforces Two-Factor Authentication (AAL2) based on role or enrollment.
  */
 export function AuthGuard({ children }: AuthGuardProps) {
-  const { user, loading: authLoading, initialized } = useAuth();
+  const { user, session, loading: authLoading, initialized } = useAuth();
   const location = useLocation();
   const [checkingMfa, setCheckingMfa] = useState(true);
   const [mfaStatus, setMfaStatus] = useState<
@@ -82,9 +83,20 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  // Not logged in -> login screen
+  // Not logged in -> public landing page
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
+  }
+
+  // Email not confirmed -> verify-email screen
+  // The Supabase session user object contains email_confirmed_at
+  const supabaseUser = session?.user;
+  if (
+    supabaseUser &&
+    !supabaseUser.email_confirmed_at &&
+    location.pathname !== "/verify-email"
+  ) {
+    return <Navigate to="/verify-email" replace />;
   }
 
   // Needs validation -> challenge screen

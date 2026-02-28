@@ -239,6 +239,7 @@ export function useFinance() {
         currency: "BRL",
       }).format(value),
 
-    formatDate: (date: Date) => new Intl.DateTimeFormat("pt-BR").format(date),
+    formatDate: (date: Date | string) =>
+      new Intl.DateTimeFormat("pt-BR").format(new Date(date)),
   };
 }

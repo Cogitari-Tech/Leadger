@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { supabase } from "../../../config/supabase";
 import { Activity, ShieldCheck, Database } from "lucide-react";
+import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
+import { Link } from "react-router-dom";
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -29,96 +31,120 @@ export function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
-      {/* 
-        RADICAL ASYMMETRIC LAYOUT (70/30 split)
-      */}
-      <div className="hidden md:flex flex-col justify-between w-[65%] border-r border-border p-12 lg:p-24 relative overflow-hidden bg-slate-950">
-        {/* Subtle grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)",
-            backgroundSize: "4rem 4rem",
-          }}
-        />
+    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row relative overflow-hidden font-sans">
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+      {/* Dynamic Background decor */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[150px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
+      </div>
 
-        <div className="relative z-10 flex items-center justify-between">
+      {/* Left side: Hero / Branding */}
+      <div className="hidden md:flex flex-col justify-between w-[60%] p-16 lg:p-24 relative z-10 overflow-hidden">
+        <div className="flex items-center justify-between">
           <img
             src="/images/logo-cogitari.png"
             alt="Cogitari"
-            className="h-8 w-auto mix-blend-screen"
+            className="h-9 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
           />
-          <span className="text-secondary-foreground/40 font-mono text-xs tracking-widest uppercase border border-border/30 px-3 py-1 bg-background/5">
-            System Auth v2.0
+          <img
+            src="/images/logo-cogitari-dark.png"
+            alt="Cogitari"
+            className="h-9 w-auto hidden dark:block transition-all opacity-90 hover:opacity-100"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/images/logo-cogitari.png";
+            }}
+          />
+          <span className="text-[10px] font-semibold tracking-[0.3em] uppercase opacity-40 px-3 py-1 bg-foreground/5 rounded-full">
+            Enterprise Security
           </span>
         </div>
 
-        <div className="relative z-10 space-y-8 mt-24 flex-grow flex flex-col justify-center">
-          <h1 className="text-6xl lg:text-7xl font-bold tracking-tighter text-white leading-[1.1]">
-            <span className="block text-primary mb-2">PRECISÃO.</span>
-            DADOS SOB <br /> CONTROLE.
+        <div className="space-y-10 mt-12 flex-grow flex flex-col justify-center">
+          <h1 className="text-6xl lg:text-[5rem] font-bold tracking-tight text-foreground leading-[1.05]">
+            Relatórios com <br />
+            <span className="text-primary">Precisão Absoluta.</span>
           </h1>
-          <p className="max-w-xl text-lg text-slate-400 font-light leading-relaxed">
-            Plataforma corporativa de auditoria e compliance financeiro. Acesso
-            restrito ao pessoal autorizado.
+          <p className="max-w-md text-lg text-muted-foreground font-medium leading-relaxed">
+            Plataforma avançada de auditoria e compliance financeiro. Gestão
+            estratégica de dados com interface intuitiva e refinada.
           </p>
 
-          <div className="flex gap-8 pt-8 border-t border-border/30 w-fit">
-            <div className="flex flex-col gap-2">
-              <ShieldCheck className="text-primary w-6 h-6 stroke-[1.5]" />
-              <span className="text-xs font-mono text-slate-500 uppercase">
-                Isolamento
+          <div className="flex gap-10 pt-10 border-t border-border/10 w-fit">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <ShieldCheck className="text-primary w-5 h-5" />
+              </div>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest leading-tight">
+                Privacidade
                 <br />
-                Garantido
+                Garantida
               </span>
             </div>
-            <div className="flex flex-col gap-2">
-              <Database className="text-primary w-6 h-6 stroke-[1.5]" />
-              <span className="text-xs font-mono text-slate-500 uppercase">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Database className="text-primary w-5 h-5" />
+              </div>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest leading-tight">
                 Dados
                 <br />
-                Críticos
+                Estruturados
               </span>
             </div>
-            <div className="flex flex-col gap-2">
-              <Activity className="text-primary w-6 h-6 stroke-[1.5]" />
-              <span className="text-xs font-mono text-slate-500 uppercase">
-                Alta
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Activity className="text-primary w-5 h-5" />
+              </div>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest leading-tight">
+                Insight
                 <br />
-                Performance
+                Estratégico
               </span>
             </div>
           </div>
         </div>
+
+        <div className="text-[10px] font-semibold text-muted-foreground/30 uppercase tracking-[0.4em]">
+          © 2026 Cogitari Governance · Cogitari Tech
+        </div>
       </div>
 
-      {/* Right side: Form */}
-      <div className="flex-1 flex flex-col justify-center p-8 sm:p-12 lg:p-16 bg-background relative">
-        <div className="w-full max-w-sm mx-auto space-y-8">
+      {/* Right side: Form Card Section */}
+      <div className="flex-1 flex flex-col justify-center p-6 sm:p-12 lg:p-16 relative z-20">
+        <div className="glass-panel p-10 sm:p-12 rounded-[2rem] soft-shadow w-full max-w-md mx-auto space-y-8 border border-white/10 dark:border-white/5">
           {/* Mobile Logo */}
-          <div className="md:hidden flex justify-start mb-8 pb-8 border-b border-border">
+          <div className="md:hidden flex justify-center mb-8">
             <img
               src="/images/logo-cogitari.png"
               alt="Cogitari"
-              className="h-8 w-auto"
+              className="h-8 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
+            />
+            <img
+              src="/images/logo-cogitari-dark.png"
+              alt="Cogitari"
+              className="h-8 w-auto hidden dark:block transition-all opacity-90 hover:opacity-100"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  "/images/logo-cogitari.png";
+              }}
             />
           </div>
 
           {sent ? (
             <div className="space-y-6 pt-4 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center border border-primary text-primary bg-primary/5">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/20 text-primary bg-primary/10">
                 <svg
-                  className="h-7 w-7"
+                  className="h-8 w-8"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
                   <path
-                    strokeLinecap="square"
-                    strokeLinejoin="miter"
-                    strokeWidth={1.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
@@ -126,82 +152,90 @@ export function ForgotPasswordPage() {
               <h2 className="text-2xl font-bold tracking-tight">
                 E-mail Enviado
               </h2>
-              <p className="text-sm font-mono text-muted-foreground leading-relaxed">
+              <p className="text-sm font-medium text-muted-foreground leading-relaxed">
                 Verifique sua caixa de entrada em{" "}
                 <span className="text-foreground font-bold">{email}</span> e
                 siga as instruções para redefinir sua senha.
               </p>
-              <div className="pt-4">
-                <a
-                  href="/login"
-                  className="text-xs font-mono text-primary hover:underline transition-colors uppercase tracking-widest"
+              <div className="pt-6">
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:brightness-110 transition-colors uppercase tracking-widest"
                 >
-                  ← Voltar ao login
-                </a>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    />
+                  </svg>
+                  Voltar ao login
+                </Link>
               </div>
             </div>
           ) : (
             <>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <h2 className="text-3xl font-bold tracking-tight">
                   Recuperação
                 </h2>
-                <p className="text-sm font-mono text-muted-foreground uppercase tracking-wider">
+                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] opacity-60">
                   Redefinição de Credenciais
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6 pt-4">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {error && (
-                  <div className="border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive font-mono">
+                  <div className="bg-destructive/10 border border-destructive/20 px-4 py-3 rounded-xl text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
                     {error}
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <label
-                    htmlFor="email"
-                    className="text-xs font-mono uppercase tracking-wider text-muted-foreground"
-                  >
-                    E-mail corporativo
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="auditor@empresa.com"
-                    className="w-full px-4 py-3 text-sm bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors rounded-none font-mono"
-                  />
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="email"
+                      className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1"
+                    >
+                      E-mail corporativo
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="auditor@empresa.com"
+                      className="w-full px-5 py-3.5 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-50"
+                    />
+                  </div>
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full bg-primary text-primary-foreground py-3 text-sm font-bold tracking-widest uppercase hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 transition-all rounded-none"
+                  className="w-full bg-primary text-primary-foreground py-4 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-lg shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:opacity-50 transition-all rounded-xl active:scale-95"
                 >
-                  {submitting ? "Enviando..." : "Enviar Link de Recuperação"}
+                  {submitting ? "Enviando..." : "Enviar Link"}
                 </button>
               </form>
 
               <div className="pt-6 text-center">
-                <a
-                  href="/login"
-                  className="text-xs font-mono text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest"
+                <Link
+                  to="/"
+                  className="font-bold uppercase tracking-widest text-brand-500 transition-colors hover:text-brand-400"
                 >
                   ← Voltar à Autenticação
-                </a>
+                </Link>
               </div>
             </>
           )}
-        </div>
-
-        {/* Footer info strictly positioned */}
-        <div className="absolute bottom-8 left-0 right-0 text-center">
-          <p className="text-[10px] font-mono text-muted-foreground uppercase opacity-50 tracking-[0.2em]">
-            V 2.5.0 · AMURI AUDIT
-          </p>
         </div>
       </div>
     </div>

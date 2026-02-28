@@ -1,4 +1,4 @@
-# Guia de Contribuição - Cogitari Audit Tool
+# Guia de Contribuição - Cogitari Governance Tool
 
 Obrigado por ajudar a manter as ferramentas da **Cogitari Tech** (CNPJ: 64.460.886/0001-39).
 

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
-import { Button } from "./Button";
 
 export const ThemeToggle = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    // Check local storage or system preference
     const storedTheme = localStorage.getItem("theme");
     if (
       storedTheme === "dark" ||
@@ -34,17 +32,21 @@ export const ThemeToggle = () => {
   };
 
   return (
-    <Button
-      variant="ghost"
+    <button
       onClick={toggleTheme}
-      className="rounded-full w-10 h-10 p-0 flex items-center justify-center text-slate-500 hover:text-brand-500 dark:text-slate-400 dark:hover:text-brand-400 transition-colors"
-      title={`Alternar para modo ${theme === "light" ? "escuro" : "claro"}`}
+      aria-label={`Alternar para modo ${theme === "light" ? "escuro" : "claro"}`}
+      className={`relative overflow-hidden rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300 border cursor-pointer
+        ${
+          theme === "light"
+            ? "bg-white border-slate-200 shadow-sm hover:bg-amber-50 hover:border-amber-300"
+            : "bg-slate-800 border-slate-600 shadow-md hover:bg-slate-700 hover:border-sky-500/50"
+        }`}
     >
       {theme === "light" ? (
-        <Moon className="w-5 h-5" />
+        <Moon className="w-5 h-5 text-slate-600 hover:text-slate-800 transition-colors" />
       ) : (
-        <Sun className="w-5 h-5" />
+        <Sun className="w-5 h-5 text-amber-400 hover:text-amber-300 transition-colors" />
       )}
-    </Button>
+    </button>
   );
 };

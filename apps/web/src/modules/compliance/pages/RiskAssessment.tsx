@@ -280,24 +280,28 @@ export default function RiskAssessment() {
                     return (
                       <div
                         key={`${rowIdx}-${colIdx}`}
-                        className={`relative aspect-square flex flex-col items-center justify-center rounded-2xl border border-white/5 transition-all duration-300 group hover:scale-[1.05] hover:z-10`}
+                        className="relative aspect-square flex flex-col items-center justify-center rounded-2xl border border-black/5 dark:border-white/5 transition-all duration-300 group hover:scale-[1.05] hover:z-10 bg-muted/30 dark:bg-muted/10 overflow-hidden"
                         style={{
-                          backgroundColor: `${getRiskColor(score).replace("bg-", "")}`,
-                          opacity: hasRisks ? 1 : 0.1,
                           boxShadow: hasRisks
-                            ? `0 8px 16px -4px ${getRiskColor(score).replace("bg-", "#")}`
+                            ? `0 8px 24px -4px var(--tw-shadow-color, rgba(0,0,0,0.2))`
                             : "none",
                         }}
                         title={`Probability: ${LIKELIHOOD_LABELS[likelihood]}, Impact: ${IMPACT_LABELS[impact]} — Score: ${score}`}
                       >
+                        {/* Background color layer */}
                         <div
-                          className={`absolute inset-0 flex flex-col items-center justify-center rounded-2xl transition-all ${getRiskColor(score)} ${hasRisks ? "opacity-90" : "opacity-0 group-hover:opacity-40"}`}
-                        >
-                          <span className="text-white font-bold text-2xl tracking-tight">
+                          className={`absolute inset-0 transition-opacity duration-300 ${getRiskColor(score)} ${hasRisks ? "opacity-100 dark:opacity-90" : "opacity-0 group-hover:opacity-20"}`}
+                        />
+
+                        {/* Content layer */}
+                        <div className="relative z-10 flex flex-col items-center justify-center">
+                          <span
+                            className={`font-bold text-2xl tracking-tight transition-colors ${hasRisks ? "text-white" : "text-muted-foreground/40 group-hover:text-foreground/70"}`}
+                          >
                             {score}
                           </span>
                           {hasRisks && (
-                            <span className="text-white/70 text-[10px] font-bold uppercase tracking-widest mt-1 px-2 py-0.5 bg-black/20 rounded-full">
+                            <span className="text-white/90 text-[10px] font-bold uppercase tracking-widest mt-1 px-2 py-0.5 bg-black/20 rounded-full shadow-sm">
                               {cell.length}{" "}
                               {cell.length > 1 ? "Riscos" : "Risco"}
                             </span>

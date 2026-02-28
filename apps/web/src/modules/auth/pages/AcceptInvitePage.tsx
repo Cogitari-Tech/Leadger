@@ -3,6 +3,7 @@ import { useParams, Navigate } from "react-router-dom";
 import { supabase } from "../../../config/supabase";
 import type { Invitation } from "../types/auth.types";
 import { Activity, ShieldCheck, Database } from "lucide-react";
+import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 
 export function AcceptInvitePage() {
   const { token } = useParams<{ token: string }>();
@@ -14,24 +15,73 @@ export function AcceptInvitePage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isInviteLink, setIsInviteLink] = useState(false);
 
   useEffect(() => {
     if (!token) return;
 
     const fetchInvitation = async () => {
-      const { data, error: fetchError } = await supabase
+      // First, try to find in invite_links by hashing the token
+      try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(token);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const tokenHash = hashArray
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+
+        const { data: linkData } = await supabase
+          .from("invite_links")
+          .select(
+            "*, role:roles(name, display_name), tenant:tenants(name, slug)",
+          )
+          .eq("token_hash", tokenHash)
+          .eq("revoked", false)
+          .single();
+
+        if (
+          linkData &&
+          new Date(linkData.expires_at) > new Date() &&
+          (linkData.max_uses === null ||
+            linkData.current_uses < linkData.max_uses)
+        ) {
+          setIsInviteLink(true);
+          setInvitation({
+            id: linkData.id,
+            tenant_id: linkData.tenant_id,
+            email: "",
+            role_id: linkData.role_id,
+            invited_by: linkData.created_by,
+            token: token || "",
+            status: "pending",
+            expires_at: linkData.expires_at,
+            created_at: linkData.created_at,
+            accepted_at: null,
+            role: linkData.role,
+            tenant: linkData.tenant,
+          } as Invitation);
+          setLoading(false);
+          return;
+        }
+      } catch {
+        // Not an invite link, try invitations table
+      }
+
+      // Fallback: try invitations table
+      const { data: invData, error: fetchError } = await supabase
         .from("invitations")
         .select("*, role:roles(name, display_name), tenant:tenants(name, slug)")
         .eq("token", token)
         .eq("status", "pending")
         .single();
 
-      if (fetchError || !data) {
+      if (fetchError || !invData) {
         setError("Convite inválido ou expirado.");
-      } else if (new Date(data.expires_at) < new Date()) {
+      } else if (new Date(invData.expires_at) < new Date()) {
         setError("Este convite expirou. Solicite um novo ao administrador.");
       } else {
-        setInvitation(data as Invitation);
+        setInvitation(invData as Invitation);
       }
       setLoading(false);
     };
@@ -60,10 +110,14 @@ export function AcceptInvitePage() {
       // 1. Create user account
       const { data: authData, error: signUpError } = await supabase.auth.signUp(
         {
-          email: invitation.email,
+          email: isInviteLink ? (undefined as any) : invitation.email,
           password,
           options: {
-            data: { name },
+            data: {
+              name,
+              signup_mode: isInviteLink ? "invite_link" : "invite",
+              invite_token: token,
+            },
           },
         },
       );
@@ -88,7 +142,7 @@ export function AcceptInvitePage() {
   };
 
   if (success) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
@@ -110,7 +164,15 @@ export function AcceptInvitePage() {
           <img
             src="/images/logo-cogitari.png"
             alt="Cogitari"
-            className="h-8 w-auto mix-blend-screen"
+            className="h-8 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
+          />
+          <img
+            src="/images/logo-cogitari-dark.png"
+            alt="Cogitari"
+            className="h-8 w-auto hidden dark:block transition-all opacity-90 hover:opacity-100"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/images/logo-cogitari.png";
+            }}
           />
           <span className="text-secondary-foreground/40 font-mono text-xs tracking-widest uppercase border border-border/30 px-3 py-1 bg-background/5">
             System Auth v2.0
@@ -158,13 +220,25 @@ export function AcceptInvitePage() {
 
       {/* Right side: Form */}
       <div className="flex-1 flex flex-col justify-center p-8 sm:p-12 lg:p-16 bg-background relative">
+        <div className="absolute top-6 right-6 z-50">
+          <ThemeToggle />
+        </div>
         <div className="w-full max-w-sm mx-auto space-y-8">
           {/* Mobile Logo */}
           <div className="md:hidden flex justify-start mb-8 pb-8 border-b border-border">
             <img
               src="/images/logo-cogitari.png"
               alt="Cogitari"
-              className="h-8 w-auto"
+              className="h-8 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
+            />
+            <img
+              src="/images/logo-cogitari-dark.png"
+              alt="Cogitari"
+              className="h-8 w-auto hidden dark:block transition-all opacity-90 hover:opacity-100"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  "/images/logo-cogitari.png";
+              }}
             />
           </div>
 
@@ -200,10 +274,10 @@ export function AcceptInvitePage() {
               </p>
               <div className="pt-4">
                 <a
-                  href="/login"
-                  className="text-xs font-mono text-primary hover:underline transition-colors uppercase tracking-widest"
+                  href="/"
+                  className="font-bold text-brand-500 uppercase tracking-widest hover:text-brand-400 transition-colors"
                 >
-                  ← Retornar à Base
+                  Ir para o Início
                 </a>
               </div>
             </div>
@@ -319,7 +393,7 @@ export function AcceptInvitePage() {
         {/* Footer info strictly positioned */}
         <div className="absolute bottom-8 left-0 right-0 text-center">
           <p className="text-[10px] font-mono text-muted-foreground uppercase opacity-50 tracking-[0.2em]">
-            V 2.5.0 · AMURI AUDIT
+            V 3.0.0 · COGITARI GOVERNANCE
           </p>
         </div>
       </div>

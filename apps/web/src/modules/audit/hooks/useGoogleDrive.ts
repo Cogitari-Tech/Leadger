@@ -13,7 +13,7 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY ?? "";
 const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
 const DRIVE_UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3/files";
-const DRIVE_FOLDER_NAME = "Cogitari Audit Reports";
+const DRIVE_FOLDER_NAME = "Cogitari Governance Reports";
 
 interface DriveState {
   connected: boolean;

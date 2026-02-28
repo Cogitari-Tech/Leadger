@@ -281,6 +281,19 @@ moduleRegistry.register(hrModule);
   - Cadastro de riscos
   - Planos de mitigação
 
+### 4. Gestão de Contas (Multi-Tenant)
+
+- 🆕 **Onboarding e Organizações**
+  - Criação de slugs únicos (`cogitari-tech`) para workspaces.
+  - Wizard guiado passo a passo para configuração de Empresa.
+  - Painel de aprovação pendente para novos membros.
+- 🆕 **RBAC (Role-Based Access Control) & Equipe**
+  - Hierarquia estrita: Owner, Admin, Manager, Auditor, Viewer.
+  - Gestão de membros, solicitações de acesso e perfis.
+  - Envio de Links de Convite seguros (hashed tokens).
+- 🆕 **Configurações Administrativas**
+  - Cadastro interativo de Contas Bancárias no sistema.
+
 ---
 
 ## 🧪 Estratégia de Testes

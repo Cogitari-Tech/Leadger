@@ -13,6 +13,8 @@ import type {
   ActionPlanStatus,
   CreateActionPlanInput,
 } from "../types/audit.types";
+import { useGitHub } from "../../github/hooks/useGitHub";
+import { Loader2 } from "lucide-react";
 
 const PRIORITY_CONFIG: Record<
   ActionPlanPriority,
@@ -64,8 +66,10 @@ const STATUS_CONFIG: Record<
 export default function AuditActionPlans() {
   const { actionPlans, findings, loading, createActionPlan, updateActionPlan } =
     useAudit();
+  const { closeIssue } = useGitHub();
 
   const [showModal, setShowModal] = useState(false);
+  const [processingId, setProcessingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [form, setForm] = useState<CreateActionPlanInput>({
     finding_id: "",
@@ -102,6 +106,31 @@ export default function AuditActionPlans() {
     ap.due_date &&
     new Date(ap.due_date) < new Date() &&
     ap.status !== "completed";
+
+  const handleCompleteActionPlan = async (ap: any) => {
+    setProcessingId(ap.id);
+    try {
+      if (
+        ap.finding?.source_type === "github" &&
+        ap.finding?.source_ref?.startsWith("github_issue#")
+      ) {
+        const parts = ap.finding.source_ref.split("#");
+        if (parts.length === 3) {
+          const repoId = parts[1];
+          const issueNumber = parseInt(parts[2], 10);
+          await closeIssue(repoId, issueNumber);
+        }
+      }
+      await updateActionPlan(ap.id, {
+        status: "completed",
+        completed_at: new Date().toISOString(),
+      });
+    } catch (err) {
+      console.error("Failed to complete action plan", err);
+    } finally {
+      setProcessingId(null);
+    }
+  };
 
   return (
     <div className="p-20 space-y-16 animate-in fade-in duration-700">
@@ -249,14 +278,13 @@ export default function AuditActionPlans() {
                       ap.status === "overdue") && (
                       <Button
                         variant="ghost"
-                        onClick={() =>
-                          updateActionPlan(ap.id, {
-                            status: "completed",
-                            completed_at: new Date().toISOString(),
-                          })
-                        }
-                        className="rounded-full h-8 px-4 font-bold text-[10px] uppercase border border-white/10 hover:bg-emerald-500 hover:text-white"
+                        onClick={() => handleCompleteActionPlan(ap)}
+                        disabled={processingId === ap.id}
+                        className="rounded-full h-8 px-4 font-bold text-[10px] uppercase border border-white/10 hover:bg-emerald-500 hover:text-white flex items-center gap-1.5"
                       >
+                        {processingId === ap.id && (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        )}
                         Concluir
                       </Button>
                     )}

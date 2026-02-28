@@ -1,5 +1,5 @@
 // apps/web/src/modules/registry.ts
-import { RouteObject } from 'react-router-dom';
+import { RouteObject } from "react-router-dom";
 
 export interface ModuleConfig {
   id: string;
@@ -33,7 +33,7 @@ class ModuleRegistry {
     if (this.modules.has(config.id)) {
       console.warn(`Módulo ${config.id} já está registrado. Substituindo...`);
     }
-    
+
     this.modules.set(config.id, config);
     console.log(`📦 Módulo registrado: ${config.name} (v${config.version})`);
   }
@@ -86,17 +86,16 @@ class ModuleRegistry {
    * Retorna todas as rotas de todos os módulos
    */
   getAllRoutes(): RouteObject[] {
-    return Array.from(this.modules.values())
-      .flatMap(module => module.routes);
+    return Array.from(this.modules.values()).flatMap((module) => module.routes);
   }
 
   /**
    * Retorna a navegação de todos os módulos
    */
   getAllNavigation(): Array<{ module: string; items: NavigationItem[] }> {
-    return Array.from(this.modules.values()).map(module => ({
+    return Array.from(this.modules.values()).map((module) => ({
       module: module.name,
-      items: module.navigation
+      items: module.navigation,
     }));
   }
 
@@ -107,8 +106,8 @@ class ModuleRegistry {
     const module = this.modules.get(moduleId);
     if (!module) return false;
 
-    return module.permissions.some(permission => 
-      userPermissions.includes(permission)
+    return module.permissions.some((permission) =>
+      userPermissions.includes(permission),
     );
   }
 
@@ -116,8 +115,8 @@ class ModuleRegistry {
    * Retorna módulos aos quais o usuário tem acesso
    */
   getAccessibleModules(userPermissions: string[]): ModuleConfig[] {
-    return Array.from(this.modules.values()).filter(module =>
-      this.hasPermission(module.id, userPermissions)
+    return Array.from(this.modules.values()).filter((module) =>
+      this.hasPermission(module.id, userPermissions),
     );
   }
 }
@@ -128,22 +127,28 @@ export const moduleRegistry = new ModuleRegistry();
 // Auto-registro de módulos na inicialização
 export async function initializeModules(): Promise<void> {
   // Importação dinâmica dos módulos
-  const auditModule = await import('./audit/module.config');
-  const financeModule = await import('./finance/module.config');
-  const complianceModule = await import('./compliance/module.config');
-  const adminModule = await import('./admin/module.config');
+  const auditModule = await import("./audit/module.config");
+  const financeModule = await import("./finance/module.config");
+  const complianceModule = await import("./compliance/module.config");
+  const adminModule = await import("./admin/module.config");
+  const githubModule = await import("./github/module.config");
+  const projectsModule = await import("./projects/module.config");
 
   // Registro
   moduleRegistry.register(auditModule.default);
   moduleRegistry.register(financeModule.default);
   moduleRegistry.register(complianceModule.default);
   moduleRegistry.register(adminModule.default);
+  moduleRegistry.register(githubModule.default);
+  moduleRegistry.register(projectsModule.default);
 
   // Carregamento
-  await moduleRegistry.load('audit');
-  await moduleRegistry.load('finance');
-  await moduleRegistry.load('compliance');
-  await moduleRegistry.load('admin');
+  await moduleRegistry.load("audit");
+  await moduleRegistry.load("finance");
+  await moduleRegistry.load("compliance");
+  await moduleRegistry.load("admin");
+  await moduleRegistry.load("github");
+  await moduleRegistry.load("projects");
 
-  console.log('✅ Todos os módulos foram inicializados');
+  console.log("✅ Todos os módulos foram inicializados");
 }

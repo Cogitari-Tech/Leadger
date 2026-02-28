@@ -16,16 +16,6 @@ CREATE TABLE IF NOT EXISTS tenants (
 
 ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "tenants_select" ON tenants;
-CREATE POLICY "tenants_select" ON tenants
-    FOR SELECT TO authenticated
-    USING (id IN (SELECT tm.tenant_id FROM tenant_members tm WHERE tm.user_id = auth.uid()));
-
-DROP POLICY IF EXISTS "tenants_all_service" ON tenants;
-CREATE POLICY "tenants_all_service" ON tenants
-    FOR ALL TO service_role
-    USING (true) WITH CHECK (true);
-
 CREATE TABLE IF NOT EXISTS tenant_members (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id   UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
@@ -37,6 +27,16 @@ CREATE TABLE IF NOT EXISTS tenant_members (
 
 CREATE INDEX IF NOT EXISTS idx_tm_user ON tenant_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_tm_tenant ON tenant_members(tenant_id);
+
+DROP POLICY IF EXISTS "tenants_select" ON tenants;
+CREATE POLICY "tenants_select" ON tenants
+    FOR SELECT TO authenticated
+    USING (id IN (SELECT tm.tenant_id FROM tenant_members tm WHERE tm.user_id = auth.uid()));
+
+DROP POLICY IF EXISTS "tenants_all_service" ON tenants;
+CREATE POLICY "tenants_all_service" ON tenants
+    FOR ALL TO service_role
+    USING (true) WITH CHECK (true);
 
 ALTER TABLE tenant_members ENABLE ROW LEVEL SECURITY;
 

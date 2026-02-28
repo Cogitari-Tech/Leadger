@@ -1,6 +1,6 @@
 # 🔐 Guia de Credenciais e Configuração de Ambiente
 
-Este documento descreve detalhadamente todas as credenciais necessárias para executar o projeto **Cogitari Audit Platform**, tanto localmente quanto nos ambientes Beta e Produção.
+Este documento descreve detalhadamente todas as credenciais necessárias para executar o projeto **Cogitari Governance Platform**, tanto localmente quanto nos ambientes Beta e Produção.
 
 > **⚠️ IMPORTANTE**: Nunca commite arquivos `.env` reais no Git. Use apenas `.env.example` como modelo.
 
@@ -50,7 +50,7 @@ Recomendamos um **Classic Token** para maior compatibilidade com ferramentas de 
 
 1. Vá para [Developer Settings > Personal access tokens > Tokens (classic)](https://github.com/settings/tokens).
 2. Clique em **Generate new token (classic)**.
-3. **Note**: Dê um nome descritivo (ex: "Amuri Audit MCP").
+3. **Note**: Dê um nome descritivo (ex: "Cogitari Governance MCP").
 4. **Expiration**: Defina para 30 ou 90 dias (ou "No expiration" se for para máquina segura).
 5. **Scopes (Permissões)** - Marque estas caixas:
    - [x] `repo` (Acesso total a repositórios privados)
