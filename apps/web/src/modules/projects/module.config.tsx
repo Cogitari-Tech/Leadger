@@ -19,18 +19,18 @@ const projectsModule: ModuleConfig = {
   ],
   navigation: [
     {
-      path: "/projects",
+      path: "projects",
       label: "Projetos",
       icon: "Briefcase",
     },
   ],
   routes: [
     {
-      path: "/projects",
+      path: "projects",
       element: <ProjectsListPage />,
     },
     {
-      path: "/projects/:id",
+      path: "projects/:id",
       element: <ProjectDetailsPage />,
     },
   ],

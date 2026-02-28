@@ -43,8 +43,8 @@ export function VerifyEmailPage() {
               Não recebeu? Verifique a pasta de spam ou lixo eletrônico.
             </p>
             <Link
-              to="/login"
-              className="inline-block text-sm font-semibold text-primary hover:underline"
+              to="/"
+              className="w-full inline-flex justify-center items-center py-4 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               Voltar para Login
             </Link>

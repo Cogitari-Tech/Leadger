@@ -20,32 +20,32 @@ export const githubModuleConfig: ModuleConfig = {
 
   routes: [
     {
-      path: "/github",
+      path: "github",
       element: <GitHubOverview />,
       handle: { title: "GitHub Governance" },
     },
     {
-      path: "/github/organizations",
+      path: "github/organizations",
       element: <GitHubOrganizations />,
       handle: { title: "Organizações" },
     },
     {
-      path: "/github/repositories",
+      path: "github/repositories",
       element: <GitHubRepositories />,
       handle: { title: "Repositórios" },
     },
     {
-      path: "/github/issues-prs",
+      path: "github/issues-prs",
       element: <GitHubIssuesPRs />,
       handle: { title: "Issues & PRs" },
     },
     {
-      path: "/github/security",
+      path: "github/security",
       element: <GitHubSecurity />,
       handle: { title: "Segurança" },
     },
     {
-      path: "/github/metrics",
+      path: "github/metrics",
       element: <GitHubMetrics />,
       handle: { title: "Métricas de Governança" },
     },
@@ -54,32 +54,32 @@ export const githubModuleConfig: ModuleConfig = {
   navigation: [
     {
       label: "Overview",
-      path: "/github",
+      path: "github",
       icon: "LayoutDashboard",
     },
     {
       label: "Organizações",
-      path: "/github/organizations",
+      path: "github/organizations",
       icon: "Building2",
     },
     {
       label: "Repositórios",
-      path: "/github/repositories",
+      path: "github/repositories",
       icon: "GitBranch",
     },
     {
       label: "Issues & PRs",
-      path: "/github/issues-prs",
+      path: "github/issues-prs",
       icon: "GitPullRequest",
     },
     {
       label: "Segurança",
-      path: "/github/security",
+      path: "github/security",
       icon: "ShieldAlert",
     },
     {
       label: "Métricas",
-      path: "/github/metrics",
+      path: "github/metrics",
       icon: "BarChart3",
     },
   ],

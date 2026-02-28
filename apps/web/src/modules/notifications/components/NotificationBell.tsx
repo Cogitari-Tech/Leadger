@@ -4,7 +4,6 @@ import {
   ShieldAlert,
   FileSearch,
   AlertTriangle,
-  GitBranch,
   CheckCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -13,13 +12,17 @@ import { useNotifications, type Notification } from "../hooks/useNotifications";
 function getNotificationIcon(type: Notification["type"]) {
   switch (type) {
     case "approval_pending":
+    case "access_request_received":
       return <FileSearch className="w-4 h-4 text-primary" />;
     case "critical_finding":
+    case "critical_vuln":
       return <AlertTriangle className="w-4 h-4 text-red-500" />;
     case "audit_returned":
+    case "access_rejected":
       return <ShieldAlert className="w-4 h-4 text-amber-500" />;
-    case "critical_vuln":
-      return <GitBranch className="w-4 h-4 text-red-500" />;
+    case "audit_approved":
+    case "access_approved":
+      return <CheckCheck className="w-4 h-4 text-green-500" />;
     default:
       return <Bell className="w-4 h-4 text-muted-foreground" />;
   }
@@ -37,6 +40,14 @@ function getNavigationPath(notification: Notification): string {
       return notification.reference_id
         ? `/audit/programs/${notification.reference_id}/execute`
         : "/audit/programs";
+    case "audit_approved":
+      return notification.reference_id
+        ? `/audit/programs/${notification.reference_id}`
+        : "/audit/programs";
+    case "access_request_received":
+    case "access_approved":
+    case "access_rejected":
+      return "/settings/team";
     case "critical_vuln":
       return "/github/security";
     default:

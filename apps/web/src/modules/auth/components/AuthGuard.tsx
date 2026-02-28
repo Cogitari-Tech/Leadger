@@ -83,9 +83,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  // Not logged in -> login screen
+  // Not logged in -> public landing page
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // Email not confirmed -> verify-email screen

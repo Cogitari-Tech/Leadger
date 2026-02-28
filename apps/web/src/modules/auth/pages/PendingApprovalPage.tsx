@@ -85,8 +85,8 @@ export function PendingApprovalPage() {
         </div>
 
         <Link
-          to="/login"
-          className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors pt-2"
+          to="/"
+          className="inline-flex w-full items-center justify-center rounded-xl bg-brand-500 py-4 text-[11px] font-bold uppercase tracking-[0.2em] text-white shadow-lg shadow-brand-500/20 outline-none transition-all hover:brightness-110 focus:ring-4 focus:ring-brand-500/20 active:scale-95"
         >
           <ArrowLeft className="w-4 h-4" /> Voltar para o login
         </Link>

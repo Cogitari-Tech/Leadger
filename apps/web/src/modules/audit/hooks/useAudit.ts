@@ -506,11 +506,10 @@ export function useAudit() {
           }
         }
 
-        // Change status to under_review
-        const { error: pErr } = await supabase
-          .from("audit_programs")
-          .update({ status: "under_review" })
-          .eq("id", auditId);
+        // Use RPC to submit and log activity
+        const { error: pErr } = await supabase.rpc("submit_audit_for_review", {
+          p_audit_id: auditId,
+        });
 
         if (pErr) throw pErr;
 
@@ -574,11 +573,10 @@ export function useAudit() {
 
         if (vErr) throw vErr;
 
-        // Change status to approved
-        const { error: pErr } = await supabase
-          .from("audit_programs")
-          .update({ status: "approved" })
-          .eq("id", auditId);
+        // Change status to approved using RPC
+        const { error: pErr } = await supabase.rpc("approve_audit", {
+          p_audit_id: auditId,
+        });
 
         if (pErr) throw pErr;
 
@@ -589,6 +587,22 @@ export function useAudit() {
     },
     [getTenantId, store],
   );
+
+  const rejectAudit = useCallback(async (auditId: string, feedback: string) => {
+    setLoading(true);
+    try {
+      const { error: err } = await supabase.rpc("reject_audit_with_feedback", {
+        p_audit_id: auditId,
+        p_feedback: feedback,
+      });
+      if (err) throw err;
+      useAuditStore
+        .getState()
+        .updateProgram(auditId, { status: "in_progress" });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // ─── Bootstrap ─────────────────────────────────────────
   useEffect(() => {
@@ -632,6 +646,7 @@ export function useAudit() {
     deleteEvidence,
     submitAuditForReview,
     approveAudit,
+    rejectAudit,
 
     // Action Plans
     loadActionPlans,

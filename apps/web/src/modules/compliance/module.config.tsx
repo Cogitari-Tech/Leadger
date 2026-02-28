@@ -16,22 +16,22 @@ export const complianceModuleConfig: ModuleConfig = {
   permissions: ["compliance.view", "compliance.manage"],
   routes: [
     {
-      path: "/compliance",
+      path: "compliance",
       element: <ComplianceDashboard />,
       handle: { title: "Dashboard Corporativo" },
     },
     {
-      path: "/compliance/frameworks",
+      path: "compliance/frameworks",
       element: <Frameworks />,
       handle: { title: "Frameworks Normativos" },
     },
     {
-      path: "/compliance/swot",
+      path: "compliance/swot",
       element: <SwotAnalysis />,
       handle: { title: "Matriz SWOT Estratégica" },
     },
     {
-      path: "/compliance/risks",
+      path: "compliance/risks",
       element: <RiskAssessment />,
       handle: { title: "Risk Assessment & Heatmap" },
     },
@@ -39,22 +39,22 @@ export const complianceModuleConfig: ModuleConfig = {
   navigation: [
     {
       label: "Visão Geral",
-      path: "/compliance",
+      path: "compliance",
       icon: "LayoutDashboard",
     },
     {
       label: "Frameworks",
-      path: "/compliance/frameworks",
+      path: "compliance/frameworks",
       icon: "ShieldAlert",
     },
     {
       label: "Matriz SWOT",
-      path: "/compliance/swot",
+      path: "compliance/swot",
       icon: "Crosshair",
     },
     {
       label: "Risk Assessment",
-      path: "/compliance/risks",
+      path: "compliance/risks",
       icon: "ActivitySquare",
     },
   ],

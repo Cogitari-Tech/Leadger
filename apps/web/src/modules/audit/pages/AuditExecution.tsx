@@ -13,6 +13,7 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
+import { AuditTimeline } from "../components/AuditTimeline";
 import { useAudit } from "../hooks/useAudit";
 import type {
   AuditProgram,
@@ -288,6 +289,15 @@ export default function AuditExecution() {
           />
         </div>
       </div>
+
+      {program.status !== "draft" && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold font-display px-2">
+            Histórico da Auditoria
+          </h3>
+          <AuditTimeline auditId={program.id} />
+        </div>
+      )}
 
       {/* Items List */}
       <div className="space-y-4">

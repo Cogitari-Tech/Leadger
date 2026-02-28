@@ -228,8 +228,8 @@ export function ForgotPasswordPage() {
 
               <div className="pt-6 text-center">
                 <Link
-                  to="/login"
-                  className="text-[11px] font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest"
+                  to="/"
+                  className="font-bold uppercase tracking-widest text-brand-500 transition-colors hover:text-brand-400"
                 >
                   ← Voltar à Autenticação
                 </Link>

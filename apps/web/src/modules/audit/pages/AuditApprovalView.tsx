@@ -12,6 +12,8 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
+import { Modal } from "@/shared/components/ui/Modal";
+import { AuditTimeline } from "../components/AuditTimeline";
 import { useAudit } from "../hooks/useAudit";
 import type {
   AuditProgram,
@@ -58,6 +60,7 @@ export default function AuditApprovalView() {
     loadItemResponses,
     loadItemEvidences,
     approveAudit,
+    rejectAudit,
     findings,
     loading,
     error,
@@ -68,6 +71,8 @@ export default function AuditApprovalView() {
   const [responses, setResponses] = useState<AuditItemResponse[]>([]);
   const [evidences, setEvidences] = useState<AuditItemEvidence[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
 
   // Filter findings for this specific program
   const programFindings = findings.filter((f) => f.program_id === programId);
@@ -181,11 +186,19 @@ export default function AuditApprovalView() {
   };
 
   const handleReject = () => {
-    // Basic Reject functionality simulation for now (requires adjusting status locally or a quick update)
-    // Normally we'd call a rejectAudit hook which changes status back to in_progress
-    alert(
-      "Funcionalidade de devolução será implementada junto à mensageria. Apenas a aprovação direta está concluída.",
-    );
+    setIsRejectModalOpen(true);
+  };
+
+  const confirmReject = async () => {
+    if (!programId || !program || !rejectReason.trim()) return;
+    try {
+      await rejectAudit(programId, rejectReason);
+      setRejectReason("");
+      setIsRejectModalOpen(false);
+      navigate("/audit/programs");
+    } catch (err: any) {
+      alert(err.message || "Erro ao devolver auditoria.");
+    }
   };
 
   if (!program) {
@@ -325,6 +338,13 @@ export default function AuditApprovalView() {
         </div>
       </div>
 
+      <div className="space-y-4">
+        <h3 className="text-lg font-bold font-display px-2">
+          Histórico da Auditoria
+        </h3>
+        <AuditTimeline auditId={programId as string} />
+      </div>
+
       {/* Items List (Read Only) */}
       <div className="space-y-4">
         <h3 className="text-lg font-bold font-display px-2">
@@ -450,6 +470,43 @@ export default function AuditApprovalView() {
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={isRejectModalOpen}
+        onClose={() => setIsRejectModalOpen(false)}
+        title="Devolver Auditoria (Correção)"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-foreground/80">
+            Informe o motivo da devolução. Este feedback será registrado no
+            histórico da auditoria e o auditor será notificado para realizar as
+            correções necessárias.
+          </p>
+          <textarea
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            className="w-full min-h-[120px] p-3 rounded-xl bg-slate-900/50 dark:bg-black/50 border border-white/10 focus:ring-2 focus:ring-primary/20 text-sm custom-scrollbar text-foreground"
+            placeholder="Descreva detalhadamente o que precisa ser corrigido..."
+          />
+          <div className="flex justify-end gap-3 pt-2 border-t border-white/10 mt-4">
+            <Button
+              variant="ghost"
+              onClick={() => setIsRejectModalOpen(false)}
+              className="rounded-xl px-4 mt-4"
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="primary"
+              onClick={confirmReject}
+              disabled={!rejectReason.trim() || loading}
+              className="rounded-xl px-4 mt-4 bg-amber-500 hover:bg-amber-600 border-0 shadow-lg shadow-amber-500/20 text-white"
+            >
+              {loading ? "Processando..." : "Confirmar Devolução"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

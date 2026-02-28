@@ -10,6 +10,10 @@ export interface Notification {
     | "approval_pending"
     | "critical_finding"
     | "audit_returned"
+    | "audit_approved"
+    | "access_request_received"
+    | "access_approved"
+    | "access_rejected"
     | "critical_vuln";
   reference_id: string | null;
   title: string;

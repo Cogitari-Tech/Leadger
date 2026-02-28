@@ -52,17 +52,37 @@ export const AppLayout: React.FC = () => {
       `}
       >
         <div className="relative z-10 p-4 flex justify-between items-center border-b border-border/20">
-          {!isCollapsed && (
+          {isCollapsed ? (
+            <div
+              className="flex justify-center w-full overflow-hidden"
+              title="Cogitari Governance"
+            >
+              <img
+                src="/images/logo-cogitari.png"
+                alt="C"
+                className="h-6 w-6 object-cover object-left mix-blend-screen hidden dark:block"
+              />
+              <img
+                src="/images/logo-cogitari-dark.png"
+                alt="C"
+                className="h-6 w-6 object-cover object-left block dark:hidden"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    "/images/logo-cogitari.png";
+                }}
+              />
+            </div>
+          ) : (
             <>
               <img
                 src="/images/logo-cogitari.png"
                 alt="Cogitari Governance"
-                className="h-7 w-auto mix-blend-screen hidden dark:block"
+                className="h-7 w-auto mix-blend-screen hidden dark:block transition-all opacity-90 hover:opacity-100"
               />
               <img
                 src="/images/logo-cogitari-dark.png"
                 alt="Cogitari Governance"
-                className="h-7 w-auto block dark:hidden"
+                className="h-7 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
                     "/images/logo-cogitari.png";
@@ -94,7 +114,14 @@ export const AppLayout: React.FC = () => {
         <nav className="relative z-10 flex-1 mt-4 overflow-y-auto custom-scrollbar px-2">
           {navigation.map((section) => (
             <div key={section.module} className="mb-6">
-              {!isCollapsed && (
+              {isCollapsed ? (
+                <div
+                  className="flex justify-center mb-2"
+                  title={section.module}
+                >
+                  <div className="h-px w-6 bg-border/50 rounded-full" />
+                </div>
+              ) : (
                 <h3 className="px-3 text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-widest mb-2">
                   {section.module}
                 </h3>
@@ -157,7 +184,7 @@ export const AppLayout: React.FC = () => {
           <button
             onClick={async () => {
               await signOut();
-              navigate("/login", { replace: true });
+              navigate("/", { replace: true });
             }}
             title={isCollapsed ? "Sair" : undefined}
             className="flex items-center gap-3 w-full p-2 rounded-xl text-muted-foreground hover:bg-red-500/10 hover:text-red-500 transition-colors"

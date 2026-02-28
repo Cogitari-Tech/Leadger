@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy } from "react";
 import { moduleRegistry } from "./modules/registry";
 import { AppLayout } from "./shared/components/layout/AppLayout";
@@ -13,6 +13,9 @@ import { TwoFactorSetup } from "./modules/auth/components/TwoFactorSetup";
 import { VerifyEmailPage } from "./modules/auth/pages/VerifyEmailPage";
 import { PendingApprovalPage } from "./modules/auth/pages/PendingApprovalPage";
 
+// The new Landing Page
+import { LandingPage } from "./modules/public/pages/LandingPage";
+
 const ExecutiveDashboard = lazy(
   () => import("./modules/dashboard/pages/ExecutiveDashboard"),
 );
@@ -23,6 +26,11 @@ const OnboardingWizard = lazy(
 
 export const createAppRouter = () =>
   createBrowserRouter([
+    // Public Marketing Route
+    {
+      path: "/",
+      element: <LandingPage />,
+    },
     // Public Routes (no auth required)
     {
       path: "/login",
@@ -101,7 +109,7 @@ export const createAppRouter = () =>
     },
     // Protected Routes (auth + full layout required)
     {
-      path: "/",
+      path: "/dashboard",
       element: (
         <AuthGuard>
           <AppLayout />
@@ -109,15 +117,19 @@ export const createAppRouter = () =>
       ),
       children: [
         {
-          path: "/",
+          index: true,
           element: <ExecutiveDashboard />,
         },
         {
-          path: "/profile",
+          path: "profile",
           element: <ProfilePage />,
         },
         ...moduleRegistry.getAllRoutes(),
       ],
+    },
+    {
+      path: "*",
+      element: <Navigate to="/dashboard" replace />,
     },
   ]);
 

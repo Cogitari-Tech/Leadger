@@ -43,6 +43,8 @@ export function AuthCallbackPage() {
     }
 
     // Regular callback (email confirmation, login, etc.)
+    // Supabase handles session setting automatically.
+    // We just need to wait for the AuthContext to update.
     setProcessing(false);
   }, [navigate]);
 
@@ -51,7 +53,8 @@ export function AuthCallbackPage() {
       if (user) {
         navigate("/", { replace: true });
       } else {
-        navigate("/login", { replace: true });
+        // If no user, redirect to home or login
+        navigate("/", { replace: true });
       }
     }
   }, [user, initialized, processing, navigate]);

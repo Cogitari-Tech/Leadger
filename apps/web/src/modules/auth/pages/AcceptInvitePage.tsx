@@ -142,7 +142,7 @@ export function AcceptInvitePage() {
   };
 
   if (success) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
@@ -274,10 +274,10 @@ export function AcceptInvitePage() {
               </p>
               <div className="pt-4">
                 <a
-                  href="/login"
-                  className="text-xs font-mono text-primary hover:underline transition-colors uppercase tracking-widest"
+                  href="/"
+                  className="font-bold text-brand-500 uppercase tracking-widest hover:text-brand-400 transition-colors"
                 >
-                  ← Retornar à Base
+                  Ir para o Início
                 </a>
               </div>
             </div>
