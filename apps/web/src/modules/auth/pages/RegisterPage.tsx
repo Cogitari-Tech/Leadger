@@ -11,6 +11,8 @@ import {
   Search,
   Loader2,
   CheckCircle,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import type { Tenant, SignupMode } from "../types/auth.types";
@@ -55,6 +57,36 @@ export function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [successMode, setSuccessMode] = useState<SignupMode>("create");
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Password strength calculation
+  const calculateStrength = (pwd: string) => {
+    let score = 0;
+    if (pwd.length >= 8) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[a-z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+    // Maximum score is 5
+    return Math.min(score, 5);
+  };
+  const strengthScore = calculateStrength(password);
+  const strengthColors = [
+    "bg-muted",
+    "bg-red-500",
+    "bg-orange-500",
+    "bg-yellow-500",
+    "bg-lime-500",
+    "bg-green-500",
+  ];
+  const strengthLabels = [
+    "Muito fraca",
+    "Muito fraca",
+    "Fraca",
+    "Razoável",
+    "Forte",
+    "Muito forte",
+  ];
 
   // If already logged in, redirect
   if (user) return <Navigate to="/" replace />;
@@ -225,16 +257,56 @@ export function RegisterPage() {
           <label htmlFor="password" className={labelClass}>
             Senha de segurança
           </label>
-          <input
-            id="password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className={`${inputClass} tracking-widest`}
-            minLength={6}
-          />
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Min 8 caract., Letras, Nums e Símbolos"
+              className={`${inputClass} tracking-widest`}
+              minLength={6}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors p-1"
+              title={showPassword ? "Ocultar senha" : "Exibir senha"}
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+          {password.length > 0 && (
+            <div className="mt-2 space-y-1 animate-in fade-in slide-in-from-top-1">
+              <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest">
+                <span
+                  className={
+                    strengthScore >= 3
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  }
+                >
+                  {strengthLabels[strengthScore]}
+                </span>
+              </div>
+              <div className="flex gap-1 h-1.5 w-full">
+                {[1, 2, 3, 4, 5].map((level) => (
+                  <div
+                    key={level}
+                    className={`h-full flex-1 rounded-full transition-colors duration-300 ${strengthScore >= level ? strengthColors[strengthScore] : "bg-muted relative overflow-hidden"}`}
+                  />
+                ))}
+              </div>
+              <p className="text-[10px] text-muted-foreground font-medium mt-1">
+                Requisitos: Min 8, Maiús., Minús., Núm., Símb.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

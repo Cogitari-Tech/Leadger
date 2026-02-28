@@ -133,13 +133,15 @@ export function ProjectDetailsPage() {
       <div className="space-y-6">
         <Link
           to="/projects"
-          className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors w-fit"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors w-fit"
         >
           <ArrowLeft className="w-4 h-4" />
           Voltar para Projetos
         </Link>
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 text-center">
-          <p className="text-red-400">{error || "Projeto não encontrado."}</p>
+        <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-6 text-center">
+          <p className="text-destructive font-medium">
+            {error || "Projeto não encontrado."}
+          </p>
         </div>
       </div>
     );
@@ -148,19 +150,31 @@ export function ProjectDetailsPage() {
   const getStatusDisplay = (status: string) => {
     switch (status) {
       case "active":
-        return { text: "Em Andamento", color: "text-cyan-500", icon: Clock };
+        return {
+          text: "Em Andamento",
+          color: "text-cyan-600 dark:text-cyan-400",
+          icon: Clock,
+        };
       case "completed":
         return {
           text: "Concluído",
-          color: "text-emerald-500",
+          color: "text-emerald-600 dark:text-emerald-400",
           icon: CheckCircle2,
         };
       case "on_hold":
-        return { text: "Pausado", color: "text-yellow-500", icon: Circle };
+        return {
+          text: "Pausado",
+          color: "text-yellow-600 dark:text-yellow-400",
+          icon: Circle,
+        };
       case "cancelled":
-        return { text: "Cancelado", color: "text-red-500", icon: Circle };
+        return {
+          text: "Cancelado",
+          color: "text-red-600 dark:text-red-400",
+          icon: Circle,
+        };
       default:
-        return { text: status, color: "text-slate-500", icon: Circle };
+        return { text: status, color: "text-muted-foreground", icon: Circle };
     }
   };
 
@@ -172,12 +186,12 @@ export function ProjectDetailsPage() {
       <div className="flex items-center gap-4">
         <Link
           to="/projects"
-          className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors border border-slate-700"
+          className="p-2 bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground rounded-lg transition-colors border border-border/40"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
             {project.name}
             <span
               className={`flex items-center gap-1.5 text-sm font-medium px-2.5 py-1rounded border border-current bg-current/10 ${statusColor} rounded-full`}
@@ -189,14 +203,14 @@ export function ProjectDetailsPage() {
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-        <div className="flex border-b border-slate-800">
+      <div className="bg-card border border-border/40 shadow-sm rounded-xl overflow-hidden">
+        <div className="flex border-b border-border/40">
           <button
             onClick={() => setSearchParams({ tab: "geral" })}
             className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
               currentTab === "geral"
-                ? "border-cyan-500 text-cyan-500"
-                : "border-transparent text-slate-400 hover:text-white"
+                ? "border-cyan-500 text-cyan-600 dark:text-cyan-400"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -206,8 +220,8 @@ export function ProjectDetailsPage() {
             onClick={() => setSearchParams({ tab: "equipe" })}
             className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
               currentTab === "equipe"
-                ? "border-cyan-500 text-cyan-500"
-                : "border-transparent text-slate-400 hover:text-white"
+                ? "border-cyan-500 text-cyan-600 dark:text-cyan-400"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             <Users className="w-4 h-4" />
@@ -217,8 +231,8 @@ export function ProjectDetailsPage() {
             onClick={() => setSearchParams({ tab: "recursos" })}
             className={`flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
               currentTab === "recursos"
-                ? "border-cyan-500 text-cyan-500"
-                : "border-transparent text-slate-400 hover:text-white"
+                ? "border-cyan-500 text-cyan-600 dark:text-cyan-400"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             <FolderGit2 className="w-4 h-4" />
@@ -232,11 +246,11 @@ export function ProjectDetailsPage() {
               <div className="flex justify-between items-start">
                 <div className="space-y-4 max-w-3xl">
                   <div>
-                    <h3 className="text-sm font-medium text-slate-400 mb-2">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">
                       Descrição
                     </h3>
-                    <div className="bg-slate-950 p-4 rounded-lg border border-slate-800/50">
-                      <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">
+                    <div className="bg-muted/40 p-4 rounded-lg border border-border/40">
+                      <p className="text-foreground leading-relaxed whitespace-pre-wrap">
                         {project.description ||
                           "Nenhuma descrição fornecida para este projeto."}
                       </p>
@@ -244,15 +258,15 @@ export function ProjectDetailsPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-slate-950 p-4 rounded-lg border border-slate-800/50 flex items-start gap-3">
-                      <div className="p-2 bg-slate-900 rounded-lg text-cyan-400">
+                    <div className="bg-muted/40 p-4 rounded-lg border border-border/40 flex items-start gap-3">
+                      <div className="p-2 bg-background border border-border/60 rounded-lg text-cyan-600 dark:text-cyan-400 shadow-sm">
                         <Calendar className="w-5 h-5" />
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500 font-medium">
+                        <p className="text-xs text-muted-foreground font-medium">
                           Data de Início
                         </p>
-                        <p className="text-white">
+                        <p className="text-foreground font-medium">
                           {project.start_date
                             ? new Date(project.start_date).toLocaleDateString(
                                 "pt-BR",
@@ -261,15 +275,15 @@ export function ProjectDetailsPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="bg-slate-950 p-4 rounded-lg border border-slate-800/50 flex items-start gap-3">
-                      <div className="p-2 bg-slate-900 rounded-lg text-cyan-400">
+                    <div className="bg-muted/40 p-4 rounded-lg border border-border/40 flex items-start gap-3">
+                      <div className="p-2 bg-background border border-border/60 rounded-lg text-cyan-600 dark:text-cyan-400 shadow-sm">
                         <Calendar className="w-5 h-5" />
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500 font-medium">
+                        <p className="text-xs text-muted-foreground font-medium">
                           Término Previsto
                         </p>
-                        <p className="text-white">
+                        <p className="text-foreground font-medium">
                           {project.end_date
                             ? new Date(project.end_date).toLocaleDateString(
                                 "pt-BR",
@@ -284,7 +298,7 @@ export function ProjectDetailsPage() {
                 {canManage && (
                   <button
                     onClick={() => setIsEditModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors font-medium border border-slate-700"
+                    className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors font-medium border border-border/40"
                   >
                     Editar Informações
                   </button>
@@ -296,13 +310,13 @@ export function ProjectDetailsPage() {
           {currentTab === "equipe" && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-white">
+                <h3 className="text-lg font-medium text-foreground">
                   Membros do Projeto
                 </h3>
                 {canManageTeam && (
                   <button
                     onClick={() => setIsAssignModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-400 hover:to-blue-400 transition-all font-medium text-sm shadow-lg shadow-cyan-500/20"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg transition-all font-medium text-sm shadow-lg shadow-cyan-500/20"
                   >
                     <Plus className="w-4 h-4" />
                     Adicionar Membro
@@ -311,18 +325,18 @@ export function ProjectDetailsPage() {
               </div>
 
               {loadingMembers ? (
-                <div className="py-8 text-center text-slate-400">
+                <div className="py-8 text-center text-muted-foreground">
                   Carregando equipe...
                 </div>
               ) : members.length === 0 ? (
-                <div className="bg-slate-950 border border-slate-800/50 rounded-lg p-12 text-center flex flex-col items-center">
-                  <div className="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center mb-3">
-                    <Users className="w-6 h-6 text-slate-500" />
+                <div className="bg-muted/40 border border-border/50 rounded-lg p-12 text-center flex flex-col items-center">
+                  <div className="w-12 h-12 bg-background border border-border/40 rounded-full flex items-center justify-center mb-3">
+                    <Users className="w-6 h-6 text-muted-foreground" />
                   </div>
-                  <h4 className="text-white font-medium mb-1">
+                  <h4 className="text-foreground font-medium mb-1">
                     Nenhum membro atribuído
                   </h4>
-                  <p className="text-slate-400 text-sm max-w-sm">
+                  <p className="text-muted-foreground text-sm max-w-sm">
                     Este projeto ainda não possui membros. Adicione pessoas da
                     equipe do tenant para colaborarem.
                   </p>
@@ -332,10 +346,10 @@ export function ProjectDetailsPage() {
                   {members.map((member) => (
                     <div
                       key={member.id}
-                      className="bg-slate-950 border border-slate-800/50 rounded-lg p-4 flex items-center justify-between group"
+                      className="bg-muted/40 border border-border/50 rounded-lg p-4 flex items-center justify-between group shadow-sm"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold uppercase">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 font-bold uppercase">
                           {(
                             member.member.user?.raw_user_meta_data?.name ||
                             member.member.user?.email ||
@@ -343,18 +357,18 @@ export function ProjectDetailsPage() {
                           ).charAt(0)}
                         </div>
                         <div>
-                          <p className="text-white font-medium text-sm">
+                          <p className="text-foreground font-medium text-sm">
                             {member.member.user?.raw_user_meta_data?.name ||
                               "Sem Nome"}
                           </p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span
-                              className="text-xs text-slate-400 truncate max-w-[120px]"
+                              className="text-xs text-muted-foreground truncate max-w-[120px]"
                               title={member.member.user?.email}
                             >
                               {member.member.user?.email}
                             </span>
-                            <span className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-300 font-medium whitespace-nowrap">
+                            <span className="px-1.5 py-0.5 rounded bg-background border border-border/60 text-[10px] text-muted-foreground font-medium whitespace-nowrap">
                               {member.project_role.toUpperCase()}
                             </span>
                           </div>
@@ -368,7 +382,7 @@ export function ProjectDetailsPage() {
                               await removeMember(member.member_id);
                             }
                           }}
-                          className="p-2 text-slate-500 hover:text-red-400 bg-slate-900 rounded-md opacity-0 group-hover:opacity-100 transition-all border border-transparent hover:border-red-400/20"
+                          className="p-2 text-muted-foreground hover:text-destructive bg-background rounded-md opacity-0 group-hover:opacity-100 transition-all border border-border/40 hover:border-destructive/20"
                           title="Remover do Projeto"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -384,25 +398,25 @@ export function ProjectDetailsPage() {
           {currentTab === "recursos" && (
             <div className="space-y-8">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-white">
+                <h3 className="text-lg font-medium text-foreground">
                   Recursos Associados
                 </h3>
               </div>
 
               {loadingResources ? (
-                <div className="py-8 text-center text-slate-400">
+                <div className="py-8 text-center text-muted-foreground">
                   Carregando recursos...
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Audit Programs */}
                   <div className="space-y-4">
-                    <h4 className="flex items-center gap-2 text-sm font-medium text-slate-300">
+                    <h4 className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wider">
                       <ShieldAlert className="w-4 h-4 text-primary" />{" "}
                       Auditorias ({programs.length})
                     </h4>
                     {programs.length === 0 ? (
-                      <div className="bg-slate-950/50 border border-slate-800/50 p-6 rounded-lg text-center text-sm text-slate-500">
+                      <div className="bg-muted/30 border border-border/40 p-6 rounded-lg text-center text-sm text-muted-foreground">
                         Nenhuma auditoria vinculada.
                       </div>
                     ) : (
@@ -411,16 +425,16 @@ export function ProjectDetailsPage() {
                           <Link
                             key={p.id}
                             to={`/audit/programs`}
-                            className="block p-4 bg-slate-900 border border-slate-800 rounded-lg hover:border-primary/50 transition-colors"
+                            className="block p-4 bg-card border border-border/60 shadow-sm rounded-lg hover:border-primary/50 hover:shadow-md transition-all"
                           >
-                            <p className="font-medium text-white text-sm">
+                            <p className="font-medium text-card-foreground text-sm">
                               {p.name}
                             </p>
                             <div className="flex justify-between mt-2">
-                              <span className="text-xs text-slate-400">
+                              <span className="text-xs font-semibold text-muted-foreground">
                                 {p.status.toUpperCase()}
                               </span>
-                              <span className="text-xs text-slate-500">
+                              <span className="text-xs text-muted-foreground">
                                 {p.start_date
                                   ? new Date(p.start_date).toLocaleDateString(
                                       "pt-BR",
@@ -436,12 +450,12 @@ export function ProjectDetailsPage() {
 
                   {/* GitHub Repositories */}
                   <div className="space-y-4">
-                    <h4 className="flex items-center gap-2 text-sm font-medium text-slate-300">
-                      <FolderGit2 className="w-4 h-4 text-cyan-400" />{" "}
+                    <h4 className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                      <FolderGit2 className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />{" "}
                       Repositórios ({repos.length})
                     </h4>
                     {repos.length === 0 ? (
-                      <div className="bg-slate-950/50 border border-slate-800/50 p-6 rounded-lg text-center text-sm text-slate-500">
+                      <div className="bg-muted/30 border border-border/40 p-6 rounded-lg text-center text-sm text-muted-foreground">
                         Nenhum repositório vinculado.
                       </div>
                     ) : (
@@ -450,15 +464,17 @@ export function ProjectDetailsPage() {
                           <Link
                             key={r.id}
                             to={`/github/repos`}
-                            className="block p-4 bg-slate-900 border border-slate-800 rounded-lg hover:border-cyan-500/50 transition-colors"
+                            className="block p-4 bg-card border border-border/60 shadow-sm rounded-lg hover:border-cyan-500/50 hover:shadow-md transition-all"
                           >
-                            <p className="font-medium text-white text-sm truncate">
+                            <p className="font-medium text-card-foreground text-sm truncate">
                               {r.full_name}
                             </p>
                             <div className="flex justify-between mt-2">
-                              <span className="text-xs text-slate-400">
+                              <span className="text-xs text-muted-foreground">
                                 Vulns Abertas:{" "}
-                                {r.open_vulnerabilities_count || 0}
+                                <strong className="text-foreground">
+                                  {r.open_vulnerabilities_count || 0}
+                                </strong>
                               </span>
                             </div>
                           </Link>
