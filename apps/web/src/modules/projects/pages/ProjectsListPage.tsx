@@ -73,15 +73,15 @@ export function ProjectsListPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-cyan-500/10 text-cyan-500 border-cyan-500/20";
+        return "bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-500/30";
       case "completed":
-        return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+        return "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30";
       case "on_hold":
-        return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
+        return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/30";
       case "cancelled":
-        return "bg-red-500/10 text-red-500 border-red-500/20";
+        return "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/30";
       default:
-        return "bg-slate-500/10 text-slate-500 border-slate-500/20";
+        return "bg-slate-500/10 text-slate-700 dark:text-slate-400 border-slate-500/30";
     }
   };
 
@@ -104,8 +104,8 @@ export function ProjectsListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-2">Projetos</h1>
-          <p className="text-slate-400">
+          <h1 className="text-2xl font-bold text-foreground mb-2">Projetos</h1>
+          <p className="text-muted-foreground">
             Gerencie os projetos e auditorias da sua organização.
           </p>
         </div>
@@ -116,7 +116,7 @@ export function ProjectsListPage() {
               setEditingProject(null);
               setIsFormOpen(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:from-cyan-400 hover:to-blue-400 transition-all font-medium shadow-lg shadow-cyan-500/20"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg transition-all font-medium shadow-lg shadow-cyan-500/20"
           >
             <Plus className="w-5 h-5" />
             Novo Projeto
@@ -124,21 +124,21 @@ export function ProjectsListPage() {
         )}
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row gap-4">
+      <div className="bg-card border border-border/40 rounded-xl p-4 flex flex-col sm:flex-row gap-4 shadow-sm">
         <div className="flex-1 relative">
-          <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+          <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
           <input
             type="text"
             placeholder="Buscar projetos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+            className="w-full bg-muted/40 border border-border/60 rounded-lg pl-10 pr-4 py-2 text-foreground focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
           />
         </div>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+          className="bg-muted/40 border border-border/60 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
         >
           <option value="all">Todos os status</option>
           <option value="active">Em Andamento</option>
@@ -157,14 +157,14 @@ export function ProjectsListPage() {
           <p className="text-red-400">{error}</p>
         </div>
       ) : filteredProjects.length === 0 ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-12 text-center flex flex-col items-center">
-          <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
-            <Briefcase className="w-8 h-8 text-slate-400" />
+        <div className="bg-card border border-border/40 rounded-xl p-12 text-center flex flex-col items-center">
+          <div className="w-16 h-16 bg-muted/40 rounded-full flex items-center justify-center mb-4">
+            <Briefcase className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium text-white mb-2">
+          <h3 className="text-lg font-medium text-foreground mb-2">
             Nenhum projeto encontrado
           </h3>
-          <p className="text-slate-400 max-w-sm mb-6">
+          <p className="text-muted-foreground max-w-sm mb-6">
             Você ainda não tem projetos criados ou nenhum correspondeu aos
             filtros aplicados.
           </p>
@@ -174,7 +174,7 @@ export function ProjectsListPage() {
                 setEditingProject(null);
                 setIsFormOpen(true);
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors font-medium border border-border/40"
             >
               <Plus className="w-4 h-4" />
               Criar Primeiro Projeto
@@ -186,11 +186,11 @@ export function ProjectsListPage() {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/50 transition-colors group flex flex-col"
+              className="bg-card border border-border/40 rounded-xl p-6 hover:border-cyan-500/50 hover:shadow-md transition-all group flex flex-col shadow-sm"
             >
               <div className="flex items-start justify-between mb-4">
                 <div
-                  className={`px-3 py-1 rounded-full border text-xs font-medium ${getStatusColor(project.status)}`}
+                  className={`px-3 py-1 rounded-full border text-xs font-semibold tracking-wide uppercase ${getStatusColor(project.status)}`}
                 >
                   {getStatusText(project.status)}
                 </div>
@@ -203,7 +203,7 @@ export function ProjectsListPage() {
                         setEditingProject(project);
                         setIsFormOpen(true);
                       }}
-                      className="p-1.5 text-slate-400 hover:text-cyan-400 bg-slate-800 rounded-lg hover:bg-slate-800 transition-colors"
+                      className="p-1.5 text-muted-foreground hover:text-cyan-600 dark:hover:text-cyan-400 bg-muted/40 rounded-md hover:bg-muted transition-colors border border-border/40"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
@@ -212,7 +212,7 @@ export function ProjectsListPage() {
                         e.preventDefault();
                         handleDelete(project.id);
                       }}
-                      className="p-1.5 text-slate-400 hover:text-red-400 bg-slate-800 rounded-lg hover:bg-slate-800 transition-colors"
+                      className="p-1.5 text-muted-foreground hover:text-destructive bg-muted/40 rounded-md hover:bg-muted transition-colors border border-border/40"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -225,17 +225,17 @@ export function ProjectsListPage() {
                 className="block flex-1 group-hover:opacity-80 transition-opacity"
               >
                 <h3
-                  className="text-lg font-bold text-white mb-2 line-clamp-1"
+                  className="text-lg font-bold text-card-foreground mb-2 line-clamp-1"
                   title={project.name}
                 >
                   {project.name}
                 </h3>
-                <p className="text-slate-400 text-sm line-clamp-2 mb-6 min-h-[40px]">
+                <p className="text-muted-foreground text-sm line-clamp-2 mb-6 min-h-[40px]">
                   {project.description || "Sem descrição disponível."}
                 </p>
               </Link>
 
-              <div className="pt-4 border-t border-slate-800/50 flex items-center justify-between text-sm text-slate-500">
+              <div className="pt-4 border-t border-border/40 flex items-center justify-between text-sm text-muted-foreground font-medium">
                 <div
                   className="flex items-center gap-1.5"
                   title="Previsão de término"
@@ -248,7 +248,7 @@ export function ProjectsListPage() {
 
                 <Link
                   to={`/projects/${project.id}?tab=equipe`}
-                  className="flex items-center gap-1.5 hover:text-cyan-400 transition-colors"
+                  className="flex items-center gap-1.5 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
                 >
                   <Users className="w-4 h-4" />
                   Equipe
