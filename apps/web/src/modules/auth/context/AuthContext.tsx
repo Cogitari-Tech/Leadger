@@ -26,6 +26,7 @@ interface AuthContextType extends AuthState {
       companyName?: string;
       signup_mode?: SignupMode;
       invite_token?: string;
+      captchaToken?: string;
     },
   ) => Promise<{ error: Error | null; data?: any }>;
   signInWithGoogle: () => Promise<void>;
@@ -215,6 +216,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       companyName?: string;
       signup_mode?: SignupMode;
       invite_token?: string;
+      captchaToken?: string;
     },
   ) => {
     setState((prev) => ({ ...prev, loading: true }));
@@ -222,6 +224,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       password,
       options: {
+        captchaToken: metadata?.captchaToken,
         data: {
           name: metadata?.name,
           companyName: metadata?.companyName,
