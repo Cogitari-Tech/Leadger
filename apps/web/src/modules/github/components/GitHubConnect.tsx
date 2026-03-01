@@ -1,18 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Github, Loader2, ArrowRight, CheckCircle } from "lucide-react";
+import { useAuth } from "../../auth/context/AuthContext";
 
 export function GitHubConnect() {
+  const { signInWithGitHub } = useAuth();
   const [connecting, setConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-
-  const handleConnect = async () => {
-    setConnecting(true);
-    // Simulate API connection process
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsConnected(true);
-    setConnecting(false);
-  };
 
   const handleDisconnect = async () => {
     setConnecting(true);
@@ -44,30 +38,36 @@ export function GitHubConnect() {
             </p>
           </div>
         </div>
-        <div>
-          {isConnected ? (
-            <button
-              onClick={handleDisconnect}
-              disabled={connecting}
-              className="px-4 py-2 text-sm font-medium text-destructive bg-destructive/10 hover:bg-destructive/20 transition-colors rounded-xl disabled:opacity-50"
-            >
-              {connecting ? "Desconectando..." : "Desconectar"}
-            </button>
-          ) : (
-            <button
-              onClick={handleConnect}
-              disabled={connecting}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 transition-colors rounded-xl disabled:opacity-50"
-            >
-              {connecting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Github className="w-4 h-4" />
-              )}
-              {connecting ? "Conectando..." : "Conectar Organização"}
-            </button>
-          )}
-        </div>
+        {isConnected ? (
+          <button
+            onClick={handleDisconnect}
+            disabled={connecting}
+            className="px-4 py-2 text-sm font-medium text-destructive bg-destructive/10 hover:bg-destructive/20 transition-colors rounded-xl disabled:opacity-50"
+          >
+            {connecting ? "Desconectando..." : "Desconectar"}
+          </button>
+        ) : (
+          <button
+            onClick={async () => {
+              setConnecting(true);
+              try {
+                await signInWithGitHub();
+              } catch (err) {
+                console.error(err);
+                setConnecting(false);
+              }
+            }}
+            disabled={connecting}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 transition-colors rounded-xl disabled:opacity-50"
+          >
+            {connecting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Github className="w-4 h-4" />
+            )}
+            {connecting ? "Conectando..." : "Conectar Organização"}
+          </button>
+        )}
       </div>
 
       {isConnected && (

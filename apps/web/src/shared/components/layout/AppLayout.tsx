@@ -24,7 +24,7 @@ export const AppLayout: React.FC = () => {
     ? moduleRegistry.getAllNavigation()
     : moduleRegistry
         .getAccessibleModules(permissions)
-        .map((m) => ({ module: m.name, items: m.navigation }));
+        .map((m) => ({ module: m.name, icon: m.icon, items: m.navigation }));
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedModules, setExpandedModules] = useState<
@@ -153,13 +153,13 @@ export const AppLayout: React.FC = () => {
                 location.pathname === "/dashboard"
                   ? "bg-primary/10 text-primary shadow-sm shadow-primary/5"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-              }`}
+              } ${isCollapsed ? "justify-center" : ""}`}
             >
               <div className="flex items-center gap-3 min-w-0 w-full">
                 <div
                   className={`flex items-center justify-center flex-shrink-0 transition-colors ${location.pathname === "/dashboard" ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}
                 >
-                  <LucideIcons.LayoutDashboard className="w-5 h-5" />
+                  <LucideIcons.Home className="w-5 h-5" />
                 </div>
                 {!isCollapsed && (
                   <span className="truncate">Painel de Governança</span>
@@ -195,16 +195,27 @@ export const AppLayout: React.FC = () => {
               checkIsActive(item.path),
             );
 
+            // Get the category icon
+            const CategoryIcon =
+              ((section as any).icon &&
+                (LucideIcons as any)[(section as any).icon]) ||
+              LucideIcons.Folder;
+
             return (
-              <div key={section.module} className="mb-6">
+              <div
+                key={section.module}
+                className={`mb-6 ${isCollapsed && !isSectionActive ? "opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all" : ""}`}
+              >
                 {isCollapsed ? (
                   <div
-                    className="flex justify-center mb-4 mt-2"
+                    className="flex justify-center mb-2 mt-2"
                     title={section.module}
                   >
                     <div
-                      className={`h-px w-8 rounded-full transition-colors ${isSectionActive ? "bg-primary" : "bg-border/30"}`}
-                    />
+                      className={`flex items-center justify-center flex-shrink-0 transition-colors ${isSectionActive ? "text-primary shadow-sm drop-shadow-md" : "text-muted-foreground/60"}`}
+                    >
+                      <CategoryIcon className="w-5 h-5" />
+                    </div>
                   </div>
                 ) : (
                   <button
@@ -223,7 +234,7 @@ export const AppLayout: React.FC = () => {
                 )}
 
                 <div
-                  className={`space-y-1 overflow-visible transition-all duration-300 ${!isCollapsed && !isExpanded ? "max-h-0 opacity-0 hidden" : "max-h-[1000px] opacity-100"}`}
+                  className={`space-y-1 overflow-visible transition-all duration-300 ${!isCollapsed && !isExpanded ? "max-h-0 opacity-0 hidden" : isCollapsed && !isSectionActive ? "hidden" : "max-h-[1000px] opacity-100"}`}
                 >
                   {section.items.map((item) => {
                     // Check if route matches to ensure proper highlighting for sub-paths
@@ -267,7 +278,7 @@ export const AppLayout: React.FC = () => {
 
         <div className="relative z-10 p-3 border-t border-border/20 flex flex-col items-center gap-2">
           <Link
-            to="/profile"
+            to="/dashboard/profile"
             title="Meu Perfil"
             className={`flex items-center gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors w-full ${isCollapsed ? "justify-center" : ""}`}
           >

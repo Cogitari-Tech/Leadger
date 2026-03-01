@@ -15,7 +15,7 @@ export const auditModuleConfig: ModuleConfig = {
   id: "audit",
   name: "Auditoria",
   description: "Gestão de auditorias internas, conformidade e planos de ação",
-  icon: "📋",
+  icon: "ClipboardCheck",
   version: "1.0.0",
 
   permissions: [

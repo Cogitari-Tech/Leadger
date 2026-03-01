@@ -89,12 +89,14 @@ class ModuleRegistry {
     return Array.from(this.modules.values()).flatMap((module) => module.routes);
   }
 
-  /**
-   * Retorna a navegação de todos os módulos
-   */
-  getAllNavigation(): Array<{ module: string; items: NavigationItem[] }> {
+  getAllNavigation(): Array<{
+    module: string;
+    icon: string;
+    items: NavigationItem[];
+  }> {
     return Array.from(this.modules.values()).map((module) => ({
       module: module.name,
+      icon: module.icon,
       items: module.navigation,
     }));
   }
