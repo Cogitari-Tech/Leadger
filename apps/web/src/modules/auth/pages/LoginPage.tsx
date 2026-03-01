@@ -1,14 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Navigate, Link } from "react-router-dom";
-import {
-  ArrowRight,
-  Loader2,
-  ShieldCheck,
-  Database,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { ArrowRight, Loader2, Eye, EyeOff, Activity } from "lucide-react";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import { Turnstile } from "@marsidev/react-turnstile";
 
@@ -56,136 +49,85 @@ export function LoginPage() {
     setSubmitting(false);
   };
 
-  // ─── Input field classes ─────────────────────────────────
-  const inputClass =
-    "w-full px-5 py-3 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-50";
-  const labelClass =
-    "text-[11px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1";
-  const btnPrimary =
-    "w-full bg-primary text-primary-foreground py-4 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-lg shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:opacity-50 transition-all rounded-xl active:scale-95";
-
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row relative overflow-hidden font-sans">
-      <div className="absolute top-6 right-6 z-50">
-        <ThemeToggle />
-      </div>
-
-      {/* Dynamic Background decor */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[150px] rounded-full animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
-      </div>
-
-      {/* Left side: Hero / Branding */}
-      <div className="hidden md:flex flex-col justify-between w-[50%] lg:w-[60%] p-16 lg:p-24 relative z-10 overflow-hidden border-r border-border/10 bg-background/50 backdrop-blur-xl">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden text-foreground flex flex-col items-center justify-center relative">
+      {/* ─── NAV HEADER ────────────────────────────────────────── */}
+      <header className="fixed top-0 inset-x-0 z-50 px-6 py-5 bg-background/40 backdrop-blur-sm transition-all duration-300 flex items-center justify-between border-transparent">
+        <div className="flex items-center gap-3">
           <Link to="/">
             <img
               src="/images/logo-cogitari.png"
-              alt="Cogitari"
-              className="h-9 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
+              alt="Cogitari Governance"
+              className="h-7 w-auto mix-blend-screen hidden dark:block"
+              aria-hidden="true"
             />
             <img
               src="/images/logo-cogitari-dark.png"
-              alt="Cogitari"
-              className="h-9 w-auto hidden dark:block transition-all opacity-90 hover:opacity-100"
+              alt="Cogitari Governance"
+              className="h-7 w-auto block dark:hidden"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
                   "/images/logo-cogitari.png";
               }}
+              aria-hidden="true"
             />
           </Link>
-          <span className="text-[10px] font-semibold tracking-[0.3em] uppercase opacity-40 px-3 py-1 bg-foreground/5 rounded-full">
-            Autosserviço Restrito
+          <span
+            className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-50 px-2 py-0.5 border-l border-border ml-2"
+            aria-label="Governance"
+          >
+            Governance
           </span>
         </div>
+        <ThemeToggle />
+      </header>
 
-        <div className="space-y-10 mt-12 flex-grow flex flex-col justify-center">
-          <h1 className="text-5xl lg:text-[4.5rem] font-bold tracking-tight text-foreground leading-[1.05]">
-            Relatórios com <br />
-            <span className="text-primary">Precisão Absoluta.</span>
-          </h1>
-          <p className="max-w-md text-lg text-muted-foreground font-medium leading-relaxed">
-            Acesse seu painel corporativo e gerencie seus dados de auditoria
-            estratégica e compliance em tempo real.
-          </p>
-
-          <div className="flex gap-10 pt-10 border-t border-border/10 w-fit">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <ShieldCheck className="text-primary w-5 h-5" />
-              </div>
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest leading-tight">
-                Acesso Seguro
-                <br />
-                Monitorado
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Database className="text-primary w-5 h-5" />
-              </div>
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest leading-tight">
-                Dados
-                <br />
-                Isolados
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="text-xs text-muted-foreground/60 font-medium">
-          &copy; {new Date().getFullYear()} Cogitari Tech. Todos os direitos
-          reservados.
-        </div>
+      {/* Unified Background Layer (Synced with LandingPage) */}
+      <div
+        className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 mix-blend-overlay dark:opacity-10 pointer-events-none z-0"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background pointer-events-none z-0"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-10 pointer-events-none z-0"
+        aria-hidden="true"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-primary via-transparent to-transparent blur-3xl" />
       </div>
 
-      {/* Right side: Login Form */}
-      <div className="w-full md:w-[50%] lg:w-[40%] flex flex-col items-center justify-center p-8 sm:p-12 relative z-10">
-        <div className="w-full max-w-[400px]">
-          {/* Mobile Logo Header */}
-          <div className="md:hidden flex flex-col items-center mb-10">
-            <Link to="/">
-              <img
-                src="/images/logo-cogitari.png"
-                alt="Cogitari"
-                className="h-8 w-auto block dark:hidden mb-4"
-              />
-              <img
-                src="/images/logo-cogitari-dark.png"
-                alt="Cogitari"
-                className="h-8 w-auto hidden dark:block mb-4"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "/images/logo-cogitari.png";
-                }}
-              />
-            </Link>
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-70 border border-border/40 px-2 py-0.5 rounded-sm">
-              Autosserviço Restrito
-            </span>
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-              Bem-vindo(a)
-            </h2>
-            <p className="text-sm text-muted-foreground mt-2">
-              Acesso corporativo ao Amuri Audit
+      {/* Login Card */}
+      <main className="w-full max-w-md relative z-10 px-6 py-24 sm:py-32">
+        <div className="w-full bg-background text-foreground rounded-[2rem] shadow-[0_0_60px_-15px_rgba(0,0,0,0.5)] border border-white/10 dark:border-white/5 overflow-hidden p-8 md:p-10">
+          <div className="mb-8 text-center sm:text-left">
+            <h1 className="text-3xl md:text-3xl font-bold tracking-tight text-foreground">
+              Acesso
+            </h1>
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-3">
+              Identificação Exclusiva
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             {error && (
-              <div className="bg-destructive/10 border border-destructive/20 px-4 py-3 rounded-xl text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">
-                {error}
+              <div
+                className="p-4 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-bold rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2"
+                aria-live="polite"
+              >
+                <Activity className="w-5 h-5 shrink-0 mt-0.5" />
+                <span>{error}</span>
               </div>
             )}
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="email" className={labelClass}>
-                  E-mail institucional
+            <div className="space-y-5">
+              <div className="space-y-1.5 flex flex-col">
+                <label
+                  htmlFor="email"
+                  className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-widest ml-1 cursor-pointer w-fit"
+                >
+                  E-mail Institucional
                 </label>
                 <input
                   id="email"
@@ -193,19 +135,22 @@ export function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-6 py-4 text-sm bg-muted/40 border border-border/60 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 shadow-sm rounded-2xl font-medium placeholder:opacity-40"
                   placeholder="nome@empresa.com"
-                  className={inputClass}
                 />
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label htmlFor="password" className={labelClass}>
-                    Senha
+              <div className="space-y-1.5 flex flex-col">
+                <div className="flex items-center justify-between ml-1">
+                  <label
+                    htmlFor="password"
+                    className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-widest cursor-pointer w-fit"
+                  >
+                    Senha de Segurança
                   </label>
                   <Link
                     to="/forgot-password"
-                    className="text-xs text-primary hover:text-primary/80 font-semibold uppercase tracking-widest transition-colors"
+                    className="text-[11px] font-bold text-primary hover:text-primary/80 transition-all uppercase tracking-widest focus:outline-none focus:underline rounded"
                   >
                     Esqueci minha senha
                   </Link>
@@ -217,19 +162,19 @@ export function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-6 py-4 text-sm bg-muted/40 border border-border/60 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 shadow-sm rounded-2xl font-medium tracking-widest placeholder:opacity-40"
                     placeholder="••••••••"
-                    className={`${inputClass} tracking-widest`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors p-1"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors p-1"
                     title={showPassword ? "Ocultar senha" : "Exibir senha"}
                   >
                     {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
+                      <EyeOff className="w-5 h-5" />
                     ) : (
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-5 h-5" />
                     )}
                   </button>
                 </div>
@@ -237,18 +182,14 @@ export function LoginPage() {
 
               {/* Turnstile */}
               {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
-                <div className="flex justify-center mt-2">
+                <div className="flex justify-center mt-2 h-[65px]">
                   <Turnstile
                     siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
                     onSuccess={(token) => {
                       setTurnstileToken(token);
                       setError(null);
                     }}
-                    onError={() => setError("Falha ao carregar o CAPTCHA.")}
-                    options={{
-                      theme: "auto",
-                      size: "normal",
-                    }}
+                    options={{ theme: "auto", size: "normal" }}
                   />
                 </div>
               )}
@@ -261,46 +202,32 @@ export function LoginPage() {
                 loading ||
                 (!!import.meta.env.VITE_TURNSTILE_SITE_KEY && !turnstileToken)
               }
-              className={btnPrimary}
+              className="group w-full bg-primary text-primary-foreground py-4 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-xl shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/30 disabled:opacity-50 transition-all duration-300 rounded-2xl active:scale-[0.98] flex items-center justify-center gap-2 mt-4"
             >
               {submitting || loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Acessando...
-                </span>
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <span className="flex items-center justify-center gap-2">
-                  Acessar Sistema <ArrowRight className="w-4 h-4" />
-                </span>
+                "Iniciar Sessão"
+              )}
+              {!submitting && !loading && (
+                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
               )}
             </button>
+          </form>
 
-            <p className="text-center text-sm text-muted-foreground/80 font-medium">
-              Não tem uma conta?{" "}
-              <Link
-                to="/register"
-                className="text-primary hover:underline font-bold"
-              >
-                Criar conta
-              </Link>
-            </p>
-
-            {/* SSO */}
-            <div className="relative pt-2">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border/20" />
-              </div>
-              <div className="relative flex justify-center text-[10px]">
-                <span className="bg-background px-4 font-bold text-muted-foreground/40 uppercase tracking-widest">
-                  Single Sign-On
-                </span>
-              </div>
+          {/* SSO */}
+          <div className="mt-8 pt-6 border-t border-border/30 relative">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-4">
+              <span className="text-[9px] font-bold text-muted-foreground/50 uppercase tracking-[0.3em]">
+                Ou entre com
+              </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mt-6">
               <button
                 onClick={signInWithGoogle}
                 type="button"
-                className="flex items-center justify-center gap-2 border border-border/40 py-3 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-muted/50 transition-all active:scale-95"
+                className="flex items-center justify-center gap-2 border border-border/60 py-3 rounded-2xl text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-muted/50 transition-all active:scale-95"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24">
                   <path
@@ -325,7 +252,7 @@ export function LoginPage() {
               <button
                 onClick={signInWithGitHub}
                 type="button"
-                className="flex items-center justify-center gap-2 border border-border/40 py-3 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-muted/50 transition-all active:scale-95"
+                className="flex items-center justify-center gap-2 border border-border/60 py-3 rounded-2xl text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-muted/50 transition-all active:scale-95"
               >
                 <svg
                   className="h-4 w-4"
@@ -341,9 +268,21 @@ export function LoginPage() {
                 GitHub
               </button>
             </div>
-          </form>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-muted-foreground text-[13px] font-medium">
+              Ainda não possui acesso?{" "}
+              <Link
+                to="/register"
+                className="text-foreground font-bold hover:text-primary focus:outline-none focus:underline rounded transition-colors"
+              >
+                Cadastre-se
+              </Link>
+            </p>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
