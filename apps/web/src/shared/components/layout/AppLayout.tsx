@@ -199,11 +199,11 @@ export const AppLayout: React.FC = () => {
               <div key={section.module} className="mb-6">
                 {isCollapsed ? (
                   <div
-                    className="flex justify-center mb-2"
+                    className="flex justify-center mb-4 mt-2"
                     title={section.module}
                   >
                     <div
-                      className={`h-px w-6 rounded-full transition-colors ${isSectionActive ? "bg-primary" : "bg-border/50"}`}
+                      className={`h-px w-8 rounded-full transition-colors ${isSectionActive ? "bg-primary" : "bg-border/30"}`}
                     />
                   </div>
                 ) : (
@@ -223,7 +223,7 @@ export const AppLayout: React.FC = () => {
                 )}
 
                 <div
-                  className={`space-y-1 overflow-hidden transition-all duration-300 ${isCollapsed || !isExpanded ? "max-h-0 opacity-0 hidden" : "max-h-[1000px] opacity-100"}`}
+                  className={`space-y-1 overflow-visible transition-all duration-300 ${!isCollapsed && !isExpanded ? "max-h-0 opacity-0 hidden" : "max-h-[1000px] opacity-100"}`}
                 >
                   {section.items.map((item) => {
                     // Check if route matches to ensure proper highlighting for sub-paths
@@ -244,7 +244,7 @@ export const AppLayout: React.FC = () => {
                             isActive
                               ? "bg-primary/10 text-primary shadow-sm shadow-primary/5"
                               : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                          }`}
+                          } ${isCollapsed ? "justify-center" : ""}`}
                       >
                         <div className="flex items-center gap-3 min-w-0 w-full">
                           <div

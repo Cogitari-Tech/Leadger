@@ -1,15 +1,18 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../../../modules/auth/context/AuthContext";
 import { ArrowLeft, Shield } from "lucide-react";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 
 export function PrivacyPolicy() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans transition-colors duration-300">
       {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link
-            to="/"
+            to={user ? "/dashboard" : "/"}
             className="flex items-center gap-2 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
