@@ -801,10 +801,62 @@ export function LandingPage() {
       </main>
 
       {/* FOOTER */}
-      <footer className="py-10 text-center text-sm font-medium text-muted-foreground border-t border-border/30">
-        <p>
-          &copy; {new Date().getFullYear()} Cogitari Governance. Todos os
-          direitos reservados.
+      <footer className="py-10 text-center text-sm font-medium text-muted-foreground border-t border-border/30 flex flex-col items-center gap-6">
+        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
+          {/* Legal Links */}
+          <div className="flex flex-wrap justify-center items-center gap-6">
+            <Link
+              to="/termos"
+              className="hover:text-foreground transition-colors"
+            >
+              Termos de Uso
+            </Link>
+            <Link
+              to="/privacidade"
+              className="hover:text-foreground transition-colors"
+            >
+              Política de Privacidade
+            </Link>
+            <Link
+              to="/disclaimer"
+              className="hover:text-foreground transition-colors"
+            >
+              Isenção de Responsabilidade
+            </Link>
+          </div>
+
+          {/* Social / External Links */}
+          <div className="flex flex-wrap justify-center items-center gap-6 border-l-0 md:border-l border-border/30 pl-0 md:pl-12">
+            <a
+              href="https://cogitari.com.br/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              Blog
+            </a>
+            <a
+              href="https://www.linkedin.com/company/cogitari-tech/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              LinkedIn
+            </a>
+            <a
+              href="https://github.com/Cogitari-Tech"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              GitHub
+            </a>
+          </div>
+        </div>
+
+        <p className="mt-4">
+          &copy; {new Date().getFullYear()} Cogitari Governance. CNPJ:
+          64.460.886/0001-39. Todos os direitos reservados.
         </p>
       </footer>
     </div>

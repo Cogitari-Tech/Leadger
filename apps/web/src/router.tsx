@@ -15,6 +15,9 @@ import { PendingApprovalPage } from "./modules/auth/pages/PendingApprovalPage";
 
 // The new Landing Page
 import { LandingPage } from "./modules/public/pages/LandingPage";
+import { TermsOfUse } from "./modules/public/pages/TermsOfUse";
+import { PrivacyPolicy } from "./modules/public/pages/PrivacyPolicy";
+import { Disclaimer } from "./modules/public/pages/Disclaimer";
 
 const ExecutiveDashboard = lazy(
   () => import("./modules/dashboard/pages/ExecutiveDashboard"),
@@ -30,6 +33,18 @@ export const createAppRouter = () =>
     {
       path: "/",
       element: <LandingPage />,
+    },
+    {
+      path: "/termos",
+      element: <TermsOfUse />,
+    },
+    {
+      path: "/privacidade",
+      element: <PrivacyPolicy />,
+    },
+    {
+      path: "/disclaimer",
+      element: <Disclaimer />,
     },
     // Public Routes (no auth required)
     {
