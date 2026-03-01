@@ -15,6 +15,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
+import { Turnstile } from "@marsidev/react-turnstile";
 import type { Tenant, SignupMode } from "../types/auth.types";
 
 type WizardStep = "personal" | "choice" | "create" | "join";
@@ -58,6 +59,10 @@ export function RegisterPage() {
   const [successMode, setSuccessMode] = useState<SignupMode>("create");
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Security checks
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // Password strength calculation
   const calculateStrength = (pwd: string) => {
@@ -122,6 +127,17 @@ export function RegisterPage() {
   const handlePersonalNext = (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!acceptedTerms) {
+      setError(
+        "Você deve aceitar os Termos de Uso e a Política de Privacidade para continuar.",
+      );
+      return;
+    }
+    const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+    if (siteKey && !turnstileToken) {
+      setError("Por favor, confirme que você não é um robô.");
+      return;
+    }
     if (password.length < 6) {
       setError("A senha deve ter pelo menos 6 caracteres.");
       return;
@@ -142,6 +158,7 @@ export function RegisterPage() {
         name,
         signup_mode: inviteMode || "invite",
         invite_token: inviteToken || undefined,
+        captchaToken: turnstileToken || undefined,
       });
       if (authError) throw authError;
       setSuccessMode("invite");
@@ -162,6 +179,7 @@ export function RegisterPage() {
         name,
         companyName,
         signup_mode: "create",
+        captchaToken: turnstileToken || undefined,
       });
       if (authError) throw authError;
       setSuccessMode("create");
@@ -185,6 +203,7 @@ export function RegisterPage() {
       const { error: authError } = await signUp(email, password, {
         name,
         signup_mode: "join",
+        captchaToken: turnstileToken || undefined,
       });
       if (authError) throw authError;
 
@@ -308,11 +327,67 @@ export function RegisterPage() {
             </div>
           )}
         </div>
+
+        {/* Checkbox Termos */}
+        <div className="flex items-start gap-3 mt-4">
+          <input
+            type="checkbox"
+            id="terms"
+            checked={acceptedTerms}
+            onChange={(e) => setAcceptedTerms(e.target.checked)}
+            className="mt-1 w-4 h-4 rounded border-border/40 text-primary focus:ring-primary/20 bg-background/50 accent-primary cursor-pointer"
+          />
+          <label
+            htmlFor="terms"
+            className="text-sm text-muted-foreground leading-relaxed cursor-pointer select-none"
+          >
+            Eu li e concordo com os{" "}
+            <Link
+              to="/termos"
+              target="_blank"
+              className="text-primary hover:underline font-medium"
+            >
+              Termos de Uso
+            </Link>{" "}
+            e a{" "}
+            <Link
+              to="/privacidade"
+              target="_blank"
+              className="text-primary hover:underline font-medium"
+            >
+              Política de Privacidade
+            </Link>
+            .
+          </label>
+        </div>
+
+        {/* Turnstile */}
+        {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
+          <div className="flex justify-center mt-2">
+            <Turnstile
+              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+              onSuccess={(token) => {
+                setTurnstileToken(token);
+                setError(null);
+              }}
+              onError={() => setError("Falha ao carregar o CAPTCHA.")}
+              options={{
+                theme: "auto",
+                size: "normal",
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <button
         type="submit"
-        disabled={submitting || loading}
+        disabled={
+          submitting ||
+          loading ||
+          !acceptedTerms ||
+          (!!import.meta.env.VITE_TURNSTILE_SITE_KEY && !turnstileToken)
+        }
         className={btnPrimary}
       >
         <span className="flex items-center justify-center gap-2">

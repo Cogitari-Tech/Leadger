@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@cogitari-platform/core": "*",
+    "@marsidev/react-turnstile": "^1.4.2",
     "@react-pdf/renderer": "^4.3.2",
     "@supabase/supabase-js": "^2.39.3",
     "docx": "^9.6.0",

@@ -9,6 +9,7 @@ import {
   Clock,
   TrendingUp,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function GitHubOverview() {
   const { kpis, repositories, events, loading, installations } = useGitHub();
@@ -48,8 +49,14 @@ export default function GitHubOverview() {
           Conecte uma organização do GitHub para monitorar repositórios, PRs,
           vulnerabilidades e métricas de governança em tempo real.
         </p>
-        <p className="text-xs text-muted-foreground/60 uppercase tracking-widest font-semibold">
-          Configuração disponível em Administração → Configurações
+        <p className="text-xs text-muted-foreground/60 uppercase tracking-widest font-semibold flex items-center justify-center gap-2">
+          Configuração disponível em
+          <Link
+            to="/dashboard/admin/settings#github"
+            className="text-primary hover:underline flex items-center gap-1"
+          >
+            Administração → Configurações
+          </Link>
         </p>
       </div>
     );
