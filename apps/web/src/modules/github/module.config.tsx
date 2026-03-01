@@ -13,7 +13,7 @@ export const githubModuleConfig: ModuleConfig = {
   name: "GitHub Governance",
   description:
     "Governança de código, segurança e métricas de repositórios GitHub",
-  icon: "🔒",
+  icon: "Github",
   version: "1.0.0",
 
   permissions: ["github.view", "github.manage", "github.admin"],

@@ -11,7 +11,7 @@ export const complianceModuleConfig: ModuleConfig = {
   name: "Compliance & GRC",
   description:
     "Gestão de frameworks, matriz estratégica (SWOT) e mapeamento de riscos",
-  icon: "⚖️",
+  icon: "ShieldCheck",
   version: "1.0.0",
   permissions: ["compliance.view", "compliance.manage"],
   routes: [

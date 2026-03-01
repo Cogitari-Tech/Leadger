@@ -416,7 +416,7 @@ export function LandingPage() {
 
               {/* === REGISTER CARD (Top Layer, slides over) === */}
               <div
-                className="absolute inset-0 w-full h-full bg-background border-l border-border/40 shadow-[-20px_0_40px_-10px_rgba(0,0,0,0.3)] transition-transform duration-700 cubic-bezier(0.16, 1, 0.3, 1) z-10"
+                className={`absolute inset-0 w-full h-full bg-background border-l border-border/40 transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1) z-10 ${authMode === "register" ? "shadow-[-20px_0_40px_-10px_rgba(0,0,0,0.3)] shadow-black/30" : "shadow-none"}`}
                 style={{
                   transform:
                     authMode === "register"
