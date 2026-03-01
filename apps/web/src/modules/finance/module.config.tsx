@@ -11,7 +11,7 @@ export const financeModuleConfig: ModuleConfig = {
   id: "finance",
   name: "Módulo Financeiro",
   description: "Controle de caixa, balanço patrimonial e DRE",
-  icon: "💰",
+  icon: "Banknote",
   version: "1.0.0",
 
   // Permissões necessárias
