@@ -17,7 +17,11 @@ import type {
 } from "../types/auth.types";
 
 interface AuthContextType extends AuthState {
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signIn: (
+    email: string,
+    password: string,
+    captchaToken?: string,
+  ) => Promise<{ error: Error | null }>;
   signUp: (
     email: string,
     password: string,
@@ -198,11 +202,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, [loadUserProfile]);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (
+    email: string,
+    password: string,
+    captchaToken?: string,
+  ) => {
     setState((prev) => ({ ...prev, loading: true }));
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
+      options: {
+        captchaToken,
+      },
     });
     if (error) setState((prev) => ({ ...prev, loading: false }));
     return { error: error as Error | null };
