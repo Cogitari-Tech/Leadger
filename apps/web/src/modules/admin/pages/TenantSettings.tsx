@@ -1,8 +1,18 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../../auth/context/AuthContext";
-import { Building2, Save, Loader2, Shield } from "lucide-react";
+import {
+  Building2,
+  Save,
+  Loader2,
+  Shield,
+  Github,
+  FileText,
+  ExternalLink,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 import { TwoFactorSetup } from "../../auth/components/TwoFactorSetup";
+import { GitHubConnect } from "../../github/components/GitHubConnect";
 
 export function TenantSettings() {
   const { tenant } = useAuth();
@@ -169,6 +179,85 @@ export function TenantSettings() {
           </p>
         </div>
         <TwoFactorSetup />
+      </div>
+
+      {/* GitHub Integration Section */}
+      <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Github className="text-slate-900 dark:text-white" /> Integrações de
+            Segurança
+          </h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Vincule plataformas externas para automação e rastreio.
+          </p>
+        </div>
+        <GitHubConnect />
+      </div>
+
+      {/* Legal Documentation Section */}
+      <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <FileText className="text-slate-900 dark:text-white" /> Documentação
+            Legal
+          </h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Consulte nossos avisos legais, termos e políticas de governança
+            ativas.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link
+            to="/termos"
+            target="_blank"
+            className="group flex flex-col p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-800/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-brand-500/50 transition-all"
+          >
+            <div className="flex justify-between items-start mb-2">
+              <span className="font-semibold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                Termos de Uso
+              </span>
+              <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
+            </div>
+            <p className="text-xs text-slate-500 line-clamp-2">
+              Regras, restrições e condições de uso da plataforma Cogitari.
+            </p>
+          </Link>
+
+          <Link
+            to="/privacidade"
+            target="_blank"
+            className="group flex flex-col p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-800/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-brand-500/50 transition-all"
+          >
+            <div className="flex justify-between items-start mb-2">
+              <span className="font-semibold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                Privacidade (LGPD)
+              </span>
+              <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
+            </div>
+            <p className="text-xs text-slate-500 line-clamp-2">
+              Nossa política de proteção de dados, segurança cibernética e logs.
+            </p>
+          </Link>
+
+          <Link
+            to="/disclaimer"
+            target="_blank"
+            className="group flex flex-col p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-800/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-brand-500/50 transition-all"
+          >
+            <div className="flex justify-between items-start mb-2">
+              <span className="font-semibold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                Aviso Legal
+              </span>
+              <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
+            </div>
+            <p className="text-xs text-slate-500 line-clamp-2">
+              Limitações de responsabilidade e natureza preditiva dos
+              algoritmos.
+            </p>
+          </Link>
+        </div>
       </div>
     </div>
   );

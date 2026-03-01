@@ -74,9 +74,10 @@ export const AppLayout: React.FC = () => {
           className={`relative z-10 flex ${isCollapsed ? "flex-col gap-4 py-4 px-2 justify-center" : "p-4 justify-between"} items-center border-b border-border/20`}
         >
           {isCollapsed ? (
-            <div
-              className="flex justify-center w-8 h-8 overflow-hidden flex-shrink-0"
-              title="Cogitari Governance"
+            <Link
+              to="/dashboard"
+              className="flex justify-center w-8 h-8 overflow-hidden flex-shrink-0 hover:opacity-80 transition-opacity"
+              title="Ir para o Início"
             >
               <img
                 src="/images/logo-cogitari.png"
@@ -92,24 +93,33 @@ export const AppLayout: React.FC = () => {
                     "/images/logo-cogitari.png";
                 }}
               />
-            </div>
+            </Link>
           ) : (
-            <>
-              <img
-                src="/images/logo-cogitari.png"
-                alt="Cogitari Governance"
-                className="h-7 w-auto mix-blend-screen hidden dark:block transition-all opacity-90 hover:opacity-100"
-              />
-              <img
-                src="/images/logo-cogitari-dark.png"
-                alt="Cogitari Governance"
-                className="h-7 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "/images/logo-cogitari.png";
-                }}
-              />
-            </>
+            <Link
+              to="/dashboard"
+              className="flex items-center gap-2.5 group w-full mr-2"
+            >
+              <div className="w-7 h-7 flex-shrink-0 relative">
+                <img
+                  src="/images/logo-cogitari.png"
+                  alt="Cogitari"
+                  className="h-full w-full object-cover mix-blend-screen hidden dark:block transition-all group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                />
+                <img
+                  src="/images/logo-cogitari-dark.png"
+                  alt="Cogitari"
+                  className="h-full w-full object-cover block dark:hidden transition-all group-hover:drop-shadow-[0_0_8px_rgba(0,0,0,0.15)]"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src =
+                      "/images/logo-cogitari.png";
+                  }}
+                />
+              </div>
+              <span className="font-bold text-base tracking-tight leading-none text-foreground truncate">
+                Cogitari{" "}
+                <span className="font-light opacity-70">Governance</span>
+              </span>
+            </Link>
           )}
           {/* Desktop collapse toggle */}
           <button
@@ -133,8 +143,58 @@ export const AppLayout: React.FC = () => {
         </div>
 
         <nav className="relative z-10 flex-1 mt-4 overflow-y-auto custom-scrollbar px-2">
+          {/* Static Home / Painel Menu Item */}
+          <div className="mb-4">
+            <Link
+              to="/dashboard"
+              onClick={() => setIsMobileMenuOpen(false)}
+              title="Painel de Governança"
+              className={`group flex items-center justify-between px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
+                location.pathname === "/dashboard"
+                  ? "bg-primary/10 text-primary shadow-sm shadow-primary/5"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              }`}
+            >
+              <div className="flex items-center gap-3 min-w-0 w-full">
+                <div
+                  className={`flex items-center justify-center flex-shrink-0 transition-colors ${location.pathname === "/dashboard" ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}
+                >
+                  <LucideIcons.LayoutDashboard className="w-5 h-5" />
+                </div>
+                {!isCollapsed && (
+                  <span className="truncate">Painel de Governança</span>
+                )}
+              </div>
+            </Link>
+          </div>
+
           {navigation.map((section) => {
             const isExpanded = expandedModules[section.module];
+
+            // Helper precise path matcher
+            // example: location /dashboard/admin/team vs /admin/team
+            const checkIsActive = (targetPath: string) => {
+              // Normaliza para ter a barra
+              const current = location.pathname.endsWith("/")
+                ? location.pathname
+                : location.pathname + "/";
+              // A URL pode vir tanto como '/dashboard/X' ou '/X', ou 'X' no map.
+              const target = targetPath.startsWith("/")
+                ? targetPath
+                : `/${targetPath}`;
+
+              // Casos comuns:
+              // Se o current é /dashboard/admin/roles/ e o target é /admin/roles/
+              return current.includes(
+                target.endsWith("/") ? target : target + "/",
+              );
+            };
+
+            // Determine if any item in this section is currently active
+            const isSectionActive = section.items.some((item) =>
+              checkIsActive(item.path),
+            );
+
             return (
               <div key={section.module} className="mb-6">
                 {isCollapsed ? (
@@ -142,27 +202,32 @@ export const AppLayout: React.FC = () => {
                     className="flex justify-center mb-2"
                     title={section.module}
                   >
-                    <div className="h-px w-6 bg-border/50 rounded-full" />
+                    <div
+                      className={`h-px w-6 rounded-full transition-colors ${isSectionActive ? "bg-primary" : "bg-border/50"}`}
+                    />
                   </div>
                 ) : (
                   <button
                     onClick={() => toggleModule(section.module)}
                     className="w-full flex items-center justify-between px-3 mb-2 group cursor-pointer"
                   >
-                    <h3 className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-widest group-hover:text-foreground/80 transition-colors">
+                    <h3
+                      className={`text-[11px] font-semibold uppercase tracking-widest transition-colors ${isSectionActive ? "text-primary" : "text-muted-foreground/60 group-hover:text-foreground/80"}`}
+                    >
                       {section.module}
                     </h3>
                     <ChevronDown
-                      className={`w-3.5 h-3.5 text-muted-foreground/40 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                      className={`w-3.5 h-3.5 transition-transform duration-200 ${isSectionActive ? "text-primary" : "text-muted-foreground/40"} ${isExpanded ? "rotate-180" : ""}`}
                     />
                   </button>
                 )}
 
                 <div
-                  className={`space-y-1 overflow-hidden transition-all duration-300 ${!isCollapsed && !isExpanded ? "max-h-0 opacity-0" : "max-h-[1000px] opacity-100"}`}
+                  className={`space-y-1 overflow-hidden transition-all duration-300 ${isCollapsed || !isExpanded ? "max-h-0 opacity-0 hidden" : "max-h-[1000px] opacity-100"}`}
                 >
                   {section.items.map((item) => {
-                    const isActive = location.pathname.startsWith(item.path);
+                    // Check if route matches to ensure proper highlighting for sub-paths
+                    const isActive = checkIsActive(item.path);
 
                     // Get the icon component dynamically from lucide-react, or default to Circle
                     const Icon =
