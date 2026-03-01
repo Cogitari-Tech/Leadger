@@ -49,7 +49,7 @@ export default function GitHubOverview() {
           vulnerabilidades e métricas de governança em tempo real.
         </p>
         <p className="text-xs text-muted-foreground/60 uppercase tracking-widest font-semibold">
-          Configuração disponível em Administração → Integrações
+          Configuração disponível em Administração → Configurações
         </p>
       </div>
     );
