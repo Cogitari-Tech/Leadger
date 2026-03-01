@@ -18,6 +18,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 export function LandingPage() {
   const { user, signIn, signUp, loading: authLoading } = useAuth();
@@ -31,6 +32,7 @@ export function LandingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // Password strength calculation
   const calculateStrength = (pwd: string) => {
@@ -99,21 +101,39 @@ export function LandingPage() {
     setSubmitting(true);
 
     try {
+      // Captcha validation
+      const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+      if (siteKey && !turnstileToken) {
+        setError("Por favor, confirme que você não é um robô.");
+        setSubmitting(false);
+        return;
+      }
+
       if (authMode === "login") {
-        const { error: authError } = await signIn(email, password);
+        const { error: authError } = await signIn(
+          email,
+          password,
+          turnstileToken || undefined,
+        );
         if (authError) {
           setError(
             authError.message === "Invalid login credentials"
               ? "E-mail ou senha incorretos."
-              : "Erro ao fazer login. Tente novamente.",
+              : authError.message.includes("captcha")
+                ? "Falha na verificação de segurança (Captcha)."
+                : "Erro ao fazer login. Tente novamente.",
           );
         }
       } else {
         if (password.length < 6) {
           setError("A senha deve ter pelo menos 6 caracteres.");
+          setSubmitting(false);
           return;
         }
-        const { error: signUpError } = await signUp(email, password, { name });
+        const { error: signUpError } = await signUp(email, password, {
+          name,
+          captchaToken: turnstileToken || undefined,
+        });
         if (signUpError) throw signUpError;
       }
     } catch (err: any) {
@@ -129,6 +149,7 @@ export function LandingPage() {
     setEmail("");
     setPassword("");
     setName("");
+    setTurnstileToken(null);
   };
 
   return (
@@ -312,7 +333,7 @@ export function LandingPage() {
                             to="/forgot-password"
                             className="text-[11px] font-bold text-primary hover:text-primary/80 transition-all uppercase tracking-widest focus:outline-none focus:underline rounded"
                           >
-                            Esqueceu?
+                            Esqueci minha senha
                           </Link>
                         </div>
                         <div className="relative">
@@ -341,11 +362,30 @@ export function LandingPage() {
                           </button>
                         </div>
                       </div>
+
+                      {/* Turnstile */}
+                      {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
+                        <div className="flex justify-center mt-2 h-[65px]">
+                          <Turnstile
+                            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                            onSuccess={(token) => {
+                              setTurnstileToken(token);
+                              setError(null);
+                            }}
+                            options={{ theme: "auto", size: "normal" }}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <button
                       type="submit"
-                      disabled={submitting || authLoading}
+                      disabled={
+                        submitting ||
+                        authLoading ||
+                        (!!import.meta.env.VITE_TURNSTILE_SITE_KEY &&
+                          !turnstileToken)
+                      }
                       className="group w-full bg-primary text-primary-foreground py-4 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-xl shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/30 disabled:opacity-50 transition-all duration-300 rounded-2xl active:scale-[0.98] flex items-center justify-center gap-2 mt-4"
                     >
                       {submitting || authLoading ? (
@@ -503,11 +543,31 @@ export function LandingPage() {
                           </div>
                         )}
                       </div>
+
+                      {/* Turnstile */}
+                      {import.meta.env.VITE_TURNSTILE_SITE_KEY &&
+                        authMode === "register" && (
+                          <div className="flex justify-center h-[65px]">
+                            <Turnstile
+                              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                              onSuccess={(token) => {
+                                setTurnstileToken(token);
+                                setError(null);
+                              }}
+                              options={{ theme: "auto", size: "normal" }}
+                            />
+                          </div>
+                        )}
                     </div>
 
                     <button
                       type="submit"
-                      disabled={submitting || authLoading}
+                      disabled={
+                        submitting ||
+                        authLoading ||
+                        (!!import.meta.env.VITE_TURNSTILE_SITE_KEY &&
+                          !turnstileToken)
+                      }
                       className="group w-full bg-foreground text-background py-4 text-xs font-bold tracking-[0.2em] uppercase hover:opacity-90 shadow-xl focus:outline-none focus:ring-4 focus:ring-muted-foreground/30 disabled:opacity-50 transition-all duration-300 rounded-2xl active:scale-[0.98] flex items-center justify-center gap-2 mt-4"
                     >
                       {submitting || authLoading ? (
