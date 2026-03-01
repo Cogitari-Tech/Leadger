@@ -39,22 +39,39 @@ export function useAuditExecution() {
   // ─── Checklists ────────────────────────────────────────
 
   const getChecklists = useCallback(async (programId: string) => {
-    const { data, error: err } = await supabase
-      .from("audit_program_checklists")
-      .select("*, control:audit_framework_controls(id, code, title)")
-      .eq("program_id", programId)
-      .order("sort_order");
-    if (err) throw err;
-    return (data ?? []) as AuditProgramChecklist[];
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error: err } = await supabase
+        .from("audit_program_checklists")
+        .select("*, control:audit_framework_controls(id, code, title)")
+        .eq("program_id", programId)
+        .order("sort_order");
+      if (err) throw err;
+      return (data ?? []) as AuditProgramChecklist[];
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao carregar checklist",
+      );
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const updateChecklistItem = useCallback(
     async (id: string, updates: Partial<AuditProgramChecklist>) => {
-      const { error: err } = await supabase
-        .from("audit_program_checklists")
-        .update(updates)
-        .eq("id", id);
-      if (err) throw err;
+      setError(null);
+      try {
+        const { error: err } = await supabase
+          .from("audit_program_checklists")
+          .update(updates)
+          .eq("id", id);
+        if (err) throw err;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erro ao atualizar item");
+        throw err;
+      }
     },
     [],
   );
@@ -62,6 +79,7 @@ export function useAuditExecution() {
   const populateChecklistFromFramework = useCallback(
     async (programId: string, frameworkId: string) => {
       setLoading(true);
+      setError(null);
       try {
         const { data: controls } = await supabase
           .from("audit_framework_controls")
@@ -83,6 +101,11 @@ export function useAuditExecution() {
           .from("audit_program_checklists")
           .insert(items);
         if (err) throw err;
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Erro ao popular checklist",
+        );
+        throw err;
       } finally {
         setLoading(false);
       }
@@ -94,6 +117,7 @@ export function useAuditExecution() {
 
   const loadItemResponses = useCallback(async (auditId: string) => {
     setLoading(true);
+    setError(null);
     try {
       const { data, error: err } = await supabase
         .from("audit_item_responses")
@@ -101,6 +125,11 @@ export function useAuditExecution() {
         .eq("audit_id", auditId);
       if (err) throw err;
       return (data ?? []) as AuditItemResponse[];
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao carregar respostas",
+      );
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -114,6 +143,7 @@ export function useAuditExecution() {
       justification: string | null = null,
     ) => {
       setLoading(true);
+      setError(null);
       try {
         const tenantId = await getTenantId();
         const {
@@ -138,6 +168,11 @@ export function useAuditExecution() {
           .single();
         if (err) throw err;
         return data as AuditItemResponse;
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Erro ao salvar resposta",
+        );
+        throw err;
       } finally {
         setLoading(false);
       }
@@ -149,6 +184,7 @@ export function useAuditExecution() {
 
   const loadItemEvidences = useCallback(async (auditId: string) => {
     setLoading(true);
+    setError(null);
     try {
       const { data, error: err } = await supabase
         .from("audit_item_evidences")
@@ -156,6 +192,11 @@ export function useAuditExecution() {
         .eq("audit_item_responses.audit_id", auditId);
       if (err) throw err;
       return (data ?? []) as AuditItemEvidence[];
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao carregar evidências",
+      );
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -164,6 +205,7 @@ export function useAuditExecution() {
   const uploadEvidence = useCallback(
     async (responseId: string, file: File) => {
       setLoading(true);
+      setError(null);
       try {
         const tenantId = await getTenantId();
         const {
@@ -192,6 +234,9 @@ export function useAuditExecution() {
           .single();
         if (insertError) throw insertError;
         return data as AuditItemEvidence;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erro ao enviar arquivo");
+        throw err;
       } finally {
         setLoading(false);
       }
@@ -202,6 +247,7 @@ export function useAuditExecution() {
   const deleteEvidence = useCallback(
     async (evidenceId: string, filePath: string) => {
       setLoading(true);
+      setError(null);
       try {
         await supabase.storage.from("audit-evidences").remove([filePath]);
         const { error: err } = await supabase
@@ -209,6 +255,11 @@ export function useAuditExecution() {
           .delete()
           .eq("id", evidenceId);
         if (err) throw err;
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Erro ao excluir arquivo",
+        );
+        throw err;
       } finally {
         setLoading(false);
       }
