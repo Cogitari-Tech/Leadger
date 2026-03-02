@@ -65,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         let tenant: Tenant | null = null;
         let role: Role | null = null;
         let permissions: string[] = [];
+        let userOnboardingCompleted = false;
 
         // Fallback: if tenant_id is not in app_metadata, look it up from tenant_members
         // A retry mechanism is used here because the DB trigger might take a few milliseconds
@@ -110,6 +111,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .eq("status", "active")
             .single();
 
+          if (memberData) {
+            userOnboardingCompleted =
+              memberData.user_onboarding_completed ?? false;
+          }
+
           if (memberData?.role_id) {
             // Fetch role separately
             const { data: roleData } = await supabase
@@ -153,6 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           tenant_id: actualTenantId ?? null,
           role,
           permissions,
+          user_onboarding_completed: userOnboardingCompleted,
         };
 
         setState({

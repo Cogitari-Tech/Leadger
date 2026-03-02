@@ -10,7 +10,7 @@ const GitHubMetrics = lazy(() => import("./pages/GitHubMetrics"));
 
 export const githubModuleConfig: ModuleConfig = {
   id: "github",
-  name: "GitHub Governance",
+  name: "Auditar Código",
   description:
     "Governança de código, segurança e métricas de repositórios GitHub",
   icon: "Github",
@@ -22,63 +22,63 @@ export const githubModuleConfig: ModuleConfig = {
     {
       path: "github",
       element: <GitHubOverview />,
-      handle: { title: "GitHub Governance" },
+      handle: { title: "Visão Geral" },
     },
     {
       path: "github/organizations",
       element: <GitHubOrganizations />,
-      handle: { title: "Organizações" },
+      handle: { title: "Gerir Organizações" },
     },
     {
       path: "github/repositories",
       element: <GitHubRepositories />,
-      handle: { title: "Repositórios" },
+      handle: { title: "Monitorar Repositórios" },
     },
     {
       path: "github/issues-prs",
       element: <GitHubIssuesPRs />,
-      handle: { title: "Issues & PRs" },
+      handle: { title: "Revisar Issues e PRs" },
     },
     {
       path: "github/security",
       element: <GitHubSecurity />,
-      handle: { title: "Segurança" },
+      handle: { title: "Verificar Segurança" },
     },
     {
       path: "github/metrics",
       element: <GitHubMetrics />,
-      handle: { title: "Métricas de Governança" },
+      handle: { title: "Analisar Métricas" },
     },
   ],
 
   navigation: [
     {
-      label: "Overview",
+      label: "Visão Geral",
       path: "github",
       icon: "LayoutDashboard",
     },
     {
-      label: "Organizações",
+      label: "Gerir Organizações",
       path: "github/organizations",
       icon: "Building2",
     },
     {
-      label: "Repositórios",
+      label: "Monitorar Repositórios",
       path: "github/repositories",
       icon: "GitBranch",
     },
     {
-      label: "Issues & PRs",
+      label: "Revisar Issues e PRs",
       path: "github/issues-prs",
       icon: "GitPullRequest",
     },
     {
-      label: "Segurança",
+      label: "Verificar Segurança",
       path: "github/security",
       icon: "ShieldAlert",
     },
     {
-      label: "Métricas",
+      label: "Analisar Métricas",
       path: "github/metrics",
       icon: "BarChart3",
     },
