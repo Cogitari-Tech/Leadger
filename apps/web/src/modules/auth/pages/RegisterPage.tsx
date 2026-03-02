@@ -363,18 +363,14 @@ export function RegisterPage() {
 
         {/* Turnstile */}
         {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
-          <div className="flex justify-center mt-2">
+          <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-hidden">
             <Turnstile
               siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
               onSuccess={(token) => {
                 setTurnstileToken(token);
                 setError(null);
               }}
-              onError={() => setError("Falha ao carregar o CAPTCHA.")}
-              options={{
-                theme: "auto",
-                size: "normal",
-              }}
+              options={{ theme: "auto", size: "flexible" }}
             />
           </div>
         )}
