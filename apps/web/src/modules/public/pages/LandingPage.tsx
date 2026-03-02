@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/context/AuthContext";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import {
@@ -22,6 +22,7 @@ import { Turnstile } from "@marsidev/react-turnstile";
 
 export function LandingPage() {
   const { user, signIn, signUp, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
   // Auth Form State
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
@@ -132,9 +133,14 @@ export function LandingPage() {
         }
         const { error: signUpError } = await signUp(email, password, {
           name,
+          signup_mode: "create",
           captchaToken: turnstileToken || undefined,
         });
         if (signUpError) throw signUpError;
+
+        // Signup succeeded — redirect to email verification
+        navigate("/verify-email", { replace: true });
+        return;
       }
     } catch (err: any) {
       setError(err.message || "Ocorreu um erro na autenticação.");

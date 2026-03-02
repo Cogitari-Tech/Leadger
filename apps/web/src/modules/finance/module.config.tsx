@@ -14,7 +14,7 @@ const FinancialProjections = lazy(() => import("./pages/FinancialProjections"));
 
 export const financeModuleConfig: ModuleConfig = {
   id: "finance",
-  name: "Controle Financeiro",
+  name: "Gerir Finanças",
   description:
     "Gestão financeira completa: caixa, balanço, DRE, runway, cap table, unit economics, burn rate e projeções",
   icon: "Banknote",
@@ -36,47 +36,47 @@ export const financeModuleConfig: ModuleConfig = {
     {
       path: "finance",
       element: <FinanceDashboard />,
-      handle: { title: "Dashboard Financeiro" },
+      handle: { title: "Visão Geral" },
     },
     {
       path: "finance/cash-flow",
       element: <CashFlow />,
-      handle: { title: "Fluxo de Caixa" },
+      handle: { title: "Acompanhar Caixa" },
     },
     {
       path: "finance/balance-sheet",
       element: <BalanceSheet />,
-      handle: { title: "Balanço Patrimonial" },
+      handle: { title: "Analisar Balanço" },
     },
     {
       path: "finance/income-statement",
       element: <IncomeStatement />,
-      handle: { title: "DRE" },
+      handle: { title: "Consultar DRE" },
     },
     {
       path: "finance/runway",
       element: <RunwayCalculator />,
-      handle: { title: "Runway Calculator" },
+      handle: { title: "Calcular Runway" },
     },
     {
       path: "finance/cap-table",
       element: <CapTable />,
-      handle: { title: "Cap Table" },
+      handle: { title: "Gerir Cap Table" },
     },
     {
       path: "finance/unit-economics",
       element: <UnitEconomics />,
-      handle: { title: "Unit Economics" },
+      handle: { title: "Avaliar Economics" },
     },
     {
       path: "finance/burn-rate",
       element: <BurnRate />,
-      handle: { title: "Burn Rate" },
+      handle: { title: "Acompanhar Burn Rate" },
     },
     {
       path: "finance/projections",
       element: <FinancialProjections />,
-      handle: { title: "Projeções Financeiras" },
+      handle: { title: "Criar Projeções" },
     },
   ],
 
@@ -88,42 +88,42 @@ export const financeModuleConfig: ModuleConfig = {
       icon: "LayoutDashboard",
     },
     {
-      label: "Fluxo de Caixa",
+      label: "Acompanhar Caixa",
       path: "finance/cash-flow",
       icon: "TrendingUp",
     },
     {
-      label: "Balanço Patrimonial",
+      label: "Analisar Balanço",
       path: "finance/balance-sheet",
       icon: "BarChart3",
     },
     {
-      label: "DRE",
+      label: "Consultar DRE",
       path: "finance/income-statement",
       icon: "FileText",
     },
     {
-      label: "Runway Calculator",
+      label: "Calcular Runway",
       path: "finance/runway",
       icon: "Fuel",
     },
     {
-      label: "Cap Table",
+      label: "Gerir Cap Table",
       path: "finance/cap-table",
       icon: "Users",
     },
     {
-      label: "Unit Economics",
+      label: "Avaliar Economics",
       path: "finance/unit-economics",
       icon: "Target",
     },
     {
-      label: "Burn Rate",
+      label: "Acompanhar Burn Rate",
       path: "finance/burn-rate",
       icon: "Flame",
     },
     {
-      label: "Projeções",
+      label: "Criar Projeções",
       path: "finance/projections",
       icon: "Presentation",
     },
