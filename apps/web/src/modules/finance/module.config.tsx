@@ -6,13 +6,19 @@ const CashFlow = lazy(() => import("./pages/CashFlow"));
 const BalanceSheet = lazy(() => import("./pages/BalanceSheet"));
 const FinanceDashboard = lazy(() => import("./pages/FinanceDashboard"));
 const IncomeStatement = lazy(() => import("./pages/IncomeStatement"));
+const RunwayCalculator = lazy(() => import("./pages/RunwayCalculator"));
+const CapTable = lazy(() => import("./pages/CapTable"));
+const UnitEconomics = lazy(() => import("./pages/UnitEconomics"));
+const BurnRate = lazy(() => import("./pages/BurnRate"));
+const FinancialProjections = lazy(() => import("./pages/FinancialProjections"));
 
 export const financeModuleConfig: ModuleConfig = {
   id: "finance",
-  name: "Módulo Financeiro",
-  description: "Controle de caixa, balanço patrimonial e DRE",
+  name: "Controle Financeiro",
+  description:
+    "Gestão financeira completa: caixa, balanço, DRE, runway, cap table, unit economics, burn rate e projeções",
   icon: "Banknote",
-  version: "1.0.0",
+  version: "2.0.0",
 
   // Permissões necessárias
   permissions: [
@@ -21,6 +27,8 @@ export const financeModuleConfig: ModuleConfig = {
     "finance.edit",
     "finance.delete",
     "finance.export",
+    "finance.cap_table",
+    "finance.projections",
   ],
 
   // Rotas do módulo (lazy loaded)
@@ -44,6 +52,31 @@ export const financeModuleConfig: ModuleConfig = {
       path: "finance/income-statement",
       element: <IncomeStatement />,
       handle: { title: "DRE" },
+    },
+    {
+      path: "finance/runway",
+      element: <RunwayCalculator />,
+      handle: { title: "Runway Calculator" },
+    },
+    {
+      path: "finance/cap-table",
+      element: <CapTable />,
+      handle: { title: "Cap Table" },
+    },
+    {
+      path: "finance/unit-economics",
+      element: <UnitEconomics />,
+      handle: { title: "Unit Economics" },
+    },
+    {
+      path: "finance/burn-rate",
+      element: <BurnRate />,
+      handle: { title: "Burn Rate" },
+    },
+    {
+      path: "finance/projections",
+      element: <FinancialProjections />,
+      handle: { title: "Projeções Financeiras" },
     },
   ],
 
@@ -69,6 +102,31 @@ export const financeModuleConfig: ModuleConfig = {
       path: "finance/income-statement",
       icon: "FileText",
     },
+    {
+      label: "Runway Calculator",
+      path: "finance/runway",
+      icon: "Fuel",
+    },
+    {
+      label: "Cap Table",
+      path: "finance/cap-table",
+      icon: "Users",
+    },
+    {
+      label: "Unit Economics",
+      path: "finance/unit-economics",
+      icon: "Target",
+    },
+    {
+      label: "Burn Rate",
+      path: "finance/burn-rate",
+      icon: "Flame",
+    },
+    {
+      label: "Projeções",
+      path: "finance/projections",
+      icon: "Presentation",
+    },
   ],
 
   // Configurações específicas do módulo
@@ -80,11 +138,11 @@ export const financeModuleConfig: ModuleConfig = {
 
   // Lifecycle hooks
   onModuleLoad: async () => {
-    console.log("✅ Módulo Financeiro carregado");
+    console.log("✅ Controle Financeiro carregado");
   },
 
   onModuleUnload: async () => {
-    console.log("🔌 Módulo Financeiro descarregado");
+    console.log("🔌 Controle Financeiro descarregado");
   },
 };
 
