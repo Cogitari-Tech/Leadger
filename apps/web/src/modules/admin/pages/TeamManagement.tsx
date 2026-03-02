@@ -50,6 +50,7 @@ export function TeamManagement() {
   const [linkMaxUses, setLinkMaxUses] = useState(1);
   const [linkExpiresDays, setLinkExpiresDays] = useState(7);
   const [linkLabel, setLinkLabel] = useState("");
+  const [linkEmail, setLinkEmail] = useState("");
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
 
@@ -81,6 +82,7 @@ export function TeamManagement() {
       linkMaxUses,
       linkExpiresDays,
       linkLabel || undefined,
+      linkEmail || undefined,
     );
     if (url) setGeneratedLink(url);
     setGenerating(false);
@@ -437,6 +439,7 @@ export function TeamManagement() {
                       onClick={() => {
                         setShowCreateLink(false);
                         setGeneratedLink(null);
+                        setLinkEmail("");
                       }}
                     >
                       <X className="w-4 h-4 text-muted-foreground" />
@@ -463,8 +466,14 @@ export function TeamManagement() {
                       </select>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                        Máximo de usos
+                      <label
+                        className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground cursor-help flex justify-between items-center"
+                        title="Dita quantas vezes este link específico pode ser acessado e concluído. Útil para links gerais vs dedicados."
+                      >
+                        Máximo de usos{" "}
+                        <span className="text-[9px] bg-muted px-1 rounded">
+                          ?
+                        </span>
                       </label>
                       <input
                         type="number"
@@ -491,14 +500,35 @@ export function TeamManagement() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                        Rótulo (opcional)
+                      <label
+                        className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground cursor-help flex justify-between items-center"
+                        title="Um nome apenas para controle interno (ex: Convites Parceiros Q3), ajudando a encontrar o link depois."
+                      >
+                        Rótulo (opcional){" "}
+                        <span className="text-[9px] bg-muted px-1 rounded">
+                          ?
+                        </span>
                       </label>
                       <input
                         type="text"
                         value={linkLabel}
                         onChange={(e) => setLinkLabel(e.target.value)}
                         placeholder="Ex: Novos auditores Q1"
+                        className="w-full text-sm bg-background/50 border border-border/40 rounded-lg px-3 py-2 outline-none focus:border-primary"
+                      />
+                    </div>
+                    <div className="space-y-1.5 col-span-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center justify-between">
+                        E-mail do Convidado (opcional)
+                        <span className="text-[8px] font-normal lowercase tracking-normal bg-primary/10 text-primary px-1.5 py-0.5 rounded">
+                          Envia o convite direto para caixa postal
+                        </span>
+                      </label>
+                      <input
+                        type="email"
+                        value={linkEmail}
+                        onChange={(e) => setLinkEmail(e.target.value)}
+                        placeholder="nome@empresa.com"
                         className="w-full text-sm bg-background/50 border border-border/40 rounded-lg px-3 py-2 outline-none focus:border-primary"
                       />
                     </div>
