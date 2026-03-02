@@ -215,7 +215,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         captchaToken,
       },
     });
-    if (error) setState((prev) => ({ ...prev, loading: false }));
+    if (error) {
+      setState((prev) => ({ ...prev, loading: false }));
+    } else {
+      // If we succeed but require email confirmation, session might not be created immediately
+      // So we should also disable loading state just in case
+      setState((prev) => ({ ...prev, loading: false }));
+    }
     return { error: error as Error | null };
   };
 
@@ -250,7 +256,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: null, data };
     }
 
-    if (error) setState((prev) => ({ ...prev, loading: false }));
+    // Always toggle off loading, independently of success or error (since we handled the response in the component)
+    setState((prev) => ({ ...prev, loading: false }));
     return { error: error as Error | null, data };
   };
 

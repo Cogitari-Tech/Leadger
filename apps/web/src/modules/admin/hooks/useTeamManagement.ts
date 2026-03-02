@@ -124,6 +124,7 @@ export function useTeamManagement() {
       maxUses: number = 1,
       expiresDays: number = 7,
       label?: string,
+      inviteeEmail?: string,
     ) => {
       if (!tenantId || !user) return null;
       setError(null);
@@ -162,7 +163,29 @@ export function useTeamManagement() {
 
       // Return the raw token (NOT the hash) so it can be shared as a URL
       const baseUrl = window.location.origin;
-      return `${baseUrl}/invite/${rawToken}`;
+      const inviteUrl = `${baseUrl}/invite/${rawToken}`;
+
+      // If an email is provided, call the edge function to send it
+      if (inviteeEmail) {
+        // We don't block the UI returning the generated link if the email fails,
+        // but we log it. In a robust setup we'd show a toast warning.
+        supabase.functions
+          .invoke("send-invite", {
+            body: {
+              email: inviteeEmail,
+              link: inviteUrl,
+              inviter_name:
+                user?.name || user?.email?.split("@")[0] || "Um administrador",
+            },
+          })
+          .then(({ error: fnError }) => {
+            if (fnError) {
+              console.error("Failed to send invite email remotely:", fnError);
+            }
+          });
+      }
+
+      return inviteUrl;
     },
     [tenantId, user, loadInviteLinks],
   );
