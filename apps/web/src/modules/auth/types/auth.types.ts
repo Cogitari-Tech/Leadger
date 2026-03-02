@@ -46,6 +46,7 @@ export interface TenantMember {
   role_id: string;
   status: "active" | "suspended" | "pending";
   joined_at: string;
+  user_onboarding_completed: boolean;
   role?: Role;
 }
 
@@ -125,6 +126,7 @@ export interface AuthUser {
   tenant_id: string | null;
   role: Role | null;
   permissions: string[];
+  user_onboarding_completed: boolean;
 }
 
 export interface AuthState {

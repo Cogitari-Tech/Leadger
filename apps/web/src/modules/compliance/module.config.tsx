@@ -8,7 +8,7 @@ const RiskAssessment = lazy(() => import("./pages/RiskAssessment"));
 
 export const complianceModuleConfig: ModuleConfig = {
   id: "compliance",
-  name: "Compliance & GRC",
+  name: "Garantir Conformidade",
   description:
     "Gestão de frameworks, matriz estratégica (SWOT) e mapeamento de riscos",
   icon: "ShieldCheck",
@@ -18,22 +18,22 @@ export const complianceModuleConfig: ModuleConfig = {
     {
       path: "compliance",
       element: <ComplianceDashboard />,
-      handle: { title: "Dashboard Corporativo" },
+      handle: { title: "Visão Geral" },
     },
     {
       path: "compliance/frameworks",
       element: <Frameworks />,
-      handle: { title: "Frameworks Normativos" },
+      handle: { title: "Aplicar Frameworks" },
     },
     {
       path: "compliance/swot",
       element: <SwotAnalysis />,
-      handle: { title: "Matriz SWOT Estratégica" },
+      handle: { title: "Mapear SWOT" },
     },
     {
       path: "compliance/risks",
       element: <RiskAssessment />,
-      handle: { title: "Risk Assessment & Heatmap" },
+      handle: { title: "Avaliar Riscos" },
     },
   ],
   navigation: [
@@ -43,17 +43,17 @@ export const complianceModuleConfig: ModuleConfig = {
       icon: "LayoutDashboard",
     },
     {
-      label: "Frameworks",
+      label: "Aplicar Frameworks",
       path: "compliance/frameworks",
       icon: "ShieldAlert",
     },
     {
-      label: "Matriz SWOT",
+      label: "Mapear SWOT",
       path: "compliance/swot",
       icon: "Crosshair",
     },
     {
-      label: "Risk Assessment",
+      label: "Avaliar Riscos",
       path: "compliance/risks",
       icon: "ActivitySquare",
     },
