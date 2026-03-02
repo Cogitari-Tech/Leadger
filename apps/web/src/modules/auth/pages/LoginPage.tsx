@@ -184,16 +184,15 @@ export function LoginPage() {
                 </div>
               </div>
 
-              {/* Turnstile */}
               {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
-                <div className="flex justify-center mt-2 h-[65px]">
+                <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-hidden">
                   <Turnstile
                     siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
                     onSuccess={(token) => {
                       setTurnstileToken(token);
                       setError(null);
                     }}
-                    options={{ theme: "auto", size: "normal" }}
+                    options={{ theme: "auto", size: "flexible" }}
                   />
                 </div>
               )}
