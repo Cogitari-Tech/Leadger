@@ -13,7 +13,7 @@ const AuditAnalytics = lazy(() => import("./pages/AuditAnalytics"));
 
 export const auditModuleConfig: ModuleConfig = {
   id: "audit",
-  name: "Auditoria",
+  name: "Gerir Auditorias",
   description: "Gestão de auditorias internas, conformidade e planos de ação",
   icon: "ClipboardCheck",
   version: "1.0.0",
@@ -30,88 +30,88 @@ export const auditModuleConfig: ModuleConfig = {
     {
       path: "audit",
       element: <AuditDashboard />,
-      handle: { title: "Dashboard de Auditoria" },
+      handle: { title: "Visão Geral" },
     },
     {
       path: "audit/programs",
       element: <AuditPrograms />,
-      handle: { title: "Programas de Auditoria" },
+      handle: { title: "Planejar Programas" },
     },
     {
       path: "audit/programs/:programId/execute",
       element: <AuditExecution />,
-      handle: { title: "Execução de Auditoria" },
+      handle: { title: "Executar Auditoria" },
     },
     {
       path: "audit/programs/:programId/approve",
       element: <AuditApprovalView />,
-      handle: { title: "Aprovação de Auditoria" },
+      handle: { title: "Aprovar Auditoria" },
     },
     {
       path: "audit/findings",
       element: <AuditFindings />,
-      handle: { title: "Achados de Auditoria" },
+      handle: { title: "Analisar Achados" },
     },
     {
       path: "audit/action-plans",
       element: <AuditActionPlans />,
-      handle: { title: "Planos de Ação" },
+      handle: { title: "Acompanhar Planos" },
     },
     {
       path: "audit/report",
       element: <ReportBuilder />,
-      handle: { title: "Gerar Relatório" },
+      handle: { title: "Criar Relatório" },
     },
     {
       path: "audit/report/:programId",
       element: <ReportBuilder />,
-      handle: { title: "Relatório de Auditoria" },
+      handle: { title: "Criar Relatório" },
     },
     {
       path: "audit/reports",
       element: <AuditReports />,
-      handle: { title: "Relatórios Emitidos" },
+      handle: { title: "Consultar Relatórios" },
     },
     {
       path: "audit/analytics",
       element: <AuditAnalytics />,
-      handle: { title: "Analytics" },
+      handle: { title: "Analisar Métricas" },
     },
   ],
 
   navigation: [
     {
-      label: "Dashboard",
+      label: "Visão Geral",
       path: "audit",
       icon: "LayoutDashboard",
     },
     {
-      label: "Programas",
+      label: "Planejar Programas",
       path: "audit/programs",
       icon: "FileText",
     },
     {
-      label: "Achados",
+      label: "Analisar Achados",
       path: "audit/findings",
       icon: "AlertTriangle",
     },
     {
-      label: "Planos de Ação",
+      label: "Acompanhar Planos",
       path: "audit/action-plans",
       icon: "ClipboardCheck",
     },
     {
-      label: "Relatório",
+      label: "Criar Relatório",
       path: "audit/report",
       icon: "FileOutput",
     },
     {
-      label: "Relatórios Emitidos",
+      label: "Consultar Relatórios",
       path: "audit/reports",
       icon: "FileDown",
     },
     {
-      label: "Analytics",
+      label: "Analisar Métricas",
       path: "audit/analytics",
       icon: "BarChart3",
     },
