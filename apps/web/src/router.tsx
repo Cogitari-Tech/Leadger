@@ -12,6 +12,8 @@ import { TwoFactorChallenge } from "./modules/auth/pages/TwoFactorChallenge";
 import { TwoFactorSetup } from "./modules/auth/components/TwoFactorSetup";
 import { VerifyEmailPage } from "./modules/auth/pages/VerifyEmailPage";
 import { PendingApprovalPage } from "./modules/auth/pages/PendingApprovalPage";
+import { PendingSetupPage } from "./modules/auth/pages/PendingSetupPage";
+import { UserOnboardingPage } from "./modules/auth/pages/UserOnboardingPage";
 
 // The new Landing Page
 import { LandingPage } from "./modules/public/pages/LandingPage";
@@ -119,6 +121,22 @@ export const createAppRouter = () =>
       element: (
         <AuthGuard>
           <OnboardingWizard />
+        </AuthGuard>
+      ),
+    },
+    {
+      path: "/user-onboarding",
+      element: (
+        <AuthGuard>
+          <UserOnboardingPage />
+        </AuthGuard>
+      ),
+    },
+    {
+      path: "/pending-setup",
+      element: (
+        <AuthGuard>
+          <PendingSetupPage />
         </AuthGuard>
       ),
     },

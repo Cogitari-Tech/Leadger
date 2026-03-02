@@ -14,7 +14,13 @@ interface AuthGuardProps {
  * Enforces Two-Factor Authentication (AAL2) based on role or enrollment.
  */
 export function AuthGuard({ children }: AuthGuardProps) {
-  const { user, session, loading: authLoading, initialized } = useAuth();
+  const {
+    user,
+    session,
+    tenant,
+    loading: authLoading,
+    initialized,
+  } = useAuth();
   const location = useLocation();
   const [checkingMfa, setCheckingMfa] = useState(true);
   const [mfaStatus, setMfaStatus] = useState<
@@ -112,6 +118,40 @@ export function AuthGuard({ children }: AuthGuardProps) {
   // Needs to create factor -> setup screen
   if (mfaStatus === "needs_setup" && location.pathname !== "/auth/mfa-setup") {
     return <Navigate to="/auth/mfa-setup" state={{ from: location }} replace />;
+  }
+
+  // --- Onboarding Flows ---
+
+  if (tenant && user) {
+    const isOwnerOrAdmin =
+      user.role?.name === "owner" || user.role?.name === "admin";
+
+    // 1. Company Setup (Tenant Onboarding)
+    if (!tenant.onboarding_completed) {
+      if (isOwnerOrAdmin) {
+        if (location.pathname !== "/onboarding") {
+          return <Navigate to="/onboarding" replace />;
+        }
+      } else {
+        // Not owner/admin but tenant is pending setup
+        if (location.pathname !== "/pending-setup") {
+          return <Navigate to="/pending-setup" replace />;
+        }
+      }
+    } else {
+      // Tenant is set up. Now check user onboarding.
+      // E.g. /user-onboarding is the route for individual user setup
+      if (
+        !user.user_onboarding_completed &&
+        location.pathname !== "/user-onboarding"
+      ) {
+        // Owner/Admin doesn't need to do user-onboarding, as their wizard serves both purposes
+        // However, if we want them to do it as well, remove the isOwnerOrAdmin check
+        if (!isOwnerOrAdmin) {
+          return <Navigate to="/user-onboarding" replace />;
+        }
+      }
+    }
   }
 
   return <>{children}</>;

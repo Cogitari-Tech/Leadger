@@ -60,7 +60,17 @@ const STEPS: StepConfig[] = [
 
 export default function OnboardingWizard() {
   const navigate = useNavigate();
-  const { tenant } = useAuth();
+  const { tenant, user } = useAuth();
+
+  useEffect(() => {
+    if (user && user.role) {
+      const isOwnerOrAdmin =
+        user.role.name === "owner" || user.role.name === "admin";
+      if (!isOwnerOrAdmin) {
+        navigate("/dashboard", { replace: true });
+      }
+    }
+  }, [user, navigate]);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -118,8 +128,16 @@ export default function OnboardingWizard() {
       .from("tenants")
       .update({ onboarding_completed: true })
       .eq("id", tenant.id);
+
+    // Also mark the owner's individual onboarding as completed
+    await supabase
+      .from("tenant_members")
+      .update({ user_onboarding_completed: true })
+      .eq("user_id", user?.id)
+      .eq("tenant_id", tenant.id);
+
     setSaving(false);
-    navigate("/", { replace: true });
+    window.location.href = "/dashboard";
   };
 
   const canGoNext = () => {
