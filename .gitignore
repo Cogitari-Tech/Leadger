@@ -7,6 +7,7 @@ node_modules
 .env.*
 !.env.example
 *.local
+.testing.credentials.md
 
 # Build Outputs
 dist/
