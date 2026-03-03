@@ -293,6 +293,10 @@ moduleRegistry.register(hrModule);
   - Envio de Links de Convite seguros (hashed tokens).
 - 🆕 **Configurações Administrativas**
   - Cadastro interativo de Contas Bancárias no sistema.
+- 🆕 **Segurança e Login**
+  - Persistência de sessão configurável ("Mantenha-me conectado" com `localStorage`/`sessionStorage`).
+  - Autenticação em Duas Etapas (TOTP) com "Lembrar dispositivo" (Trust Token 30 dias).
+  - Proteção Anti-Bot inteligente com Cloudflare Turnstile (modo Managed).
 
 ---
 
@@ -595,4 +599,4 @@ Uso interno restrito. Distribuição não autorizada é proibida.
 
 **Cogitari Tech** - Construindo o futuro da auditoria e gestão empresarial. 🚀
 
-_Última atualização: 16 de Fevereiro de 2026_
+_Última atualização: 03 de Março de 2026_

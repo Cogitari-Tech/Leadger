@@ -171,6 +171,15 @@ if (factors.totp.length > 0) {
 }
 ```
 
+#### 3.4 Persistência e Confiança de Dispositivo (Device Trust)
+
+Para melhorar a Experiência do Usuário (UX) sem comprometer a segurança, implementamos o conceito de "Trusted Devices":
+
+- Na tela de validação 2FA (`TwoFactorChallenge.tsx`), o usuário possui a opção: **"Lembrar deste dispositivo por 30 dias"**.
+- Em caso de sucesso na verificação TOTP, a aplicação armazena um Trust Token seguro no `localStorage` do navegador válido por 30 dias (`mfa_trust_[USER_ID]`).
+- O interceptador global de rotas (`AuthGuard.tsx`) valida proativamente este Trust Token. Caso seja válido e não expirado, a exigência de Nível de Segurança (`aal2`) é tolerada, promovendo um fluxo "frictionless" (sem fricção).
+- **Exceção de Segurança:** Se o usuário limpar o histórico/cookies do navegador ou tentar efetuar login a partir de um novo IP/dispositivo, a variável não existirá e a tela de confirmação do 2FA retornará imediatamente.
+
 ### Política de Enforcement
 
 | Role             | 2FA Obrigatório? | Justificativa               |
@@ -189,9 +198,9 @@ if (factors.totp.length > 0) {
 
 ### Checklist de implementação 2FA
 
-- [ ] Criar componente `TwoFactorSetup.tsx` com QR code e input de verificação
-- [ ] Criar componente `TwoFactorChallenge.tsx` para tela de verificação no login
-- [ ] Adicionar verificação AAL no `AuthGuard` para roles obrigatórias
+- [x] Criar componente `TwoFactorSetup.tsx` com QR code e input de verificação
+- [x] Criar componente `TwoFactorChallenge.tsx` para tela de verificação no login
+- [x] Adicionar verificação AAL no `AuthGuard` para roles obrigatórias e Trusted Devices
 - [ ] Adicionar opção "Desativar 2FA" nas configurações do usuário
 
 ---

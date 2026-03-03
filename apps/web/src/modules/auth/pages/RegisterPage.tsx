@@ -63,6 +63,16 @@ export function RegisterPage() {
   // Security checks
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [remember, setRemember] = useState(true);
+
+  // Session persistence sync
+  useEffect(() => {
+    if (!remember) {
+      localStorage.setItem("amuri_session_type", "temporal");
+    } else {
+      localStorage.removeItem("amuri_session_type");
+    }
+  }, [remember]);
 
   // Password strength calculation
   const calculateStrength = (pwd: string) => {
@@ -358,6 +368,20 @@ export function RegisterPage() {
               Política de Privacidade
             </Link>
             .
+          </label>
+        </div>
+
+        <div className="flex items-center px-1 mb-2">
+          <label className="flex items-center gap-2 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              className="w-4 h-4 rounded border-border/40 text-primary focus:ring-primary/20 bg-background/40 transition-all"
+            />
+            <span className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest group-hover:text-muted-foreground transition-colors">
+              Mantenha-me conectado
+            </span>
           </label>
         </div>
 
