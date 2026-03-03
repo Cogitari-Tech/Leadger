@@ -217,9 +217,9 @@ export default function AuditApprovalView() {
                 <ShieldCheck className="w-6 h-6 text-amber-500" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold tracking-tight font-display mb-1">
+                <div className="text-3xl font-bold tracking-tight font-display mb-1">
                   Aprovação de Auditoria
-                </h1>
+                </div>
                 <p className="text-muted-foreground font-medium text-sm">
                   Carregando programa...
                 </p>

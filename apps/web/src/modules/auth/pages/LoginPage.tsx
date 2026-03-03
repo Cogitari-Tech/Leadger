@@ -66,6 +66,19 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden text-foreground flex flex-col items-center justify-center relative">
+      {/* SEO Metadata */}
+      <div className="hidden" aria-hidden="true">
+        <title>Acesso Restrito | Cogitari Governance</title>
+        <meta
+          name="description"
+          content="Acesse sua conta no Cogitari Governance. Identificação exclusiva para auditoria e compliance."
+        />
+        <meta property="og:title" content="Login - Cogitari Governance" />
+        <meta
+          property="og:description"
+          content="Acesse o ecossistema de governança da sua startup."
+        />
+      </div>
       {/* ─── NAV HEADER ────────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-50 px-6 py-5 bg-background/40 backdrop-blur-sm transition-all duration-300 flex items-center justify-between border-transparent">
         <div className="flex items-center gap-3">

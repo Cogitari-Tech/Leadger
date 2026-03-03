@@ -6,6 +6,8 @@ import {
   ShieldCheck,
   ArrowRightLeft,
   CheckCircle2,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import type {
@@ -13,9 +15,7 @@ import type {
   RiskLikelihood,
   RiskImpact,
 } from "../types/compliance.types";
-
-// --- Mock Data ---
-const INITIAL_RISKS: RiskEntry[] = [];
+import { useRisks } from "../hooks/useRisks";
 
 const LIKELIHOOD_LABELS = [
   "",
@@ -82,7 +82,7 @@ const getRiskTextColor = (score: number): string => {
 };
 
 export default function RiskAssessment() {
-  const [risks, setRisks] = useState<RiskEntry[]>(INITIAL_RISKS);
+  const { risks, loading, addRisk: addRiskApi, removeRisk } = useRisks();
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState<"register" | "matrix">("register");
 
@@ -94,10 +94,9 @@ export default function RiskAssessment() {
   const [fImpact, setFImpact] = useState<RiskImpact>(3);
   const [fOwner, setFOwner] = useState("");
 
-  const addRisk = () => {
+  const handleAddRisk = async () => {
     if (!fTitle.trim()) return;
-    const newRisk: RiskEntry = {
-      id: `r${Date.now()}`,
+    await addRiskApi({
       title: fTitle.trim(),
       description: fDesc.trim(),
       category: fCat,
@@ -106,9 +105,7 @@ export default function RiskAssessment() {
       score: fLikelihood * fImpact,
       status: "open",
       owner: fOwner.trim() || undefined,
-      createdAt: new Date().toISOString().split("T")[0],
-    };
-    setRisks((prev) => [...prev, newRisk]);
+    });
     setShowModal(false);
     setFTitle("");
     setFDesc("");
@@ -184,76 +181,95 @@ export default function RiskAssessment() {
             <div className="col-span-1 text-center">Imp.</div>
             <div className="col-span-1 text-center">Score</div>
             <div className="col-span-1">Dono</div>
-            <div className="col-span-2">Status</div>
+            <div className="col-span-1">Status</div>
+            <div className="col-span-1"></div>
           </div>
 
           {/* Rows */}
-          <div className="divide-y divide-border/10">
-            {risks
-              .sort((a, b) => b.score - a.score)
-              .map((risk) => {
-                const cfg = getStatusConfig(risk.status);
-                const StatusIcon = cfg.icon;
-                return (
-                  <div
-                    key={risk.id}
-                    className="grid grid-cols-1 md:grid-cols-12 gap-4 p-8 hover:bg-muted/50 transition-all items-center group"
-                  >
-                    <div className="col-span-4">
-                      <h4 className="text-base font-bold text-foreground transition-colors group-hover:text-primary">
-                        {risk.title}
-                      </h4>
-                      <p className="text-xs text-muted-foreground/80 mt-1 line-clamp-1 leading-relaxed">
-                        {risk.description}
-                      </p>
-                    </div>
-                    <div className="col-span-2">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-2 py-1 bg-foreground/5 rounded-md">
-                        {getCategoryLabel(risk.category)}
-                      </span>
-                    </div>
-                    <div className="col-span-1 text-center">
-                      <span className="text-sm font-bold text-foreground">
-                        {risk.likelihood}
-                      </span>
-                    </div>
-                    <div className="col-span-1 text-center">
-                      <span className="text-sm font-bold text-foreground">
-                        {risk.impact}
-                      </span>
-                    </div>
-                    <div className="col-span-1 text-center">
-                      <div
-                        className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-foreground/5`}
-                      >
-                        <span
-                          className={`text-lg font-bold ${getRiskTextColor(risk.score)}`}
+          <div className="divide-y divide-border/10 min-h-[150px]">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center p-12 text-muted-foreground/50 space-y-3">
+                <Loader2 className="w-8 h-8 animate-spin" />
+                <p className="text-[10px] font-bold uppercase tracking-widest">
+                  Carregando riscos...
+                </p>
+              </div>
+            ) : (
+              risks
+                .sort((a, b) => b.score - a.score)
+                .map((risk) => {
+                  const cfg = getStatusConfig(risk.status);
+                  const StatusIcon = cfg.icon;
+                  return (
+                    <div
+                      key={risk.id}
+                      className="grid grid-cols-1 md:grid-cols-12 gap-4 p-8 hover:bg-muted/50 transition-all items-center group"
+                    >
+                      <div className="col-span-4">
+                        <h4 className="text-base font-bold text-foreground transition-colors group-hover:text-primary">
+                          {risk.title}
+                        </h4>
+                        <p className="text-xs text-muted-foreground/80 mt-1 line-clamp-1 leading-relaxed">
+                          {risk.description}
+                        </p>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-2 py-1 bg-foreground/5 rounded-md">
+                          {getCategoryLabel(risk.category)}
+                        </span>
+                      </div>
+                      <div className="col-span-1 text-center">
+                        <span className="text-sm font-bold text-foreground">
+                          {risk.likelihood}
+                        </span>
+                      </div>
+                      <div className="col-span-1 text-center">
+                        <span className="text-sm font-bold text-foreground">
+                          {risk.impact}
+                        </span>
+                      </div>
+                      <div className="col-span-1 text-center">
+                        <div
+                          className={`inline-flex items-center justify-center w-10 h-10 rounded-xl bg-foreground/5`}
                         >
-                          {risk.score}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="col-span-1">
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full bg-foreground/10 flex items-center justify-center text-[10px] font-bold">
-                          {risk.owner?.charAt(0) ?? "?"}
+                          <span
+                            className={`text-lg font-bold ${getRiskTextColor(risk.score)}`}
+                          >
+                            {risk.score}
+                          </span>
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                          {risk.owner ?? "N/A"}
+                      </div>
+                      <div className="col-span-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 rounded-full bg-foreground/10 flex items-center justify-center text-[10px] font-bold">
+                            {risk.owner?.charAt(0) ?? "?"}
+                          </div>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                            {risk.owner ?? "N/A"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="col-span-1">
+                        <span
+                          className={`inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-full border ${cfg.color} shadow-sm`}
+                        >
+                          <StatusIcon className="w-3 h-3" />
+                          {cfg.label}
                         </span>
                       </div>
+                      <div className="col-span-1 flex justify-end opacity-0 group-hover:opacity-100 transition-all">
+                        <button
+                          onClick={() => removeRisk(risk.id)}
+                          className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                          title="Remover Risco"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="col-span-2">
-                      <span
-                        className={`inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-full border ${cfg.color} shadow-sm`}
-                      >
-                        <StatusIcon className="w-3 h-3" />
-                        {cfg.label}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+            )}
           </div>
         </div>
       ) : (
@@ -396,10 +412,14 @@ export default function RiskAssessment() {
 
             <div className="space-y-8">
               <div className="space-y-3">
-                <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">
+                <label
+                  htmlFor="riskTitle"
+                  className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1"
+                >
                   Título do Risco
                 </label>
                 <input
+                  id="riskTitle"
                   type="text"
                   value={fTitle}
                   onChange={(e) => setFTitle(e.target.value)}
@@ -409,10 +429,14 @@ export default function RiskAssessment() {
               </div>
 
               <div className="space-y-3">
-                <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">
+                <label
+                  htmlFor="riskDesc"
+                  className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1"
+                >
                   Descrição do Cenário
                 </label>
                 <textarea
+                  id="riskDesc"
                   value={fDesc}
                   onChange={(e) => setFDesc(e.target.value)}
                   className="glass-input w-full px-6 py-4 rounded-2xl bg-white/5 border-white/10 text-foreground text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none resize-none h-24"
@@ -422,10 +446,14 @@ export default function RiskAssessment() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
-                  <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">
+                  <label
+                    htmlFor="riskCat"
+                    className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1"
+                  >
                     Categoria
                   </label>
                   <select
+                    id="riskCat"
                     value={fCat}
                     onChange={(e) =>
                       setFCat(e.target.value as RiskEntry["category"])
@@ -441,10 +469,14 @@ export default function RiskAssessment() {
                 </div>
 
                 <div className="space-y-3">
-                  <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">
+                  <label
+                    htmlFor="riskOwner"
+                    className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1"
+                  >
                     Responsável
                   </label>
                   <input
+                    id="riskOwner"
                     type="text"
                     value={fOwner}
                     onChange={(e) => setFOwner(e.target.value)}
@@ -521,7 +553,7 @@ export default function RiskAssessment() {
               </div>
 
               <Button
-                onClick={addRisk}
+                onClick={handleAddRisk}
                 disabled={!fTitle.trim()}
                 className="w-full h-16 rounded-2xl font-bold uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all"
               >

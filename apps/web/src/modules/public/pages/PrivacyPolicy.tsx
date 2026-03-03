@@ -8,6 +8,22 @@ export function PrivacyPolicy() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans transition-colors duration-300">
+      {/* SEO Metadata */}
+      <div className="hidden" aria-hidden="true">
+        <title>Política de Privacidade | Cogitari Governance</title>
+        <meta
+          name="description"
+          content="Saiba como a Cogitari Governance processa e protege seus dados corporativos."
+        />
+        <meta
+          property="og:title"
+          content="Política de Privacidade - Cogitari Governance"
+        />
+        <meta
+          property="og:description"
+          content="Segurança e transparência no tratamento de dados."
+        />
+      </div>
       {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">

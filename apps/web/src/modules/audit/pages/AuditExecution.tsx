@@ -207,9 +207,9 @@ export default function AuditExecution() {
                 <ClipboardCheck className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold tracking-tight font-display mb-1">
+                <div className="text-3xl font-bold tracking-tight font-display mb-1">
                   Execução do Checklist
-                </h1>
+                </div>
                 <p className="text-muted-foreground font-medium text-sm">
                   Carregando programa...
                 </p>

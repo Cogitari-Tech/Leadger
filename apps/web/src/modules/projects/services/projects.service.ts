@@ -21,7 +21,6 @@ export function useProjects() {
       const { data, error } = await supabase
         .from("projects")
         .select("*")
-        .eq("status", "active") // or allow filtering
         .order("created_at", { ascending: false });
 
       if (error) throw error;
