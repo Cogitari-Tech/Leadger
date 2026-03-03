@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../../auth/context/AuthContext";
 import {
@@ -12,7 +12,10 @@ import {
   ChevronRight,
   Globe,
   Link2,
+  Camera,
+  CheckCircle2,
 } from "lucide-react";
+
 import { Link } from "react-router-dom";
 import { TwoFactorSetup } from "../../auth/components/TwoFactorSetup";
 import { GitHubConnect } from "../../github/components/GitHubConnect";
@@ -24,7 +27,9 @@ export function TenantSettings() {
   const [domain, setDomain] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!tenant) return;
@@ -33,6 +38,33 @@ export function TenantSettings() {
     setDomain(tenant.domain ?? "");
     setLogoUrl(tenant.logo_url ?? "");
   }, [tenant]);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !tenant) return;
+
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `tenant-logos/${tenant.id}-${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("audit-evidences")
+        .upload(path, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("audit-evidences").getPublicUrl(path);
+
+      setLogoUrl(publicUrl);
+    } catch (err: any) {
+      console.error("Logo upload error:", err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
@@ -78,16 +110,37 @@ export function TenantSettings() {
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/10 via-primary/40 to-primary/10 opacity-40" />
 
           <div className="flex flex-col md:flex-row items-center gap-6 pb-10 border-b border-border/40">
-            <div className="h-24 w-24 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-inner group transition-transform hover:scale-105 duration-500 relative">
-              {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt={name}
-                  className="h-20 w-20 rounded-2xl object-cover shadow-2xl"
-                />
-              ) : (
-                <Building2 className="h-10 w-10 text-primary" />
-              )}
+            <div className="relative group/logo">
+              <div className="h-24 w-24 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-inner overflow-hidden group-hover/logo:scale-105 transition-all duration-500 relative">
+                {logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt={name}
+                    className="h-20 w-20 rounded-2xl object-cover shadow-2xl"
+                  />
+                ) : (
+                  <Building2 className="h-10 w-10 text-primary" />
+                )}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/logo:opacity-100 transition-opacity disabled:cursor-not-allowed"
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <Loader2 className="w-6 h-6 text-white animate-spin" />
+                  ) : (
+                    <Camera className="w-6 h-6 text-white" />
+                  )}
+                </button>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleLogoUpload}
+                className="hidden"
+              />
               <div className="absolute -bottom-1 -right-1 bg-background border border-border/40 rounded-full p-1.5 shadow-lg">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               </div>
@@ -98,13 +151,10 @@ export function TenantSettings() {
               </h2>
               <div className="flex items-center gap-3 mt-1 justify-center md:justify-start">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20">
-                  Sincronizado
+                  Ambiente Corporativo
                 </span>
                 <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-                  Plano:{" "}
-                  <span className="text-foreground">
-                    {tenant?.plan ?? "free"}
-                  </span>
+                  Sincronizado: <span className="text-foreground">Ativo</span>
                 </p>
               </div>
             </div>
