@@ -8,6 +8,7 @@ import { CheckCircle2, ShieldAlert, Loader2 } from "lucide-react";
 export function TwoFactorSetup() {
   const [factorId, setFactorId] = useState<string | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
+  const [uri, setUri] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
   const [verifyCode, setVerifyCode] = useState("");
   const [error, setError] = useState("");
@@ -23,7 +24,7 @@ export function TwoFactorSetup() {
       const { data, error } = await supabase.auth.mfa.listFactors();
       if (error) throw error;
 
-      const totpFactors = data.totp || [];
+      const totpFactors = data.all || [];
       const enrolled = totpFactors.some(
         (factor) => factor.status === "verified",
       );
@@ -55,6 +56,7 @@ export function TwoFactorSetup() {
       setFactorId(data.id);
       setQrCode(data.totp.qr_code);
       setSecret(data.totp.secret);
+      setUri(data.totp.uri);
     } catch (err: any) {
       console.error("[2FA Enrollment Error]:", err);
       let errMsg = err.message || "Falha ao iniciar configuração do 2FA.";
@@ -187,7 +189,7 @@ export function TwoFactorSetup() {
             <div className="mt-6 flex flex-col gap-6 md:flex-row">
               <div className="flex shrink-0 flex-col items-center gap-4 rounded-xl border border-border/40 bg-muted/30 p-4">
                 <div className="bg-white p-2 rounded-lg">
-                  <QRCodeSVG value={qrCode} size={160} />
+                  <QRCodeSVG value={uri || ""} size={160} />
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-muted-foreground">
