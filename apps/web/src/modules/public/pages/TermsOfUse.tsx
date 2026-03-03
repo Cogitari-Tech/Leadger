@@ -8,6 +8,22 @@ export function TermsOfUse() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans transition-colors duration-300">
+      {/* SEO Metadata */}
+      <div className="hidden" aria-hidden="true">
+        <title>Termos de Uso | Cogitari Governance</title>
+        <meta
+          name="description"
+          content="Leia os Termos de Uso do Cogitari Governance. Diretrizes para utilização do nosso ecossistema de governança."
+        />
+        <meta
+          property="og:title"
+          content="Termos de Uso - Cogitari Governance"
+        />
+        <meta
+          property="og:description"
+          content="A fonte da verdade para Auditoria e Compliance."
+        />
+      </div>
       {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">

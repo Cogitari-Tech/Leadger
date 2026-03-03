@@ -98,9 +98,9 @@ export default function AuditDashboard() {
           <div className="space-y-2">
             <div className="flex items-center gap-3 mb-1">
               <div className="w-8 h-1 bg-primary rounded-full" />
-              <h1 className="text-4xl font-bold tracking-tight font-display">
+              <div className="text-4xl font-bold tracking-tight font-display">
                 Auditoria
-              </h1>
+              </div>
             </div>
             <p className="text-muted-foreground font-medium">
               Carregando painel de auditoria...

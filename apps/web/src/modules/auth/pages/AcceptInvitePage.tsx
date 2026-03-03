@@ -183,6 +183,22 @@ export function AcceptInvitePage() {
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden text-foreground flex flex-col items-center justify-center relative">
+      {/* SEO Metadata */}
+      <div className="hidden" aria-hidden="true">
+        <title>Aceitar Convite | Cogitari Governance</title>
+        <meta
+          name="description"
+          content="Aceite seu convite para participar da plataforma Cogitari Governance."
+        />
+        <meta
+          property="og:title"
+          content="Aceitar Convite - Cogitari Governance"
+        />
+        <meta
+          property="og:description"
+          content="Inicie sua jornada na governança corporativa."
+        />
+      </div>
       {/* ─── NAV HEADER ────────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-50 px-6 py-5 bg-background/40 backdrop-blur-sm transition-all duration-300 flex items-center justify-between border-transparent">
         <div className="flex items-center gap-3">

@@ -171,6 +171,20 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden text-foreground">
+      {/* SEO Metadata */}
+      <div className="hidden" aria-hidden="true">
+        <title>Cogitari Governance | Plataforma Corporativa All-in-One</title>
+        <meta
+          name="description"
+          content="A única fonte da verdade para a sua startup. Gestão integrada, contabilidade e compliance para early-stage e founders."
+        />
+        <meta property="og:title" content="Cogitari Governance" />
+        <meta
+          property="og:description"
+          content="A fonte da verdade para Auditoria e Compliance."
+        />
+        <meta property="og:image" content="/images/og-image.png" />
+      </div>
       {/* ─── NAV HEADER ────────────────────────────────────────── */}
       <header
         className={`fixed top-0 inset-x-0 z-50 px-6 transition-all duration-300 flex items-center justify-between border-b ${
