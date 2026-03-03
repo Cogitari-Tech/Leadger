@@ -34,6 +34,16 @@ export function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [rememberMe, setRememberMe] = useState(true);
+
+  // Session persistence sync
+  useEffect(() => {
+    if (!rememberMe) {
+      localStorage.setItem("amuri_session_type", "temporal");
+    } else {
+      localStorage.removeItem("amuri_session_type");
+    }
+  }, [rememberMe]);
 
   // Password strength calculation
   const calculateStrength = (pwd: string) => {
@@ -115,6 +125,7 @@ export function LandingPage() {
           email,
           password,
           turnstileToken || undefined,
+          rememberMe,
         );
         if (authError) {
           setError(
@@ -369,6 +380,20 @@ export function LandingPage() {
                         </div>
                       </div>
 
+                      <div className="flex items-center justify-between px-1">
+                        <label className="flex items-center gap-2 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            className="w-4 h-4 rounded border-border/40 text-primary focus:ring-primary/20 bg-muted/40 transition-all"
+                          />
+                          <span className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest group-hover:text-muted-foreground transition-colors">
+                            Mantenha-me conectado
+                          </span>
+                        </label>
+                      </div>
+
                       {/* Turnstile */}
                       {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
                         <div className="flex justify-center mt-2 h-[65px]">
@@ -564,6 +589,20 @@ export function LandingPage() {
                             />
                           </div>
                         )}
+                    </div>
+
+                    <div className="flex items-center justify-between px-1">
+                      <label className="flex items-center gap-2 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
+                          className="w-4 h-4 rounded border-border/40 text-primary focus:ring-primary/20 bg-muted/40 transition-all"
+                        />
+                        <span className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest group-hover:text-muted-foreground transition-colors">
+                          Mantenha-me conectado
+                        </span>
+                      </label>
                     </div>
 
                     <button

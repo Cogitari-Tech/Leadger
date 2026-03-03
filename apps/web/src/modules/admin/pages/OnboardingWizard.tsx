@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../../auth/context/AuthContext";
+import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import { BankAccountForm } from "../../admin/components/BankAccountForm";
 import type { BankAccount } from "../../auth/types/auth.types";
 import {
@@ -60,7 +61,7 @@ const STEPS: StepConfig[] = [
 
 export default function OnboardingWizard() {
   const navigate = useNavigate();
-  const { tenant, user } = useAuth();
+  const { tenant, user, signOut } = useAuth();
 
   useEffect(() => {
     if (user && user.role) {
@@ -76,10 +77,24 @@ export default function OnboardingWizard() {
   const [saving, setSaving] = useState(false);
 
   // Company data
+  const [name, setName] = useState(tenant?.name || "");
+  const [slug, setSlug] = useState(tenant?.slug || "");
   const [industry, setIndustry] = useState(tenant?.industry || "");
   const [phone, setPhone] = useState(tenant?.phone || "");
   const [companyEmail, setCompanyEmail] = useState(tenant?.email || "");
   const [cnpj, setCnpj] = useState((tenant?.cnpj as string) || "");
+
+  // Update name/slug if tenant loads later
+  useEffect(() => {
+    if (tenant) {
+      if (!name) setName(tenant.name);
+      if (!slug) setSlug(tenant.slug);
+      if (!industry) setIndustry(tenant.industry || "");
+      if (!phone) setPhone(tenant.phone || "");
+      if (!companyEmail) setCompanyEmail(tenant.email || "");
+      if (!cnpj) setCnpj((tenant.cnpj as string) || "");
+    }
+  }, [tenant]);
 
   // Bank accounts
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
@@ -108,17 +123,26 @@ export default function OnboardingWizard() {
   const handleSaveCompany = async () => {
     if (!tenant) return;
     setSaving(true);
-    await supabase
-      .from("tenants")
-      .update({
-        industry: industry || null,
-        phone: phone || null,
-        email: companyEmail || null,
-        cnpj: cnpj || null,
-      })
-      .eq("id", tenant.id);
-    setSaving(false);
-    setCurrentStep((s) => s + 1);
+    try {
+      await supabase
+        .from("tenants")
+        .update({
+          name: name || tenant.name,
+          slug: slug || tenant.slug,
+          industry: industry || null,
+          phone: phone || null,
+          email: companyEmail || null,
+          cnpj: cnpj || null,
+        })
+        .eq("id", tenant.id);
+
+      // Refresh local state if needed or just proceed
+      setCurrentStep((s) => s + 1);
+    } catch (err) {
+      console.error("Error saving company:", err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleFinish = async () => {
@@ -151,6 +175,10 @@ export default function OnboardingWizard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Background decor */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[150px] rounded-full animate-pulse" />
@@ -210,17 +238,27 @@ export default function OnboardingWizard() {
           {/* ── Company ────────────────────── */}
           {step.key === "company" && (
             <div className="space-y-5">
-              <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/10 rounded-xl">
-                <Building2 className="w-5 h-5 text-primary flex-shrink-0" />
-                <p className="text-xs text-muted-foreground">
-                  Empresa:{" "}
-                  <strong className="text-foreground">{tenant?.name}</strong>
-                  {tenant?.slug && (
-                    <span className="ml-2 font-mono text-primary">
-                      ({tenant.slug})
-                    </span>
-                  )}
-                </p>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/10 rounded-xl">
+                  <Building2 className="w-5 h-5 text-primary flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-xs text-muted-foreground">
+                      Empresa:{" "}
+                      <strong className="text-foreground">
+                        {tenant?.name}
+                      </strong>
+                    </p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Você poderá alterar o nome e o identificador (slug) da
+                      empresa posteriormente em
+                      <strong className="text-foreground">
+                        {" "}
+                        Configurações → Geral
+                      </strong>
+                      .
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -391,11 +429,17 @@ export default function OnboardingWizard() {
         {/* Navigation */}
         <div className="flex items-center justify-between">
           <button
-            onClick={() => setCurrentStep((s) => Math.max(0, s - 1))}
-            disabled={currentStep === 0}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
+            onClick={() => {
+              if (currentStep === 0) {
+                signOut().then(() => navigate("/login"));
+              } else {
+                setCurrentStep((s) => Math.max(0, s - 1));
+              }
+            }}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" /> Anterior
+            <ArrowLeft className="w-4 h-4" />
+            {currentStep === 0 ? "Sair / Voltar" : "Anterior"}
           </button>
 
           <div className="flex items-center gap-3">

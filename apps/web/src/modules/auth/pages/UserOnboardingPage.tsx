@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../context/AuthContext";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
@@ -7,12 +8,14 @@ import {
   ShieldCheck,
   CheckCircle2,
   ArrowRight,
+  ArrowLeft,
   Loader2,
   GitBranch,
 } from "lucide-react";
 
 export function UserOnboardingPage() {
-  const { user, tenant } = useAuth();
+  const navigate = useNavigate();
+  const { user, tenant, signOut } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
@@ -148,6 +151,13 @@ export function UserOnboardingPage() {
                 ) : (
                   "Acessar Dashboard"
                 )}
+              </button>
+
+              <button
+                onClick={() => signOut().then(() => navigate("/login"))}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mx-auto mt-4"
+              >
+                <ArrowLeft className="w-4 h-4" /> Sair / Entrar com outra conta
               </button>
             </div>
           )}

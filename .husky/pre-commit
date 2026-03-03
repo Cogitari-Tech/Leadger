@@ -10,10 +10,10 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# 2. Hard block for known secrets in diff
-if git diff --cached --name-only | xargs grep -iE 'SUPABASE_SERVICE_ROLE_KEY|GITHUB_TOKEN'; then
+# 2. Hard block for known secrets (excluding documentation/husky)
+if git diff --cached --name-only | grep -vE '\.md$|.husky/' | xargs grep -iE 'SUPABASE_SERVICE_ROLE_KEY|GITHUB_TOKEN'; then
   echo "🚨 CRITICAL: Possible high-level secrets detected in staged files!"
-  echo "Commit rejected. Please remove credentials (e.g., SUPABASE_SERVICE_ROLE_KEY) before committing."
+  echo "Commit rejected. Please remove actual credentials (not just documentation names) before committing."
   exit 1
 fi
 

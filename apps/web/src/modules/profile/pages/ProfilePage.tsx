@@ -24,11 +24,15 @@ export default function ProfilePage() {
     updateName,
     updateAvatar,
     updateSecondaryEmail,
+    updateEmail,
     requestPasswordReset,
   } = useProfile();
 
   const [nameInput, setNameInput] = useState("");
   const [nameEditing, setNameEditing] = useState(false);
+  const [emailInput, setEmailInput] = useState("");
+  const [emailEditing, setEmailEditing] = useState(false);
+  const [emailChangeRequested, setEmailChangeRequested] = useState(false);
   const [passwordResetSent, setPasswordResetSent] = useState(false);
   const [secondaryEmailInput, setSecondaryEmailInput] = useState("");
   const [secondaryEmailEditing, setSecondaryEmailEditing] = useState(false);
@@ -80,6 +84,16 @@ export default function ProfilePage() {
     setSecondaryEmailEditing(false);
     setSecondaryEmailSaved(true);
     setTimeout(() => setSecondaryEmailSaved(false), 3000);
+  };
+
+  const handleSaveEmail = async () => {
+    if (!emailInput.trim() || emailInput === profile.email) {
+      setEmailEditing(false);
+      return;
+    }
+    await updateEmail(emailInput.trim());
+    setEmailEditing(false);
+    setEmailChangeRequested(true);
   };
 
   const activeProjects = profile.projects.filter((p) => p.status === "active");
@@ -161,16 +175,59 @@ export default function ProfilePage() {
                 {profile.fullName || "Sem nome definido"}
               </button>
             )}
-            <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
-              <Mail className="w-3.5 h-3.5" />
-              {profile.email}
-            </p>
+            <div className="mt-1">
+              {emailEditing ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="email"
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    className="flex-1 px-3 py-1.5 text-sm bg-muted/50 border border-border/50 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveEmail();
+                      if (e.key === "Escape") setEmailEditing(false);
+                    }}
+                  />
+                  <button
+                    onClick={handleSaveEmail}
+                    disabled={saving}
+                    className="p-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <Save className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 group/email">
+                  <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5" />
+                    {profile.email}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setEmailInput(profile.email);
+                      setEmailEditing(true);
+                    }}
+                    className="text-[10px] text-primary opacity-0 group-hover/email:opacity-100 transition-opacity font-bold uppercase tracking-widest"
+                  >
+                    Alterar
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {emailChangeRequested && (
+              <p className="text-[10px] text-amber-500 font-medium mt-1 animate-pulse">
+                Confirmação enviada para o novo e-mail.
+              </p>
+            )}
+
             <div className="flex items-center gap-3 mt-2">
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
                 <Shield className="w-3 h-3" />
                 {profile.roleName}
               </span>
-              {profile.emailConfirmedAt && (
+              {profile.emailConfirmedAt && !emailChangeRequested && (
                 <span className="inline-flex items-center gap-1 text-[10px] text-emerald-500">
                   <CheckCircle2 className="w-3 h-3" />
                   E-mail verificado
@@ -327,7 +384,8 @@ export default function ProfilePage() {
                   E-mail de Recuperação Secundário
                 </p>
                 <p className="text-[10px] text-muted-foreground">
-                  {profile.secondaryEmail || "Não configurado"}
+                  {profile.secondaryEmail || "Não configurado"} — Para uso
+                  administrativo
                 </p>
               </div>
             </div>
