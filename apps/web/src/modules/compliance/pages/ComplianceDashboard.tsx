@@ -9,7 +9,6 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Button } from "@/shared/components/ui/Button";
 import { useRisks } from "../hooks/useRisks";
-import { useSwot } from "../hooks/useSwot";
 
 export default function ComplianceDashboard() {
   const navigate = useNavigate();
