@@ -87,3 +87,11 @@ npm run test
 # Run Build
 npm run build
 ```
+
+## 5. E2E Testing (Playwright) & Bypasses
+
+When running automated End-to-End tests via Playwright, the Cloudflare Turnstile CAPTCHA will block automated Chromium/Firefox browsers. To bypass this during testing:
+
+1. Use the **Dummy Site Key** in `.env`: `VITE_TURNSTILE_SITE_KEY=1x00000000000000000000AA`.
+2. Ensure you have test tenant accounts mapped correctly.
+3. If necessary, inject `amuri_session_type` in the browser context `localStorage` to bypass MFA timeout or test persistent sessions.

@@ -39,7 +39,9 @@ export function useProfile() {
         data: { user: authUser },
       } = await supabase.auth.getUser();
 
-      // Get tenant info
+      // Get tenant info - filter by current user's active tenant if available
+      const activeTenantId = user.tenant_id;
+
       const { data: memberData } = await supabase
         .from("tenant_members")
         .select(
@@ -52,6 +54,8 @@ export function useProfile() {
         `,
         )
         .eq("user_id", user.id)
+        .eq("status", "active")
+        .eq("tenant_id", activeTenantId)
         .single();
 
       // Get projects from project_members
@@ -191,6 +195,22 @@ export function useProfile() {
     }
   }, []);
 
+  const updateEmail = useCallback(async (newEmail: string) => {
+    setSaving(true);
+    try {
+      const { error: updateError } = await supabase.auth.updateUser({
+        email: newEmail,
+      });
+      if (updateError) throw updateError;
+      // User will need to verify email, profile will reflect after refresh/re-login
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setSaving(false);
+    }
+  }, []);
+
   return {
     profile,
     loading,
@@ -199,6 +219,7 @@ export function useProfile() {
     updateName,
     updateAvatar,
     updateSecondaryEmail,
+    updateEmail,
     requestPasswordReset,
     refresh: fetchProfile,
   };
