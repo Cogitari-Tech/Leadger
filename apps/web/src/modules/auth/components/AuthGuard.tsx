@@ -44,6 +44,14 @@ export function AuthGuard({ children }: AuthGuardProps) {
         // If current level is AAL1 but the user has registered factors (nextLevel = AAL2),
         // they must complete the MFA challenge.
         if (currentLevel === "aal1" && nextLevel === "aal2") {
+          // CHECK FOR TRUSTED DEVICE
+          const trustUntil = localStorage.getItem(`mfa_trust_${user.id}`);
+          if (trustUntil && parseInt(trustUntil) > Date.now()) {
+            setMfaStatus("ok");
+            setCheckingMfa(false);
+            return;
+          }
+
           setMfaStatus("needs_challenge");
           setCheckingMfa(false);
           return;
