@@ -150,10 +150,13 @@ export function TenantSettings() {
               </h2>
               <div className="flex items-center gap-3 mt-1 justify-center md:justify-start">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20">
-                  Ambiente Corporativo
+                  Sincronizado
                 </span>
                 <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-                  Sincronizado: <span className="text-foreground">Ativo</span>
+                  Plano:{" "}
+                  <span className="text-foreground">
+                    {tenant?.plan ?? "free"}
+                  </span>
                 </p>
               </div>
             </div>
