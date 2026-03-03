@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Navigate, Link } from "react-router-dom";
 import { ArrowRight, Loader2, Eye, EyeOff, Activity } from "lucide-react";
@@ -15,6 +15,16 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [remember, setRemember] = useState(true);
+
+  // Session persistence sync
+  useEffect(() => {
+    if (!remember) {
+      localStorage.setItem("amuri_session_type", "temporal");
+    } else {
+      localStorage.removeItem("amuri_session_type");
+    }
+  }, [remember]);
 
   // If already logged in, redirect
   if (user) return <Navigate to="/dashboard" replace />;
@@ -40,6 +50,7 @@ export function LoginPage() {
       email,
       password,
       turnstileToken || undefined,
+      remember,
     );
     if (authError) {
       setError(
@@ -182,6 +193,20 @@ export function LoginPage() {
                     )}
                   </button>
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between px-1">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    onChange={(e) => setRemember(e.target.checked)}
+                    className="w-4 h-4 rounded border-border/40 text-primary focus:ring-primary/20 bg-muted/40 transition-all"
+                  />
+                  <span className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest group-hover:text-muted-foreground transition-colors">
+                    Mantenha-me conectado
+                  </span>
+                </label>
               </div>
 
               {import.meta.env.VITE_TURNSTILE_SITE_KEY && (

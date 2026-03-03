@@ -21,6 +21,7 @@ interface AuthContextType extends AuthState {
     email: string,
     password: string,
     captchaToken?: string,
+    remember?: boolean,
   ) => Promise<{ error: Error | null }>;
   signUp: (
     email: string,
@@ -181,8 +182,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      // Check for temporary session logic
+      const sessionType = localStorage.getItem("amuri_session_type");
+      const isNewBrowserSession = !sessionStorage.getItem(
+        "amuri_session_active",
+      );
+
       if (session?.user) {
-        loadUserProfile(session.user, session);
+        if (sessionType === "temporal" && isNewBrowserSession) {
+          // Browser was closed and it was a non-persistent session -> sign out
+          supabase.auth.signOut();
+          setState((prev) => ({ ...prev, loading: false, initialized: true }));
+        } else {
+          // Valid session, mark current browser session as active
+          sessionStorage.setItem("amuri_session_active", "true");
+          loadUserProfile(session.user, session);
+        }
       } else {
         setState((prev) => ({ ...prev, loading: false, initialized: true }));
       }
@@ -193,8 +208,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
+        sessionStorage.setItem("amuri_session_active", "true");
         await loadUserProfile(session.user, session);
       } else if (event === "SIGNED_OUT") {
+        sessionStorage.removeItem("amuri_session_active");
+        localStorage.removeItem("amuri_session_type");
         setState({
           user: null,
           session: null,
@@ -213,8 +231,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string,
     password: string,
     captchaToken?: string,
+    remember: boolean = true,
   ) => {
     setState((prev) => ({ ...prev, loading: true }));
+
+    if (!remember) {
+      localStorage.setItem("amuri_session_type", "temporal");
+    } else {
+      localStorage.removeItem("amuri_session_type");
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
