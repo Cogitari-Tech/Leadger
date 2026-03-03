@@ -46,13 +46,13 @@
 
   .dark {
     /* Deep Glass Dark - Soft but intense */
-    --background: 224 71% 4%;
+    --background: 222 47% 7%;
     --foreground: 210 20% 98%;
 
-    --card: 224 71% 4%;
+    --card: 222 47% 9%;
     --card-foreground: 210 20% 98%;
 
-    --popover: 224 71% 4%;
+    --popover: 222 47% 7%;
     --popover-foreground: 210 20% 98%;
 
     --primary: 24.6 95% 53.1%;

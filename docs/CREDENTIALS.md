@@ -126,16 +126,17 @@ MCP_SERVER_POSTGRES_DSN=postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres
 
 Para manter a segurança e a arquitetura limpa, é vital saber o destino correto de cada chave. Use esta tabela como guia definitivo separando o que vai para a nuvem da Vercel, o que vai para o Supabase e o que fica na sua máquina (arquivos `.env`).
 
-| Variável / Credencial                                               | Onde Salvar?                                    | Segurança             | Ambiente                                     | Descrição e Motivo                                                                                                                        |
-| :------------------------------------------------------------------ | :---------------------------------------------- | :-------------------- | :------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| **`VITE_SUPABASE_URL`**                                             | Vercel e `.env`                                 | 🟢 Pública            | **Separado** (Preview e Prod)                | URL do projeto Supabase para que o site consiga encontrar o banco de dados.                                                               |
-| **`VITE_SUPABASE_ANON_KEY`**                                        | Vercel e `.env`                                 | 🟢 Pública            | **Separado** (Preview e Prod)                | Chave base pública. Permite que o React faça requisições limitadas pelo RLS.                                                              |
-| **`APP_URL`**                                                       | Vercel e `.env`                                 | 🟢 Pública            | **Separado** (Preview e Prod)                | Ex: `https://app.cogitari...` Usada pelas Edge Functions para saber redirecionar links em e-mails.                                        |
-| **OAuth Client IDs e Secrets** (Google/GitHub para Sign-in)         | **Apenas no Supabase** (Dashboard > Auth)       | 🔴 Secrets Protegidos | **Separado** (Dev e Prod independentes)      | Obrigatórios para permitir Login via Social. Quem lida com os provedores é a Supabase, **portanto NÃO adicione eles na Vercel**.          |
-| **Chaves de APIs de Terceiros** (Ex: Google Drive p/ salvar laudos) | **Apenas no Supabase** (Edge Functions Secrets) | 🔴 Secrets Protegidos | **Separado** (Cofre isolado em cada projeto) | Segredos usados pelos scripts de Edge Functions. Elas devem viver nos cofres do backend, longe do frontend da Vercel.                     |
-| **`SUPABASE_SERVICE_ROLE_KEY`**                                     | Apenas no `.env` corporativo                    | 🔴 Máxima (Sensitive) | **Separado** (Não misture chaves)            | Chave-Mestre de Administração que ignora barreiras de segurança (RLS). **Não adicione na Vercel** (a menos que crie um micro-backend lá). |
-| **`GITHUB_TOKEN`** (Automação MCP)                                  | Apenas no `.env` local                          | 🔴 Sensitive          | **Global** (Da sua conta pessoal)            | Token concedido para assistentes IA rodarem scripts no código e fazerem commits em seu nome.                                              |
-| **`MCP_SERVER_POSTGRES_DSN`**                                       | Apenas no `.env` local                          | 🔴 Máxima (Sensitive) | **Separado** (URL direta de Prod vs Beta)    | URL direta do superusuário no DB Postgres. Usada exclusivamente por IAs ou DBAs para rodar migrations/SQL brutos.                         |
+| Variável / Credencial                                               | Onde Salvar?                                    | Segurança             | Ambiente                                     | Descrição e Motivo                                                                                                                          |
+| :------------------------------------------------------------------ | :---------------------------------------------- | :-------------------- | :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`VITE_SUPABASE_URL`**                                             | Vercel e `.env`                                 | 🟢 Pública            | **Separado** (Preview e Prod)                | URL do projeto Supabase para que o site consiga encontrar o banco de dados.                                                                 |
+| **`VITE_SUPABASE_ANON_KEY`**                                        | Vercel e `.env`                                 | 🟢 Pública            | **Separado** (Preview e Prod)                | Chave base pública. Permite que o React faça requisições limitadas pelo RLS.                                                                |
+| **`APP_URL`**                                                       | Vercel e `.env`                                 | 🟢 Pública            | **Separado** (Preview e Prod)                | Ex: `https://app.cogitari...` Usada pelas Edge Functions para saber redirecionar links em e-mails.                                          |
+| **OAuth Client IDs e Secrets** (Google/GitHub para Sign-in)         | **Apenas no Supabase** (Dashboard > Auth)       | 🔴 Secrets Protegidos | **Separado** (Dev e Prod independentes)      | Obrigatórios para permitir Login via Social. Quem lida com os provedores é a Supabase, **portanto NÃO adicione eles na Vercel**.            |
+| **Chaves de APIs de Terceiros** (Ex: Google Drive p/ salvar laudos) | **Apenas no Supabase** (Edge Functions Secrets) | 🔴 Secrets Protegidos | **Separado** (Cofre isolado em cada projeto) | Segredos usados pelos scripts de Edge Functions. Elas devem viver nos cofres do backend, longe do frontend da Vercel.                       |
+| **`SUPABASE_SERVICE_ROLE_KEY`**                                     | Apenas no `.env` corporativo                    | 🔴 Máxima (Sensitive) | **Separado** (Não misture chaves)            | Chave-Mestre de Administração que ignora barreiras de segurança (RLS). **Não adicione na Vercel** (a menos que crie um micro-backend lá).   |
+| **`GITHUB_TOKEN`** (Automação MCP)                                  | Apenas no `.env` local                          | 🔴 Sensitive          | **Global** (Da sua conta pessoal)            | Token concedido para assistentes IA rodarem scripts no código e fazerem commits em seu nome.                                                |
+| **`MCP_SERVER_POSTGRES_DSN`**                                       | Apenas no `.env` local                          | 🔴 Máxima (Sensitive) | **Separado** (URL direta de Prod vs Beta)    | URL direta do superusuário no DB Postgres. Usada exclusivamente por IAs ou DBAs para rodar migrations/SQL brutos.                           |
+| **`VITE_TURNSTILE_SITE_KEY`**                                       | Vercel e `.env` local/apps                      | 🟢 Pública            | **Separado** (Desenvolvimento e Prod)        | Chave do site do Cloudflare Turnstile. Usada no Frontend para instanciar o widget contra bots. Deve ser distinta para testes locais e Prod. |
 
 ### Passo a Passo
 
@@ -148,3 +149,27 @@ Para manter a segurança e a arquitetura limpa, é vital saber o destino correto
    - **Para Beta (Preview)**:
      - Copie do arquivo `.env.beta`.
      - Desmarque "Production". Mantenha **Preview** (e Development se desejar usar o base de beta localmente).
+
+---
+
+## 7. Cloudflare Turnstile e Testes Automatizados (Bypass E2E)
+
+Nosso sistema utiliza o **Cloudflare Turnstile** para proteção anti-bot. Por padrão, em Produção, ele roda no modo "**Managed**", o que significa que o selo de sucesso (Check verde) apenas será concedido de forma interativa ou transparente dependendo do risco do visitante.
+
+Durante o desenvolvimento ou execução de testes E2E (Playwright), os scripts automatizados podem ser bloqueados porque eles disparam desafios do Captcha que os robôs não conseguem resolver.
+
+Para permitir **Bypass** e que assistentes de Inteligência Artificial e Testes E2E rodem sem barreira visual de rede local, siga esta diretriz:
+
+1. **Alterar no Ambiente (`apps/web/.env`)**
+   Substitua sempre no Frontend Local sua chave verdadeira (se estiver testando login localmente com AI ou Playwright) pela Dummy Site Key do Cloudflare que concede _sempre_ acesso:
+   \`\`\`env
+
+# Chave Especial para bypass de testes
+
+VITE_TURNSTILE_SITE_KEY=1x00000000000000000000AA
+\`\`\`
+
+> **⚠️ CUIDADO:** Nunca permita que a chave de Teste (`1x...AA`) faça o commit até o Preview ou Main do `.env.production`. Caso contrário o Captcha ficará nulo e deixará bots passarem.
+
+2. **Bypass Via Storage (`localStorage`)**
+   Para automações complexas nas telas de Auth, o sistema detecta preferencialmente a navegação persistente caso a variável local exista no browser automatizado. Certas rotinas de Login automatizado só prosseguem sem timeout se você configurar antes (no setup stage via injeção JavaScript E2E) chaves contendo `amuri_session_type` etc. Caso seja necessário, verifique em `.testing.credentials.md` (no root) atalhos e usuários dummy recomendados.
