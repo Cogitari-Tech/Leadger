@@ -8,13 +8,50 @@ import {
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Button } from "@/shared/components/ui/Button";
+import { useRisks } from "../hooks/useRisks";
+import { useSwot } from "../hooks/useSwot";
 
 export default function ComplianceDashboard() {
   const navigate = useNavigate();
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  const complianceData: any[] = [];
-  const frameworks: any[] = [];
-  const actionItems: any[] = [];
+  const { risks } = useRisks();
+
+  // Mock telemetria generalizada enquanto módulo frameworks não possui tabela real de progresso
+  const complianceData = [
+    { name: "Aderência a Frameworks", value: 65, color: "#14b8a6" },
+    { name: "Riscos Mitigados", value: 20, color: "#3b82f6" },
+    { name: "Pendências", value: 15, color: "#f59e0b" },
+  ];
+
+  const frameworks = [
+    {
+      id: "1",
+      name: "ISO 27001",
+      description: "Gestão de Segurança da Informação",
+      status: "partial",
+      progress: 65,
+    },
+    {
+      id: "2",
+      name: "LGPD",
+      description: "Lei Geral de Proteção de Dados Pessoais",
+      status: "compliant",
+      progress: 100,
+    },
+  ];
+
+  const actionItems = risks
+    .filter((r) => r.status === "open")
+    .map((r) => ({
+      id: r.id,
+      title: r.title,
+      due: "Ação Requerida",
+      priority: r.score >= 15 ? "Alta" : r.score >= 10 ? "Média" : "Baixa",
+      status: r.status,
+    }))
+    .sort((a, b) =>
+      a.priority === "Alta" ? -1 : b.priority === "Alta" ? 1 : 0,
+    )
+    .slice(0, 5);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -237,7 +274,7 @@ export default function ComplianceDashboard() {
               >
                 <div className="flex items-start gap-5">
                   <div
-                    className={`mt-1 p-2 rounded-xl transition-colors ${item.status === "Concluído" ? "bg-emerald-500/10 text-emerald-500" : "bg-foreground/5 text-muted-foreground"}`}
+                    className={`mt-1 p-2 rounded-xl transition-colors ${item.status === "mitigated" ? "bg-emerald-500/10 text-emerald-500" : "bg-foreground/5 text-muted-foreground"}`}
                   >
                     <CheckCircle className="w-5 h-5" />
                   </div>

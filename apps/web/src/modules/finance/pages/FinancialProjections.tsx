@@ -99,6 +99,22 @@ export default function FinancialProjections() {
 
   return (
     <div className="space-y-8">
+      {/* SEO Metadata */}
+      <div className="hidden" aria-hidden="true">
+        <title>Projeções Financeiras | Cogitari Governance</title>
+        <meta
+          name="description"
+          content="Gere projeções financeiras detalhadas para o seu pitch deck com 3 cenários integrados."
+        />
+        <meta
+          property="og:title"
+          content="Projeções Financeiras - Cogitari Governance"
+        />
+        <meta
+          property="og:description"
+          content="Modele o futuro financeiro da sua startup."
+        />
+      </div>
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">

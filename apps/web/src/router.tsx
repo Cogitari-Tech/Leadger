@@ -90,24 +90,31 @@ export const createAppRouter = () =>
       path: "/auth/mfa-setup",
       element: (
         <AuthGuard>
-          <div className="flex min-h-screen items-center justify-center p-4 bg-slate-50 dark:bg-slate-950">
-            <div className="w-full max-w-2xl">
+          <div className="flex min-h-screen items-center justify-center p-4 bg-background relative overflow-hidden">
+            <div className="absolute inset-0 z-0 pointer-events-none">
+              <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[150px] rounded-full animate-pulse" />
+              <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
+            </div>
+
+            <div className="w-full max-w-2xl relative z-10 glass-card p-8 rounded-[2rem] shadow-2xl">
               <div className="mb-6 text-center">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  Ação Obrigatória
+                <h2 className="text-2xl font-bold text-foreground">
+                  Configuração de Segurança
                 </h2>
-                <p className="mt-2 text-slate-600 dark:text-slate-400">
-                  Seu nível de acesso exige a configuração de Autenticação em
-                  Duas Etapas.
+                <p className="mt-2 text-muted-foreground font-medium">
+                  Seu nível de acesso ou ação requer a configuração da
+                  Autenticação em Duas Etapas para continuar.
                 </p>
               </div>
+
               <TwoFactorSetup />
+
               <div className="mt-6 text-center">
                 <a
-                  href="/login"
-                  className="text-sm font-medium text-brand-600 dark:text-brand-400 hover:underline"
+                  href="/dashboard"
+                  className="text-sm font-medium text-primary hover:underline hover:brightness-110 transition-all"
                 >
-                  Voltar e Entrar com outra conta
+                  Sair / Voltar ao Dashboard
                 </a>
               </div>
             </div>
