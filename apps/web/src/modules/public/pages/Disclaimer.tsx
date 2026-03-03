@@ -8,6 +8,19 @@ export function Disclaimer() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans transition-colors duration-300">
+      {/* SEO Metadata */}
+      <div className="hidden" aria-hidden="true">
+        <title>Disclaimer Legal | Cogitari Governance</title>
+        <meta
+          name="description"
+          content="Avisos legais e limitações de responsabilidade da plataforma Cogitari Governance."
+        />
+        <meta property="og:title" content="Disclaimer - Cogitari Governance" />
+        <meta
+          property="og:description"
+          content="Avisos legais importantes sobre o uso da plataforma."
+        />
+      </div>
       {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">

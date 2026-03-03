@@ -11,11 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import type { Framework, Control } from "../types/compliance.types";
-
-// --- Mock Data ---
-const MOCK_FRAMEWORKS: Framework[] = [];
-
-const MOCK_CONTROLS: Record<string, Control[]> = {};
+import { useFrameworks } from "../hooks/useFrameworks";
 
 const getStatusConfig = (status: Control["status"]) => {
   switch (status) {
@@ -69,15 +65,16 @@ const getFrameworkStatusLabel = (status: Framework["status"]) => {
 };
 
 export default function Frameworks() {
+  const { frameworks, controls: allControls } = useFrameworks();
   const [selectedFramework, setSelectedFramework] = useState<string | null>(
     null,
   );
 
   const framework = selectedFramework
-    ? MOCK_FRAMEWORKS.find((f) => f.id === selectedFramework)
+    ? frameworks.find((f) => f.id === selectedFramework)
     : null;
   const controls = selectedFramework
-    ? (MOCK_CONTROLS[selectedFramework] ?? [])
+    ? (allControls[selectedFramework] ?? [])
     : [];
 
   // --- Details View ---
@@ -280,8 +277,8 @@ export default function Frameworks() {
 
       {/* Framework Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {MOCK_FRAMEWORKS.length > 0 ? (
-          MOCK_FRAMEWORKS.map((fw) => (
+        {frameworks.length > 0 ? (
+          frameworks.map((fw) => (
             <div
               key={fw.id}
               className="glass-card soft-shadow p-0 bg-muted/20 dark:bg-card/40 backdrop-blur-xl rounded-[2.5rem] border border-border flex flex-col cursor-pointer group hover:scale-[1.03] transition-all"
