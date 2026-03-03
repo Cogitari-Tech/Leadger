@@ -6,6 +6,7 @@ import { Input } from "../../../shared/components/ui/Input";
 import { CheckCircle2, ShieldAlert, Loader2 } from "lucide-react";
 
 export function TwoFactorSetup() {
+  const [factorId, setFactorId] = useState<string | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [uri, setUri] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
