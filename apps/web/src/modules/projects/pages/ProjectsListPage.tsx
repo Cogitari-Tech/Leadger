@@ -7,6 +7,8 @@ import {
   Users,
   Edit2,
   Trash2,
+  Filter,
+  ArrowUpRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useProjects } from "../services/projects.service";
@@ -73,26 +75,26 @@ export function ProjectsListPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-500/30";
+        return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
       case "completed":
-        return "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30";
+        return "bg-primary/10 text-primary border-primary/20";
       case "on_hold":
-        return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/30";
+        return "bg-amber-500/10 text-amber-500 border-amber-500/20";
       case "cancelled":
-        return "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/30";
+        return "bg-destructive/10 text-destructive border-destructive/20";
       default:
-        return "bg-slate-500/10 text-slate-700 dark:text-slate-400 border-slate-500/30";
+        return "bg-muted text-muted-foreground border-border/40";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
       case "active":
-        return "Em Andamento";
+        return "Em Execução";
       case "completed":
         return "Concluído";
       case "on_hold":
-        return "Pausado";
+        return "Em Pausa";
       case "cancelled":
         return "Cancelado";
       default:
@@ -101,12 +103,15 @@ export function ProjectsListPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">Projetos</h1>
-          <p className="text-muted-foreground">
-            Gerencie os projetos e auditorias da sua organização.
+    <div className="space-y-10 p-6 max-w-7xl mx-auto animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-black tracking-tight text-foreground font-display">
+            Projetos & Auditorias
+          </h1>
+          <p className="text-sm text-muted-foreground font-medium">
+            Gerencie o ciclo de vida dos projetos e o progresso das auditorias
+            organizacionais.
           </p>
         </div>
 
@@ -116,94 +121,107 @@ export function ProjectsListPage() {
               setEditingProject(null);
               setIsFormOpen(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg transition-all font-medium shadow-lg shadow-cyan-500/20"
+            className="flex items-center justify-center gap-3 px-8 py-4 bg-primary text-primary-foreground rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 transition-all hover:brightness-110 active:scale-95 group"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-5 h-5 transition-transform group-hover:rotate-90" />
             Novo Projeto
           </button>
         )}
       </div>
 
-      <div className="bg-card border border-border/40 rounded-xl p-4 flex flex-col sm:flex-row gap-4 shadow-sm">
-        <div className="flex-1 relative">
-          <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+      <div className="glass-panel border border-border/20 rounded-[2rem] p-5 flex flex-col lg:flex-row gap-5 shadow-2xl items-center">
+        <div className="flex-1 relative w-full group">
+          <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/30 group-focus-within:text-primary transition-colors" />
           <input
             type="text"
-            placeholder="Buscar projetos..."
+            placeholder="Pesquisar por nome do projeto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-muted/40 border border-border/60 rounded-lg pl-10 pr-4 py-2 text-foreground focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+            className="w-full bg-background/50 border border-border/40 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all shadow-sm"
           />
         </div>
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="bg-muted/40 border border-border/60 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
-        >
-          <option value="all">Todos os status</option>
-          <option value="active">Em Andamento</option>
-          <option value="completed">Concluídos</option>
-          <option value="on_hold">Pausados</option>
-          <option value="cancelled">Cancelados</option>
-        </select>
+
+        <div className="flex items-center gap-3 w-full lg:w-auto">
+          <div className="relative w-full lg:w-64 group">
+            <Filter className="w-4 h-4 absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/30 group-focus-within:text-primary transition-colors" />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="w-full bg-background/50 border border-border/40 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all shadow-sm appearance-none"
+            >
+              <option value="all">Filtro: Todos</option>
+              <option value="active">Status: Em Execução</option>
+              <option value="completed">Status: Concluído</option>
+              <option value="on_hold">Status: Em Pausa</option>
+              <option value="cancelled">Status: Cancelado</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {loading && projects.length === 0 ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin"></div>
+        <div className="flex flex-col items-center justify-center h-96 gap-4">
+          <div className="w-12 h-12 rounded-2xl border-4 border-primary/20 border-t-primary animate-spin shadow-xl"></div>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground animate-pulse">
+            Carregando Projetos
+          </p>
         </div>
       ) : error ? (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 text-center">
-          <p className="text-red-400">{error}</p>
+        <div className="bg-destructive/10 border border-destructive/20 rounded-3xl p-8 text-center animate-in zoom-in-95">
+          <p className="text-destructive font-bold">{error}</p>
         </div>
       ) : filteredProjects.length === 0 ? (
-        <div className="bg-card border border-border/40 rounded-xl p-12 text-center flex flex-col items-center">
-          <div className="w-16 h-16 bg-muted/40 rounded-full flex items-center justify-center mb-4">
-            <Briefcase className="w-8 h-8 text-muted-foreground" />
+        <div className="glass-panel border border-border/20 border-dashed rounded-[3rem] p-24 text-center flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-8">
+          <div className="w-24 h-24 bg-muted/40 rounded-full flex items-center justify-center shadow-inner">
+            <Briefcase className="w-10 h-10 text-muted-foreground/30" />
           </div>
-          <h3 className="text-lg font-medium text-foreground mb-2">
-            Nenhum projeto encontrado
-          </h3>
-          <p className="text-muted-foreground max-w-sm mb-6">
-            Você ainda não tem projetos criados ou nenhum correspondeu aos
-            filtros aplicados.
-          </p>
+          <div className="space-y-2">
+            <h3 className="text-xl font-black text-foreground">
+              Vazio estratégico detectado
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-sm font-medium">
+              Sua organização ainda não iniciou ciclos de auditoria ou nenhum
+              projeto corresponde aos filtros atuais.
+            </p>
+          </div>
           {canManage && (
             <button
               onClick={() => {
                 setEditingProject(null);
                 setIsFormOpen(true);
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors font-medium border border-border/40"
+              className="mt-4 flex items-center gap-3 px-8 py-3.5 bg-muted hover:bg-muted/80 text-foreground rounded-2xl transition-all font-black text-[11px] uppercase tracking-widest border border-border/40 shadow-xl"
             >
               <Plus className="w-4 h-4" />
-              Criar Primeiro Projeto
+              Inicializar Primeiro Projeto
             </button>
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map((project) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          {filteredProjects.map((project, idx) => (
             <div
               key={project.id}
-              className="bg-card border border-border/40 rounded-xl p-6 hover:border-cyan-500/50 hover:shadow-md transition-all group flex flex-col shadow-sm"
+              className="group relative flex flex-col bg-background/40 glass-panel border border-border/20 rounded-[2.5rem] p-7 hover:border-primary/40 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 animate-in fade-in slide-in-from-bottom-8"
+              style={{ animationDelay: `${idx * 50}ms` }}
             >
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-8">
                 <div
-                  className={`px-3 py-1 rounded-full border text-xs font-semibold tracking-wide uppercase ${getStatusColor(project.status)}`}
+                  className={`px-4 py-1.5 rounded-xl border text-[10px] font-black tracking-[0.1em] uppercase shadow-sm ${getStatusColor(project.status)}`}
                 >
                   {getStatusText(project.status)}
                 </div>
 
                 {canManage && (
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-2 lg:opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <button
                       onClick={(e) => {
                         e.preventDefault();
                         setEditingProject(project);
                         setIsFormOpen(true);
                       }}
-                      className="p-1.5 text-muted-foreground hover:text-cyan-600 dark:hover:text-cyan-400 bg-muted/40 rounded-md hover:bg-muted transition-colors border border-border/40"
+                      className="p-2.5 text-muted-foreground hover:text-primary bg-muted/20 rounded-xl hover:bg-background transition-all border border-border/20 shadow-sm"
+                      title="Editar Configurações"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
@@ -212,7 +230,8 @@ export function ProjectsListPage() {
                         e.preventDefault();
                         handleDelete(project.id);
                       }}
-                      className="p-1.5 text-muted-foreground hover:text-destructive bg-muted/40 rounded-md hover:bg-muted transition-colors border border-border/40"
+                      className="p-2.5 text-muted-foreground hover:text-destructive bg-muted/20 rounded-xl hover:bg-background transition-all border border-border/20 shadow-sm"
+                      title="Arquivar Projeto"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -222,38 +241,55 @@ export function ProjectsListPage() {
 
               <Link
                 to={`/projects/${project.id}`}
-                className="block flex-1 group-hover:opacity-80 transition-opacity"
+                className="flex-1 flex flex-col group/link"
               >
-                <h3
-                  className="text-lg font-bold text-card-foreground mb-2 line-clamp-1"
-                  title={project.name}
-                >
-                  {project.name}
-                </h3>
-                <p className="text-muted-foreground text-sm line-clamp-2 mb-6 min-h-[40px]">
-                  {project.description || "Sem descrição disponível."}
-                </p>
-              </Link>
-
-              <div className="pt-4 border-t border-border/40 flex items-center justify-between text-sm text-muted-foreground font-medium">
-                <div
-                  className="flex items-center gap-1.5"
-                  title="Previsão de término"
-                >
-                  <Calendar className="w-4 h-4" />
-                  {project.end_date
-                    ? new Date(project.end_date).toLocaleDateString("pt-BR")
-                    : "Sem prazo"}
+                <div className="flex items-center justify-between group/title mb-3">
+                  <h3
+                    className="text-2xl font-black text-foreground tracking-tight leading-tight group-hover/link:text-primary transition-colors"
+                    title={project.name}
+                  >
+                    {project.name}
+                  </h3>
+                  <ArrowUpRight className="w-6 h-6 text-primary opacity-0 group-hover/link:opacity-100 transition-all group-hover/link:translate-x-1 group-hover/link:-translate-y-1" />
                 </div>
 
-                <Link
-                  to={`/projects/${project.id}?tab=equipe`}
-                  className="flex items-center gap-1.5 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
-                >
-                  <Users className="w-4 h-4" />
-                  Equipe
-                </Link>
-              </div>
+                <p className="text-muted-foreground text-sm font-medium leading-relaxed line-clamp-3 mb-8">
+                  {project.description ||
+                    "Este projeto ainda não possui uma descrição estratégica definida."}
+                </p>
+
+                <div className="mt-auto space-y-4 pt-6 border-t border-border/20">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-muted-foreground font-bold text-[11px] uppercase tracking-wider">
+                      <Calendar className="w-4 h-4 text-primary/40" />
+                      {project.end_date
+                        ? new Date(project.end_date).toLocaleDateString(
+                            "pt-BR",
+                            { month: "short", day: "numeric", year: "numeric" },
+                          )
+                        : "Sem Prazo"}
+                    </div>
+
+                    <Link
+                      to={`/projects/${project.id}?tab=equipe`}
+                      className="flex items-center gap-2 text-muted-foreground hover:text-primary font-bold text-[11px] uppercase tracking-wider transition-all"
+                    >
+                      <Users className="w-4 h-4 text-primary/40" />
+                      Gestão Equipe
+                    </Link>
+                  </div>
+
+                  {/* Progress visualization (mocking a bit since the schema might vary, but for aesthetics) */}
+                  <div className="relative w-full h-1.5 bg-muted/30 rounded-full overflow-hidden">
+                    <div
+                      className="absolute h-full bg-primary rounded-full"
+                      style={{
+                        width: project.status === "completed" ? "100%" : "45%",
+                      }}
+                    />
+                  </div>
+                </div>
+              </Link>
             </div>
           ))}
         </div>
@@ -268,6 +304,13 @@ export function ProjectsListPage() {
         onSubmit={editingProject ? handleUpdate : handleCreate}
         initialData={editingProject}
       />
+
+      <div className="py-12 flex flex-col items-center gap-4 opacity-30 mt-12">
+        <div className="h-px w-32 bg-gradient-to-r from-transparent via-border to-transparent" />
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">
+          Portfolio de Governança 2026
+        </p>
+      </div>
     </div>
   );
 }

@@ -6,9 +6,11 @@ import {
   TrendingDown,
   Zap,
   ShieldAlert,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
-import type { SwotItem, SwotType } from "../types/compliance.types";
+import type { SwotType } from "../types/compliance.types";
+import { useSwot } from "../hooks/useSwot";
 
 const QUADRANT_CONFIG: Record<
   SwotType,
@@ -55,34 +57,25 @@ const QUADRANT_CONFIG: Record<
   },
 };
 
-const INITIAL_ITEMS: SwotItem[] = [];
-
 export default function SwotAnalysis() {
-  const [items, setItems] = useState<SwotItem[]>(INITIAL_ITEMS);
+  const { items, loading, addItem, removeItem } = useSwot();
   const [showModal, setShowModal] = useState<SwotType | null>(null);
   const [formTitle, setFormTitle] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formImpact, setFormImpact] = useState(3);
 
-  const addItem = () => {
+  const handleAddItem = async () => {
     if (!showModal || !formTitle.trim()) return;
-    const newItem: SwotItem = {
-      id: `${showModal[0]}${Date.now()}`,
+    await addItem({
       type: showModal,
       title: formTitle.trim(),
       description: formDescription.trim(),
       impact: formImpact,
-      createdAt: new Date().toISOString().split("T")[0],
-    };
-    setItems((prev) => [...prev, newItem]);
+    });
     setShowModal(null);
     setFormTitle("");
     setFormDescription("");
     setFormImpact(3);
-  };
-
-  const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
   };
 
   const quadrantOrder: SwotType[] = [
@@ -167,7 +160,14 @@ export default function SwotAnalysis() {
 
               {/* Items */}
               <div className="flex-1 p-6 space-y-4 min-h-[250px]">
-                {quadrantItems.length === 0 ? (
+                {loading ? (
+                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground/50 space-y-3">
+                    <Loader2 className="w-8 h-8 animate-spin" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest">
+                      Carregando...
+                    </p>
+                  </div>
+                ) : quadrantItems.length === 0 ? (
                   <div className="flex items-center justify-center h-full text-muted-foreground/30">
                     <p className="text-[10px] font-bold uppercase tracking-widest">
                       Nenhum item registrado
@@ -238,10 +238,14 @@ export default function SwotAnalysis() {
 
             <div className="space-y-8">
               <div className="space-y-3">
-                <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">
+                <label
+                  htmlFor="swot-title"
+                  className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1"
+                >
                   Título do Fator Estratégico
                 </label>
                 <input
+                  id="swot-title"
                   type="text"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
@@ -251,10 +255,14 @@ export default function SwotAnalysis() {
               </div>
 
               <div className="space-y-3">
-                <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">
+                <label
+                  htmlFor="swot-desc"
+                  className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1"
+                >
                   Breve Descrição
                 </label>
                 <textarea
+                  id="swot-desc"
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
                   className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none resize-none h-32"
@@ -284,7 +292,7 @@ export default function SwotAnalysis() {
               </div>
 
               <Button
-                onClick={addItem}
+                onClick={handleAddItem}
                 disabled={!formTitle.trim()}
                 className="w-full h-14 rounded-2xl font-bold uppercase tracking-widest text-xs shadow-xl shadow-primary/20"
               >

@@ -60,7 +60,7 @@ export function TwoFactorSetup() {
       let errMsg = err.message || "Falha ao iniciar configuração do 2FA.";
       if (err.message?.includes("not enabled")) {
         errMsg =
-          "O Autenticador TOTP não foi ativado no painel do Supabase. Vá em Authentication -> Providers -> Email e ative 'Enable MFA'.";
+          "O Autenticador TOTP não foi ativado no painel do banco de dados de autenticação. Confirme se a funcionalidade MFA está habilitada.";
       }
       setError(errMsg);
     } finally {
@@ -122,16 +122,16 @@ export function TwoFactorSetup() {
 
   if (isEnrolled) {
     return (
-      <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="rounded-2xl border border-border/40 bg-background/50 backdrop-blur-sm p-6 shadow-sm">
         <div className="flex items-start gap-4">
-          <div className="rounded-full bg-green-100 p-3 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+          <div className="rounded-full bg-emerald-500/10 p-3 text-emerald-500">
             <CheckCircle2 size={24} />
           </div>
           <div>
-            <h3 className="text-lg font-medium text-slate-900 dark:text-white">
+            <h3 className="text-lg font-medium text-foreground">
               Autenticação de Dois Fatores (2FA) Ativa
             </h3>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-1 text-sm text-muted-foreground">
               Sua conta está mais segura. Um código será solicitado sempre que
               você fizer login.
             </p>
@@ -143,7 +143,7 @@ export function TwoFactorSetup() {
                 <span>Desativar 2FA</span>
               </Button>
             </div>
-            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+            {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
           </div>
         </div>
       </div>
@@ -151,41 +151,49 @@ export function TwoFactorSetup() {
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="rounded-2xl border border-border/40 bg-background/50 backdrop-blur-sm p-6 shadow-sm">
       <div className="flex items-start gap-4">
-        <div className="rounded-full bg-amber-100 p-3 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+        <div className="rounded-full bg-amber-500/10 p-3 text-amber-500">
           <ShieldAlert size={24} />
         </div>
         <div className="flex-1">
-          <h3 className="text-lg font-medium text-slate-900 dark:text-white">
+          <h3 className="text-lg font-medium text-foreground">
             Proteger Conta com 2FA
           </h3>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             Adicione uma camada extra de segurança à sua conta exigindo um
             código do Google Authenticator ou Authy no login.
           </p>
 
           {!qrCode ? (
-            <div className="mt-4">
-              <Button onClick={startEnrollment} disabled={loading}>
+            <div className="mt-6">
+              <button
+                onClick={startEnrollment}
+                disabled={loading}
+                className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl text-sm font-bold uppercase tracking-widest hover:brightness-110 disabled:opacity-50 transition-all active:scale-95"
+              >
                 {loading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
                 <span>Configurar 2FA (TOTP)</span>
-              </Button>
-              {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+              </button>
+              {error && (
+                <p className="mt-4 text-sm text-destructive font-medium border border-destructive/20 bg-destructive/10 p-3 rounded-lg">
+                  {error}
+                </p>
+              )}
             </div>
           ) : (
             <div className="mt-6 flex flex-col gap-6 md:flex-row">
-              <div className="flex shrink-0 flex-col items-center gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-                <div className="bg-white p-2">
+              <div className="flex shrink-0 flex-col items-center gap-4 rounded-xl border border-border/40 bg-muted/30 p-4">
+                <div className="bg-white p-2 rounded-lg">
                   <QRCodeSVG value={qrCode} size={160} />
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-muted-foreground">
                     Ou use o código manual:
                   </p>
-                  <code className="mt-1 block rounded bg-slate-100 px-2 py-1 text-xs font-medium dark:bg-slate-900">
+                  <code className="mt-1 block rounded bg-background border border-border/40 px-2 py-1 text-xs font-medium text-foreground">
                     {secret}
                   </code>
                 </div>
@@ -196,11 +204,11 @@ export function TwoFactorSetup() {
                   <div>
                     <label
                       htmlFor="code"
-                      className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+                      className="block text-sm font-medium text-foreground"
                     >
                       Código de Verificação
                     </label>
-                    <p className="mb-2 mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mb-3 mt-1 text-xs text-muted-foreground">
                       Escaneie o QR Code com o aplicativo Authy ou Google
                       Authenticator e digite o código de 6 dígitos gerado.
                     </p>
@@ -215,33 +223,38 @@ export function TwoFactorSetup() {
                       onChange={(e) =>
                         setVerifyCode(e.target.value.replace(/\D/g, ""))
                       }
-                      className="text-center text-lg tracking-[0.5em]"
+                      className="text-center text-xl tracking-[0.5em] font-mono h-14"
                       required
                     />
                   </div>
 
-                  {error && <p className="text-sm text-red-600">{error}</p>}
+                  {error && (
+                    <p className="text-sm text-destructive font-medium">
+                      {error}
+                    </p>
+                  )}
 
-                  <div className="flex justify-end gap-3">
-                    <Button
+                  <div className="flex justify-end gap-3 pt-2">
+                    <button
                       type="button"
-                      variant="secondary"
                       onClick={() => {
                         setQrCode(null);
                         setFactorId(null);
                       }}
+                      className="px-4 py-2.5 text-sm font-medium text-muted-foreground bg-muted/50 rounded-xl hover:bg-muted transition-colors"
                     >
                       Cancelar
-                    </Button>
-                    <Button
+                    </button>
+                    <button
                       type="submit"
                       disabled={verifyCode.length !== 6 || loading}
+                      className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-bold uppercase tracking-widest hover:brightness-110 disabled:opacity-50 transition-all active:scale-95"
                     >
                       {loading ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       ) : null}
-                      <span>Ativar e Verificar</span>
-                    </Button>
+                      <span>Ativar</span>
+                    </button>
                   </div>
                 </form>
               </div>
