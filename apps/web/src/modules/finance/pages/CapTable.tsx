@@ -514,7 +514,11 @@ export default function CapTable() {
                     className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
                   >
                     {Object.entries(ROUND_TYPE_LABELS).map(([k, v]) => (
-                      <option key={k} value={k}>
+                      <option
+                        key={k}
+                        value={k}
+                        className="bg-background text-foreground"
+                      >
                         {v}
                       </option>
                     ))}
@@ -637,11 +641,36 @@ export default function CapTable() {
                     }
                     className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
                   >
-                    <option value="founder">Fundador</option>
-                    <option value="investor">Investidor</option>
-                    <option value="employee">Colaborador</option>
-                    <option value="advisor">Advisor</option>
-                    <option value="other">Outro</option>
+                    <option
+                      value="founder"
+                      className="bg-background text-foreground"
+                    >
+                      Fundador
+                    </option>
+                    <option
+                      value="investor"
+                      className="bg-background text-foreground"
+                    >
+                      Investidor
+                    </option>
+                    <option
+                      value="employee"
+                      className="bg-background text-foreground"
+                    >
+                      Colaborador
+                    </option>
+                    <option
+                      value="advisor"
+                      className="bg-background text-foreground"
+                    >
+                      Advisor
+                    </option>
+                    <option
+                      value="other"
+                      className="bg-background text-foreground"
+                    >
+                      Outro
+                    </option>
                   </select>
                 </div>
               </div>
