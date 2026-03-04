@@ -455,9 +455,24 @@ export default function BurnRate() {
                   }
                   className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
                 >
-                  <option value="runway_months">Meses de Runway</option>
-                  <option value="burn_rate_change">Burn Rate Mensal</option>
-                  <option value="cash_low">Caixa Mínimo</option>
+                  <option
+                    value="runway_months"
+                    className="bg-background text-foreground"
+                  >
+                    Meses de Runway
+                  </option>
+                  <option
+                    value="burn_rate_change"
+                    className="bg-background text-foreground"
+                  >
+                    Burn Rate Mensal
+                  </option>
+                  <option
+                    value="cash_low"
+                    className="bg-background text-foreground"
+                  >
+                    Caixa Mínimo
+                  </option>
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-6">
@@ -492,8 +507,18 @@ export default function BurnRate() {
                     }
                     className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
                   >
-                    <option value="below">Abaixo de</option>
-                    <option value="above">Acima de</option>
+                    <option
+                      value="below"
+                      className="bg-background text-foreground"
+                    >
+                      Abaixo de
+                    </option>
+                    <option
+                      value="above"
+                      className="bg-background text-foreground"
+                    >
+                      Acima de
+                    </option>
                   </select>
                 </div>
               </div>
