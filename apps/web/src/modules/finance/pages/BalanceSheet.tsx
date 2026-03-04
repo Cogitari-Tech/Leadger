@@ -12,7 +12,17 @@ import {
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import { useFinance } from "../hooks/useFinance";
-import { AccountBalanceDTO } from "@cogitari-platform/core/repositories/IFinanceRepository";
+
+interface AccountBalanceDTO {
+  accountId: string;
+  accountName: string;
+  accountCode: string;
+  accountType: string;
+  isAnalytical: boolean;
+  debitTotal: number;
+  creditTotal: number;
+  balance: number;
+}
 
 export default function BalanceSheet() {
   const { getAccountBalances, loading, error } = useFinance();

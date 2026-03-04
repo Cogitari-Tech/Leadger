@@ -81,6 +81,13 @@ const getRiskTextColor = (score: number): string => {
   return "text-emerald-500";
 };
 
+const getRiskBgColor = (score: number): string => {
+  if (score >= 15) return "bg-red-600";
+  if (score >= 10) return "bg-orange-600";
+  if (score >= 5) return "bg-amber-600";
+  return "bg-emerald-600";
+};
+
 export default function RiskAssessment() {
   const { risks, loading, addRisk: addRiskApi, removeRisk } = useRisks();
   const [showModal, setShowModal] = useState(false);
@@ -460,11 +467,36 @@ export default function RiskAssessment() {
                     }
                     className="glass-input w-full px-6 py-4 rounded-2xl bg-white/5 border-white/10 text-foreground text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none appearance-none cursor-pointer"
                   >
-                    <option value="operational">Operacional</option>
-                    <option value="financial">Financeiro</option>
-                    <option value="strategic">Estratégico</option>
-                    <option value="compliance">Compliance</option>
-                    <option value="cybersecurity">Cybersecurity</option>
+                    <option
+                      value="operational"
+                      className="bg-background text-foreground"
+                    >
+                      Operacional
+                    </option>
+                    <option
+                      value="financial"
+                      className="bg-background text-foreground"
+                    >
+                      Financeiro
+                    </option>
+                    <option
+                      value="strategic"
+                      className="bg-background text-foreground"
+                    >
+                      Estratégico
+                    </option>
+                    <option
+                      value="compliance"
+                      className="bg-background text-foreground"
+                    >
+                      Compliance
+                    </option>
+                    <option
+                      value="cybersecurity"
+                      className="bg-background text-foreground"
+                    >
+                      Cybersecurity
+                    </option>
                   </select>
                 </div>
 
@@ -540,11 +572,7 @@ export default function RiskAssessment() {
                   </p>
                 </div>
                 <div
-                  className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl shadow-current/20 ${getRiskTextColor(
-                    fLikelihood * fImpact,
-                  )
-                    .replace("text-", "bg-")
-                    .replace("500", "600")}`}
+                  className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl shadow-current/20 ${getRiskBgColor(fLikelihood * fImpact)}`}
                 >
                   <span className="text-3xl font-bold text-white">
                     {fLikelihood * fImpact}

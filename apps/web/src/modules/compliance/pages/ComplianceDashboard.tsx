@@ -121,7 +121,7 @@ export default function ComplianceDashboard() {
         <Button
           variant="primary"
           className="rounded-2xl px-6 shadow-lg shadow-primary/20"
-          onClick={() => navigate("/audit/report")}
+          onClick={() => navigate("frameworks")}
         >
           <FileText className="w-4 h-4 mr-2" /> Gerar Relatório
         </Button>
@@ -305,7 +305,8 @@ export default function ComplianceDashboard() {
             {actionItems.map((item) => (
               <div
                 key={item.id}
-                className="p-8 hover:bg-white/5 transition-all flex items-center justify-between group"
+                className="p-8 hover:bg-white/5 transition-all flex items-center justify-between group cursor-pointer"
+                onClick={() => navigate("risks")}
               >
                 <div className="flex items-start gap-5">
                   <div
@@ -347,6 +348,7 @@ export default function ComplianceDashboard() {
           <Button
             variant="ghost"
             className="w-full py-4 text-xs font-bold text-primary hover:brightness-110 uppercase tracking-[0.3em] group"
+            onClick={() => navigate("/dashboard/audit/programs")}
           >
             Gerenciar Ciclo de Auditoria{" "}
             <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" />
