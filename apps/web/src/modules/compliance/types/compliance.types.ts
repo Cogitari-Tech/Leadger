@@ -3,7 +3,13 @@ export interface Framework {
   name: string;
   description: string;
   version: string;
-  status: "active" | "archived" | "evaluating";
+  status:
+    | "active"
+    | "archived"
+    | "evaluating"
+    | "compliant"
+    | "partial"
+    | "pending";
   progress: number; // 0 to 100
   controlsCount: number;
   compliantCount: number;

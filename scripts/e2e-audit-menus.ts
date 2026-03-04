@@ -28,65 +28,71 @@ async function runTest() {
   page.on("pageerror", (error) => {
     console.error("PAGE ERROR:", error.message);
   });
+  page.on("requestfailed", request => {
+    console.log(`REQUEST FAILED: ${request.url()} - ${request.failure()?.errorText}`);
+  });
+  page.on("response", response => {
+    if (response.status() >= 400) {
+      console.log(`HTTP ERROR ${response.status()}: ${response.url()}`);
+    }
+  });
 
   try {
-    console.log("1. Navigating to login page...");
-    await page.goto(`${BASE_URL}/login`, {
+    console.log("1. Navigating to landing page...");
+    await page.goto(`${BASE_URL}/`, {
       waitUntil: "domcontentloaded",
-      timeout: 15000,
+      timeout: 20000,
     });
     await page.waitForTimeout(3000);
 
-    // Debug: capture what the page looks like
-    const pageTitle = await page.title();
-    const bodyHTML = await page.evaluate(
-      () => document.body?.innerHTML?.substring(0, 500) || "EMPTY BODY",
-    );
-    console.log("Page title:", pageTitle);
-    console.log("Body preview:", bodyHTML.substring(0, 300));
-
+    // Initial capture
     await page.screenshot({
-      path: path.join(SCREENSHOT_DIR, "menu_01_initial.png"),
+      path: path.join(SCREENSHOT_DIR, "menu_01_landing.png"),
     });
 
     // Try to find email input with retry
-    console.log("2. Looking for login form...");
-    const emailInput = page.locator("#email");
+    console.log("2. Looking for landing page login form...");
+    const emailInput = page.locator("#login-email");
     const count = await emailInput.count();
-    console.log("Email input count:", count);
+    console.log("Landing login email input count:", count);
 
     if (count === 0) {
-      // Maybe already logged in or redirected
+      // Check if maybe we're on /login (redirected) or already in dashboard
       const url = page.url();
       console.log("Current URL:", url);
+      
+      const content = await page.content();
+      console.log("PAGE CONTENT PREVIEW:", content.substring(0, 1000));
 
       if (url.includes("/dashboard")) {
         console.log("Already logged in! Proceeding to menu tests...");
       } else {
-        console.log("Login form not found. Checking page content...");
-        const fullHTML = await page.evaluate(() =>
-          document.documentElement.outerHTML.substring(0, 2000),
-        );
-        console.log("Full HTML:", fullHTML.substring(0, 1000));
-        await browser.close();
-        return;
+        // Find by conventional email input on /login
+        const fallbackEmail = page.locator("#email");
+        if ((await fallbackEmail.count()) > 0) {
+          console.log("Landed on /login fallback form");
+          await fallbackEmail.fill("teste@cogitari.com");
+          await page.locator("#password").fill("Cogitari@2026!Dev");
+          await page.locator('button[type="submit"]').click();
+        } else {
+          console.log("Login form not found. Closing...");
+          await browser.close();
+          return;
+        }
       }
     } else {
-      // Fill login form
-      console.log("3. Filling login credentials...");
+      // Fill landing page login form
+      console.log("3. Filling landing page credentials...");
       await emailInput.fill("teste@cogitari.com");
-      await page.locator("#password").fill("Cogitari@2026!Dev");
+      await page.locator("#login-password").fill("Cogitari@2026!Dev");
       await page.screenshot({
-        path: path.join(SCREENSHOT_DIR, "menu_02_login_filled.png"),
+        path: path.join(SCREENSHOT_DIR, "menu_02_landing_login_filled.png"),
       });
 
-      // Click submit
-      await page.locator('button[type="submit"]').click();
-      console.log("4. Submitted login, waiting for redirect...");
-      await page.waitForTimeout(4000);
-      await page.screenshot({
-        path: path.join(SCREENSHOT_DIR, "menu_03_after_login.png"),
-      });
+      // Submit
+      await page.locator('button[type="submit"]:has-text("Iniciar Sessão")').click();
+      console.log("4. Submitted landing login, waiting for redirect...");
+      await page.waitForTimeout(5000);
     }
 
     const currentUrl = page.url();

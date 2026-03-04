@@ -48,3 +48,6 @@ tmp/
 
 # Vercel
 .vercel
+
+e2e-user-registration.ts
+e2e-audit-menus.ts

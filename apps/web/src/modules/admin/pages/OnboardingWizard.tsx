@@ -261,46 +261,97 @@ export default function OnboardingWizard() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className={labelClass}>Setor / Indústria</label>
+                  <label htmlFor="workspaceName" className={labelClass}>
+                    Nome do Workspace / Empresa
+                  </label>
                   <input
+                    id="workspaceName"
                     type="text"
-                    value={industry}
-                    onChange={(e) => setIndustry(e.target.value)}
-                    placeholder="Ex: Tecnologia, Financeiro..."
+                    value={name}
+                    onChange={(e) => {
+                      const newName = e.target.value;
+                      setName(newName);
+                      // Update slug automatically but keep it editable below
+                      setSlug(
+                        newName
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, "-")
+                          .replace(/^-|-$/g, ""),
+                      );
+                    }}
+                    placeholder="Ex: Minha Empresa"
                     className={inputClass}
                   />
                 </div>
+
                 <div className="space-y-1.5">
-                  <label className={labelClass}>CNPJ (opcional)</label>
-                  <input
-                    type="text"
-                    value={cnpj}
-                    onChange={(e) => setCnpj(e.target.value)}
-                    placeholder="00.000.000/0001-00"
-                    className={inputClass}
-                  />
+                  <label htmlFor="workspaceSlug" className={labelClass}>
+                    URL do Workspace (Slug)
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground bg-muted/30 px-3 py-2.5 rounded-l-xl border border-r-0 border-border/40 font-mono">
+                      audit.cogitari.com.br/
+                    </span>
+                    <input
+                      id="workspaceSlug"
+                      type="text"
+                      value={slug}
+                      onChange={(e) =>
+                        setSlug(
+                          e.target.value
+                            .toLowerCase()
+                            .replace(/[^a-z0-9-]+/g, ""),
+                        )
+                      }
+                      placeholder="minha-empresa"
+                      className={`${inputClass} rounded-l-none`}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <label className={labelClass}>Telefone</label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="(11) 99999-9999"
-                    className={inputClass}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className={labelClass}>E-mail da Empresa</label>
-                  <input
-                    type="email"
-                    value={companyEmail}
-                    onChange={(e) => setCompanyEmail(e.target.value)}
-                    placeholder="contato@empresa.com"
-                    className={inputClass}
-                  />
+
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="space-y-1.5">
+                    <label className={labelClass}>Setor / Indústria</label>
+                    <input
+                      type="text"
+                      value={industry}
+                      onChange={(e) => setIndustry(e.target.value)}
+                      placeholder="Ex: Tecnologia, Financeiro..."
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={labelClass}>CNPJ (opcional)</label>
+                    <input
+                      type="text"
+                      value={cnpj}
+                      onChange={(e) => setCnpj(e.target.value)}
+                      placeholder="00.000.000/0001-00"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={labelClass}>Telefone</label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="(11) 99999-9999"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={labelClass}>E-mail da Empresa</label>
+                    <input
+                      type="email"
+                      value={companyEmail}
+                      onChange={(e) => setCompanyEmail(e.target.value)}
+                      placeholder="contato@empresa.com"
+                      className={inputClass}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -429,17 +480,18 @@ export default function OnboardingWizard() {
         {/* Navigation */}
         <div className="flex items-center justify-between">
           <button
-            onClick={() => {
+            onClick={async () => {
               if (currentStep === 0) {
-                signOut().then(() => navigate("/login"));
+                await signOut();
+                window.location.href = "/";
               } else {
                 setCurrentStep((s) => Math.max(0, s - 1));
               }
             }}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors p-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            {currentStep === 0 ? "Sair / Voltar" : "Anterior"}
+            {currentStep === 0 ? "Sair / Voltar para Início" : "Anterior"}
           </button>
 
           <div className="flex items-center gap-3">

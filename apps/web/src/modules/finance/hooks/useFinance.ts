@@ -187,6 +187,40 @@ export function useFinance() {
   );
 
   /**
+   * Busca métricas históricas dos últimos 12 meses
+   */
+  const getHistoricalMetrics = useCallback(async () => {
+    setLoading(true);
+    try {
+      const results = [];
+      const now = new Date();
+
+      for (let i = 11; i >= 0; i--) {
+        const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
+        const statement = await repository.getIncomeStatement(start, end);
+        results.push({
+          month: start.toLocaleDateString("pt-BR", {
+            month: "short",
+            year: "2-digit",
+          }),
+          revenue: statement.revenue,
+          expenses: statement.expenses,
+          netIncome: statement.netIncome,
+        });
+      }
+      return results;
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao carregar histórico",
+      );
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, [repository]);
+
+  /**
    * Busca dados do Balancete
    */
   const getTrialBalance = useCallback(
@@ -227,6 +261,7 @@ export function useFinance() {
     getAccountBalances,
     getIncomeStatement,
     getTrialBalance,
+    getHistoricalMetrics,
 
     // Consultas
     getMonthSummary,
