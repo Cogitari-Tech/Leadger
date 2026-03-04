@@ -194,7 +194,7 @@ export default function ReportFindingCard({
           </p>
           {W2H_FIELDS.map((field) => (
             <div key={field.key}>
-              <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block mb-1">
+              <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1">
                 {field.label}
               </label>
               <textarea
@@ -214,7 +214,7 @@ export default function ReportFindingCard({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Task Type Searchable Selection */}
           <div className="relative">
-            <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block mb-1">
+            <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1">
               Tipo de Tarefa
             </label>
             <div className="relative">
@@ -293,7 +293,7 @@ export default function ReportFindingCard({
 
           {/* Risk Level */}
           <div>
-            <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block mb-1">
+            <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1">
               Risco
             </label>
             <div className="flex gap-1.5">
@@ -309,7 +309,7 @@ export default function ReportFindingCard({
                     }
                   />
                   <span
-                    className={`block text-center text-[10px] font-bold py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 dark:text-slate-300 transition-all ${r.color}`}
+                    className={`block text-center text-[10px] font-bold py-1.5 rounded-lg border border-border text-foreground transition-all hover:bg-foreground/5 ${r.color}`}
                   >
                     {r.label}
                   </span>
@@ -320,7 +320,7 @@ export default function ReportFindingCard({
 
           {/* Status */}
           <div>
-            <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block mb-1">
+            <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1">
               Status
             </label>
             <div className="flex gap-1.5">
@@ -333,7 +333,7 @@ export default function ReportFindingCard({
                     checked={finding.status === s.value}
                     onChange={() => onUpdate(finding.id, { status: s.value })}
                   />
-                  <span className="block text-center text-[10px] font-bold py-1.5 rounded-lg border border-border text-muted-foreground transition-all peer-checked:bg-foreground peer-checked:text-background peer-checked:border-foreground">
+                  <span className="block text-center text-[10px] font-bold py-1.5 rounded-lg border border-border text-muted-foreground transition-all peer-checked:bg-foreground peer-checked:text-background peer-checked:border-foreground hover:bg-foreground/5">
                     {s.label}
                   </span>
                 </label>
@@ -344,7 +344,7 @@ export default function ReportFindingCard({
 
         {/* Impact Areas */}
         <div>
-          <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block mb-1">
+          <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1">
             Áreas Impactadas
           </label>
           <div className="flex flex-wrap gap-2">
@@ -361,7 +361,7 @@ export default function ReportFindingCard({
                     onUpdate(finding.id, { impacted_areas: next });
                   }}
                 />
-                <span className="block text-[10px] font-bold py-1.5 px-3 rounded-lg border border-border text-muted-foreground transition-all peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary">
+                <span className="block text-center text-[10px] font-bold py-1.5 px-3 rounded-lg border border-border text-muted-foreground transition-all peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary hover:bg-foreground/5">
                   {area}
                 </span>
               </label>
@@ -371,7 +371,7 @@ export default function ReportFindingCard({
 
         {/* Code Snippet */}
         <div>
-          <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block mb-1 flex items-center gap-1">
+          <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1 flex items-center gap-1">
             <Code2 className="w-3 h-3" /> Trecho de Código / Log
           </label>
           <textarea
@@ -387,7 +387,7 @@ export default function ReportFindingCard({
 
         {/* Evidence Links */}
         <div>
-          <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase block mb-1 flex items-center gap-1">
+          <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1 flex items-center gap-1">
             <Link className="w-3 h-3" /> Evidências (Links)
           </label>
           <div className="space-y-1.5">
@@ -431,8 +431,8 @@ export default function ReportFindingCard({
         </div>
 
         {/* Email Notification */}
-        <div className="border-t border-slate-100 dark:border-slate-800 pt-3">
-          <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase flex items-center gap-1.5 cursor-pointer">
+        <div className="border-t border-border pt-4 mt-4">
+          <label className="text-[10px] font-bold text-muted-foreground/80 uppercase flex items-center gap-1.5 cursor-pointer">
             <input
               type="checkbox"
               className="accent-primary"

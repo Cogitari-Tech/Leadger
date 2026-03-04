@@ -133,7 +133,7 @@ export default function AuditActionPlans() {
   };
 
   return (
-    <div className="p-20 space-y-16 animate-in fade-in duration-700">
+    <div className="p-6 md:p-20 space-y-16 animate-in fade-in duration-700">
       <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
         <div className="space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
@@ -142,7 +142,7 @@ export default function AuditActionPlans() {
               Plano de Melhorias
             </span>
           </div>
-          <h1 className="text-6xl font-black tracking-tighter sm:text-7xl font-outfit uppercase italic">
+          <h1 className="text-3xl md:text-6xl font-black tracking-tighter md:text-7xl font-outfit uppercase italic">
             Planos de <span className="text-primary italic">Ação</span>
           </h1>
           <p className="max-w-xl text-lg font-medium leading-relaxed text-muted-foreground/60">
@@ -323,11 +323,17 @@ export default function AuditActionPlans() {
                   }
                   className="bg-white/5 border-white/10 h-14 rounded-2xl"
                 >
-                  <option value="">Selecione o achado...</option>
+                  <option value="" className="bg-background text-foreground">
+                    Selecione o achado...
+                  </option>
                   {findings
                     .filter((f) => f.status !== "resolved")
                     .map((f) => (
-                      <option key={f.id} value={f.id} className="bg-slate-900">
+                      <option
+                        key={f.id}
+                        value={f.id}
+                        className="bg-background text-foreground"
+                      >
                         [{f.risk_level.toUpperCase()}] {f.title}
                       </option>
                     ))}
@@ -366,7 +372,11 @@ export default function AuditActionPlans() {
                     className="bg-white/5 border-white/10 h-14 rounded-2xl"
                   >
                     {Object.entries(PRIORITY_CONFIG).map(([val, cfg]) => (
-                      <option key={val} value={val} className="bg-slate-900">
+                      <option
+                        key={val}
+                        value={val}
+                        className="bg-background text-foreground"
+                      >
                         {cfg.label}
                       </option>
                     ))}
@@ -384,7 +394,7 @@ export default function AuditActionPlans() {
                 </div>
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Button
                   variant="ghost"
                   onClick={() => setShowModal(false)}
@@ -395,7 +405,7 @@ export default function AuditActionPlans() {
                 <Button
                   onClick={handleCreate}
                   disabled={!form.finding_id || !form.title || loading}
-                  className="flex-[2] h-14 rounded-full font-bold shadow-xl shadow-primary/20"
+                  className="flex-1 h-14 rounded-full font-bold shadow-xl shadow-primary/20"
                 >
                   {loading ? "Processando..." : "Criar Plano de Ação"}
                 </Button>
