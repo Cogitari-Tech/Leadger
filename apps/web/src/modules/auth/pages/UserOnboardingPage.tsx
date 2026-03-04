@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../context/AuthContext";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
@@ -14,7 +13,6 @@ import {
 } from "lucide-react";
 
 export function UserOnboardingPage() {
-  const navigate = useNavigate();
   const { user, tenant, signOut } = useAuth();
 
   const [loading, setLoading] = useState(false);
@@ -154,10 +152,13 @@ export function UserOnboardingPage() {
               </button>
 
               <button
-                onClick={() => signOut().then(() => navigate("/login"))}
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mx-auto mt-4"
+                onClick={async () => {
+                  await signOut();
+                  window.location.href = "/";
+                }}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mx-auto mt-4 p-2"
               >
-                <ArrowLeft className="w-4 h-4" /> Sair / Entrar com outra conta
+                <ArrowLeft className="w-4 h-4" /> Sair / Voltar para Início
               </button>
             </div>
           )}

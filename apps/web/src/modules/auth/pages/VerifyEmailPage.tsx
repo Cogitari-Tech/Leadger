@@ -1,5 +1,4 @@
 import { MailCheck } from "lucide-react";
-import { Link } from "react-router-dom";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 
 /**
@@ -19,8 +18,21 @@ export function VerifyEmailPage() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
       </div>
 
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-50">
+        <img
+          src="/images/logo-cogitari.png"
+          alt="Cogitari"
+          className="h-6 w-auto block dark:hidden opacity-80"
+        />
+        <img
+          src="/images/logo-cogitari-dark.png"
+          alt="Cogitari"
+          className="h-6 w-auto hidden dark:block opacity-80"
+        />
+      </div>
+
       <div className="relative z-10 w-full max-w-md mx-auto p-8">
-        <div className="glass-card soft-shadow rounded-[2.5rem] p-10 text-center space-y-6">
+        <div className="glass-card shadow-2xl rounded-[2.5rem] p-10 text-center space-y-6">
           <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
             <MailCheck className="w-8 h-8 text-primary" />
           </div>
@@ -42,12 +54,16 @@ export function VerifyEmailPage() {
             <p className="text-xs text-muted-foreground">
               Não recebeu? Verifique a pasta de spam ou lixo eletrônico.
             </p>
-            <Link
-              to="/"
+            <button
+              onClick={async () => {
+                const { supabase } = await import("../../../config/supabase");
+                await supabase.auth.signOut();
+                window.location.href = "/";
+              }}
               className="w-full inline-flex justify-center items-center py-4 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
-              Voltar para Login
-            </Link>
+              Sair / Voltar para Início
+            </button>
           </div>
         </div>
       </div>
