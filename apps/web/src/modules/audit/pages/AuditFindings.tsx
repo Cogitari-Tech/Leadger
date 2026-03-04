@@ -155,28 +155,31 @@ export default function AuditFindings() {
         </Button>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row items-center gap-6 glass-card bg-white/5 dark:bg-black/20 backdrop-blur-xl p-6 rounded-[2rem] border border-white/5 soft-shadow">
-        <div className="relative flex-1 w-full">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 glass-card bg-white/5 dark:bg-black/20 backdrop-blur-xl p-6 rounded-[2rem] border border-white/5 soft-shadow">
+        <div className="relative flex-1">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30" />
           <Input
             placeholder="Buscar por título ou descrição..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-14 bg-foreground/5 border-transparent rounded-[1.5rem] py-4 focus:bg-white/10 transition-all font-medium"
+            className="pl-14 bg-foreground/5 border-transparent rounded-2xl py-4 focus:bg-white/10 transition-all font-medium h-12"
           />
         </div>
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-muted-foreground/20" />
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Filter className="w-4 h-4 text-muted-foreground/20 shrink-0" />
             <Select
               value={filterRisk}
               onChange={(e) => setFilterRisk(e.target.value)}
-              className="bg-foreground/5 border-transparent rounded-[1.5rem] px-6 py-4 min-w-[180px]"
+              className="bg-foreground/5 border-transparent rounded-2xl px-4 h-12 min-w-[160px]"
             >
               <option value="">Risco (Todos)</option>
               {Object.entries(RISK_CONFIG).map(([val, cfg]) => (
-                <option key={val} value={val}>
+                <option
+                  key={val}
+                  value={val}
+                  className="bg-background text-foreground"
+                >
                   {cfg.label}
                 </option>
               ))}
@@ -185,11 +188,15 @@ export default function AuditFindings() {
           <Select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="bg-foreground/5 border-transparent rounded-[1.5rem] px-6 py-4 min-w-[180px]"
+            className="bg-foreground/5 border-transparent rounded-2xl px-4 h-12 min-w-[160px] w-full sm:w-auto"
           >
             <option value="">Status (Todos)</option>
             {Object.entries(STATUS_LABELS).map(([val, label]) => (
-              <option key={val} value={val}>
+              <option
+                key={val}
+                value={val}
+                className="bg-background text-foreground"
+              >
                 {label}
               </option>
             ))}

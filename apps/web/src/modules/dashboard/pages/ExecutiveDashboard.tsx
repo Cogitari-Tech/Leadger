@@ -41,6 +41,7 @@ function KPICard({
 
   return (
     <button
+      type="button"
       onClick={onClick}
       className="glass-card soft-shadow rounded-2xl p-5 text-left transition-all hover:scale-[1.02] hover:shadow-lg w-full"
     >
@@ -190,7 +191,7 @@ export default function ExecutiveDashboard() {
         {/* Left Column — Risk Ranking */}
         <div className="lg:col-span-2 space-y-6">
           {/* Project Risk Ranking */}
-          <div className="glass-card soft-shadow rounded-2xl p-6">
+          <div className="glass-card soft-shadow rounded-2xl p-6 transition-all hover:scale-[1.01] hover:shadow-md">
             <SectionTitle
               icon={TrendingUp}
               title="Ranking de Risco por Projeto"
@@ -257,7 +258,7 @@ export default function ExecutiveDashboard() {
           {/* Compliance & GitHub Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Compliance Summary */}
-            <div className="glass-card soft-shadow rounded-2xl p-6">
+            <div className="glass-card soft-shadow rounded-2xl p-6 transition-all hover:scale-[1.01] hover:shadow-md">
               <SectionTitle icon={CheckCircle2} title="Compliance" />
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -307,7 +308,7 @@ export default function ExecutiveDashboard() {
             </div>
 
             {/* GitHub Security */}
-            <div className="glass-card soft-shadow rounded-2xl p-6">
+            <div className="glass-card soft-shadow rounded-2xl p-6 transition-all hover:scale-[1.01] hover:shadow-md">
               <SectionTitle icon={GitBranch} title="GitHub Security" />
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -364,7 +365,7 @@ export default function ExecutiveDashboard() {
         <div className="space-y-6">
           {/* Pending Decisions */}
           {isManager && (
-            <div className="glass-card soft-shadow rounded-2xl p-6">
+            <div className="glass-card soft-shadow rounded-2xl p-6 transition-all hover:scale-[1.01] hover:shadow-md">
               <SectionTitle icon={Clock} title="Decisões Pendentes" />
               {kpis.pendingDecisions.length === 0 ? (
                 <div className="text-center py-6">
@@ -377,6 +378,7 @@ export default function ExecutiveDashboard() {
                 <div className="space-y-2">
                   {kpis.pendingDecisions.map((d) => (
                     <button
+                      type="button"
                       key={d.id}
                       onClick={() => {
                         if (d.type === "approval")
@@ -415,7 +417,7 @@ export default function ExecutiveDashboard() {
           )}
 
           {/* Quick Stats */}
-          <div className="glass-card soft-shadow rounded-2xl p-6">
+          <div className="glass-card soft-shadow rounded-2xl p-6 transition-all hover:scale-[1.01] hover:shadow-md">
             <SectionTitle icon={BarChart3} title="Resumo Rápido" />
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -446,7 +448,7 @@ export default function ExecutiveDashboard() {
           </div>
 
           {/* Finance Summary */}
-          <div className="glass-card soft-shadow rounded-2xl p-6">
+          <div className="glass-card soft-shadow rounded-2xl p-6 transition-all hover:scale-[1.01] hover:shadow-md">
             <SectionTitle icon={Wallet} title="Financeiro" />
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -478,6 +480,7 @@ export default function ExecutiveDashboard() {
               </div>
             </div>
             <button
+              type="button"
               onClick={() => navigate("/finance")}
               className="w-full mt-4 px-3 py-2 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-xl transition-colors text-center"
             >
