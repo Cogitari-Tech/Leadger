@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { moduleRegistry } from "../../../modules/registry";
 import { useAuth } from "../../../modules/auth/context/AuthContext";
@@ -202,7 +203,7 @@ export const AppLayout: React.FC = () => {
                             );
                             const rect = btn?.getBoundingClientRect();
                             if (!rect) return null;
-                            return (
+                            return createPortal(
                               <>
                                 <div
                                   className="fixed inset-0 z-[9998]"
@@ -217,7 +218,8 @@ export const AppLayout: React.FC = () => {
                                 >
                                   {tooltipDescriptions[section.module]}
                                 </div>
-                              </>
+                              </>,
+                              document.body,
                             );
                           })()}
                         </>

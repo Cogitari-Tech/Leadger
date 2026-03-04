@@ -32,7 +32,7 @@ const RISK_LEVELS: { value: FindingRiskLevel; label: string; color: string }[] =
       value: "critical",
       label: "Crítico",
       color:
-        "peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600",
+        "peer-checked:bg-destructive peer-checked:text-destructive-foreground peer-checked:border-destructive",
     },
     {
       value: "high",
@@ -50,16 +50,37 @@ const RISK_LEVELS: { value: FindingRiskLevel; label: string; color: string }[] =
       value: "low",
       label: "Baixo",
       color:
-        "peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600",
+        "peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:border-emerald-500",
     },
   ];
 
-const STATUS_OPTIONS: { value: FindingStatus; label: string }[] = [
-  { value: "open", label: "Pendente" },
-  { value: "in_progress", label: "Andamento" },
-  { value: "resolved", label: "Urgente" },
-  { value: "accepted", label: "Bloqueado" },
-];
+const STATUS_OPTIONS: { value: FindingStatus; label: string; color: string }[] =
+  [
+    {
+      value: "open",
+      label: "Aberto",
+      color:
+        "peer-checked:bg-muted-foreground/20 peer-checked:text-foreground peer-checked:border-muted-foreground/40",
+    },
+    {
+      value: "in_progress",
+      label: "Em Tratamento",
+      color:
+        "peer-checked:bg-primary peer-checked:text-primary-foreground peer-checked:border-primary",
+    },
+    {
+      value: "resolved",
+      label: "Resolvido",
+      color:
+        "peer-checked:bg-emerald-500 peer-checked:text-white peer-checked:border-emerald-500",
+    },
+    {
+      value: "accepted",
+      label: "Aceito",
+      color:
+        "peer-checked:bg-blue-500 peer-checked:text-white peer-checked:border-blue-500",
+    },
+  ];
 
 const TASK_TYPES: { value: TaskCategory; label: string }[] = [
   { value: "Frontend Bug", label: "Interface (Frontend)" },
@@ -309,7 +330,7 @@ export default function ReportFindingCard({
                     }
                   />
                   <span
-                    className={`block text-center text-[10px] font-bold py-1.5 rounded-lg border border-border text-foreground transition-all hover:bg-foreground/5 ${r.color}`}
+                    className={`block text-center text-[10px] font-bold py-1.5 rounded-lg border border-border text-muted-foreground transition-all hover:bg-foreground/5 ${r.color}`}
                   >
                     {r.label}
                   </span>
@@ -333,7 +354,9 @@ export default function ReportFindingCard({
                     checked={finding.status === s.value}
                     onChange={() => onUpdate(finding.id, { status: s.value })}
                   />
-                  <span className="block text-center text-[10px] font-bold py-1.5 rounded-lg border border-border text-muted-foreground transition-all peer-checked:bg-foreground peer-checked:text-background peer-checked:border-foreground hover:bg-foreground/5">
+                  <span
+                    className={`block text-center text-[10px] font-bold py-1.5 rounded-lg border border-border text-muted-foreground transition-all hover:bg-foreground/5 ${s.color}`}
+                  >
                     {s.label}
                   </span>
                 </label>
@@ -361,7 +384,7 @@ export default function ReportFindingCard({
                     onUpdate(finding.id, { impacted_areas: next });
                   }}
                 />
-                <span className="block text-center text-[10px] font-bold py-1.5 px-3 rounded-lg border border-border text-muted-foreground transition-all peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary hover:bg-foreground/5">
+                <span className="block text-center text-[10px] font-bold py-1.5 px-3 rounded-lg border border-border text-muted-foreground transition-all peer-checked:bg-primary/20 peer-checked:text-primary peer-checked:border-primary/50 hover:bg-foreground/5">
                   {area}
                 </span>
               </label>
