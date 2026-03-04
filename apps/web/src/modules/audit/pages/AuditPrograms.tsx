@@ -300,7 +300,7 @@ export default function AuditPrograms() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, name: e.target.value }))
                   }
-                  className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4 focus:bg-white/10 transition-all font-medium"
+                  className="rounded-2xl h-12"
                 />
               </div>
 
@@ -329,11 +329,17 @@ export default function AuditPrograms() {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, framework_id: e.target.value }))
                     }
-                    className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4"
+                    className="rounded-2xl h-12"
                   >
-                    <option value="">Nenhum (Personalizado)</option>
+                    <option value="" className="bg-background text-foreground">
+                      Nenhum (Personalizado)
+                    </option>
                     {frameworks.map((fw) => (
-                      <option key={fw.id} value={fw.id}>
+                      <option
+                        key={fw.id}
+                        value={fw.id}
+                        className="bg-background text-foreground"
+                      >
                         {fw.name} ({fw.version})
                       </option>
                     ))}
@@ -351,10 +357,14 @@ export default function AuditPrograms() {
                         frequency: e.target.value as AuditProgramFrequency,
                       }))
                     }
-                    className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4"
+                    className="rounded-2xl h-12"
                   >
                     {Object.entries(FREQUENCY_LABELS).map(([val, label]) => (
-                      <option key={val} value={val}>
+                      <option
+                        key={val}
+                        value={val}
+                        className="bg-background text-foreground"
+                      >
                         {label}
                       </option>
                     ))}
@@ -373,7 +383,7 @@ export default function AuditPrograms() {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, start_date: e.target.value }))
                     }
-                    className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4"
+                    className="rounded-2xl h-12"
                   />
                 </div>
                 <div className="space-y-2">
@@ -386,7 +396,7 @@ export default function AuditPrograms() {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, end_date: e.target.value }))
                     }
-                    className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4"
+                    className="rounded-2xl h-12"
                   />
                 </div>
               </div>

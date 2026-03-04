@@ -8,7 +8,16 @@ import {
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import { useFinance } from "../hooks/useFinance";
-import { IncomeStatementData } from "@cogitari-platform/core/repositories/IFinanceRepository";
+
+interface IncomeStatementData {
+  revenue: number;
+  expenses: number;
+  netIncome: number;
+  details: {
+    revenueByCategory: Record<string, number>;
+    expensesByCategory: Record<string, number>;
+  };
+}
 
 export default function IncomeStatement() {
   const { getIncomeStatement, loading, error } = useFinance();

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   DollarSign,
   TrendingUp,
@@ -21,47 +22,109 @@ import {
   Cell,
 } from "recharts";
 import { Button } from "@/shared/components/ui/Button";
+import { useFinance } from "../hooks/useFinance";
 
 export default function FinanceDashboard() {
-  // const navigate = useNavigate();
-  // Mock Data
+  const navigate = useNavigate();
+  const {
+    transactions,
+    accounts,
+    loading,
+    formatCurrency,
+    getMonthSummary,
+    formatDate,
+  } = useFinance();
+
+  const summary = getMonthSummary();
+
   const kpis = [
     {
       title: "Receita Mensal",
-      value: "R$ 0,00",
+      value: formatCurrency(summary.revenue),
       trend: "",
       icon: TrendingUp,
       color: "text-emerald-500",
     },
     {
       title: "Despesas",
-      value: "R$ 0,00",
+      value: formatCurrency(summary.expenses),
       trend: "",
       icon: TrendingDown,
       color: "text-destructive",
     },
     {
       title: "Lucro Líquido",
-      value: "R$ 0,00",
+      value: formatCurrency(summary.netIncome),
       trend: "",
       icon: DollarSign,
       color: "text-primary",
     },
     {
       title: "Saldo em Caixa",
-      value: "R$ 0,00",
+      value: formatCurrency(summary.revenue - summary.expenses),
       trend: "",
       icon: Wallet,
       color: "text-amber-500",
     },
   ];
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  const cashFlowData: any[] = [];
-  const expenseData: any[] = [];
-  const recentTransactions: any[] = [];
+  // Build chart data from real transactions
+  const chartMap: Record<
+    string,
+    { name: string; revenue: number; expense: number }
+  > = {};
+  transactions.forEach((t) => {
+    const month = new Date(t.date).toLocaleDateString("pt-BR", {
+      month: "short",
+    });
+    if (!chartMap[month])
+      chartMap[month] = { name: month, revenue: 0, expense: 0 };
+    const creditAccount = accounts.find((a) => a.id === t.accountCreditId);
+    const debitAccount = accounts.find((a) => a.id === t.accountDebitId);
+    if (creditAccount?.type === "Receita") chartMap[month].revenue += t.amount;
+    if (debitAccount?.type === "Despesa") chartMap[month].expense += t.amount;
+  });
+  const cashFlowData = Object.values(chartMap);
+
+  // Expense distribution by account
+  const expenseMap: Record<string, number> = {};
+  transactions.forEach((t) => {
+    const debitAccount = accounts.find((a) => a.id === t.accountDebitId);
+    if (debitAccount?.type === "Despesa") {
+      expenseMap[debitAccount.name] =
+        (expenseMap[debitAccount.name] || 0) + t.amount;
+    }
+  });
+  const expenseData = Object.entries(expenseMap).map(([name, value]) => ({
+    name,
+    value,
+  }));
+
+  // Recent transactions
+  const recentTransactions = transactions.slice(0, 5).map((t) => {
+    const creditAccount = accounts.find((a) => a.id === t.accountCreditId);
+    const isCredit = creditAccount?.type === "Receita";
+    return {
+      id: t.id,
+      description: t.description,
+      date: formatDate(t.date),
+      amount: t.amount,
+      type: isCredit ? "credit" : "debit",
+    };
+  });
 
   const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#0ea5e9"];
+
+  const TOOLTIP_STYLE = {
+    backgroundColor: "rgba(15, 15, 15, 0.85)",
+    backdropFilter: "blur(12px)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    borderRadius: "1rem",
+    boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+    color: "#fff",
+    fontWeight: 600,
+    fontSize: 12,
+  };
 
   return (
     <div className="space-y-8">
@@ -86,11 +149,19 @@ export default function FinanceDashboard() {
           <Button
             variant="primary"
             className="rounded-2xl px-6 shadow-lg shadow-primary/20"
+            onClick={() => navigate("cash-flow")}
           >
             Nova Transação
           </Button>
         </div>
       </div>
+
+      {/* Loading state */}
+      {loading && transactions.length === 0 && (
+        <div className="flex items-center justify-center py-20">
+          <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -100,9 +171,7 @@ export default function FinanceDashboard() {
             className="glass-card soft-shadow p-8 flex flex-col justify-between relative overflow-hidden group bg-muted/20 dark:bg-card/40 backdrop-blur-xl rounded-[2.5rem] border border-border transition-all hover:scale-[1.03]"
           >
             <div className="flex items-start justify-between mb-6">
-              <div
-                className={`p-3 rounded-2xl bg-foreground/5 text-foreground`}
-              >
+              <div className="p-3 rounded-2xl bg-foreground/5 text-foreground">
                 <kpi.icon className={`w-6 h-6 ${kpi.color}`} />
               </div>
               {kpi.trend && (
@@ -123,7 +192,6 @@ export default function FinanceDashboard() {
               </h3>
             </div>
 
-            {/* Decorative background lines for tech feel */}
             <div className="absolute -bottom-6 -right-6 opacity-[0.03] group-hover:opacity-[0.07] transition-all pointer-events-none rotate-12 group-hover:rotate-0">
               <kpi.icon className="w-32 h-32" />
             </div>
@@ -162,14 +230,14 @@ export default function FinanceDashboard() {
                     <CartesianGrid
                       strokeDasharray="2 4"
                       vertical={false}
-                      stroke="rgba(var(--foreground-rgb), 0.05)"
+                      stroke="rgba(255,255,255,0.05)"
                     />
                     <XAxis
                       dataKey="name"
                       axisLine={false}
                       tickLine={false}
                       tick={{
-                        fill: "rgba(var(--foreground-rgb), 0.4)",
+                        fill: "rgba(255,255,255,0.4)",
                         fontSize: 10,
                         fontWeight: 700,
                       }}
@@ -178,23 +246,12 @@ export default function FinanceDashboard() {
                       axisLine={false}
                       tickLine={false}
                       tick={{
-                        fill: "rgba(var(--foreground-rgb), 0.4)",
+                        fill: "rgba(255,255,255,0.4)",
                         fontSize: 10,
                         fontWeight: 700,
                       }}
                     />
-                    <Tooltip
-                      cursor={{ fill: "rgba(var(--foreground-rgb), 0.02)" }}
-                      contentStyle={{
-                        backgroundColor: "rgba(255, 255, 255, 0.8)",
-                        backdropFilter: "blur(12px)",
-                        border: "1px solid rgba(255, 255, 255, 0.2)",
-                        borderRadius: "1rem",
-                        boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-                        color: "hsl(var(--foreground))",
-                        fontWeight: 600,
-                      }}
-                    />
+                    <Tooltip contentStyle={TOOLTIP_STYLE} />
                     <Bar
                       dataKey="revenue"
                       name="Receitas"
@@ -205,7 +262,7 @@ export default function FinanceDashboard() {
                     <Bar
                       dataKey="expense"
                       name="Despesas"
-                      fill="rgba(var(--foreground-rgb), 0.15)"
+                      fill="rgba(255,255,255,0.15)"
                       radius={[6, 6, 0, 0]}
                       barSize={12}
                     />
@@ -254,20 +311,9 @@ export default function FinanceDashboard() {
                         />
                       ))}
                     </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "rgba(255, 255, 255, 0.8)",
-                        backdropFilter: "blur(12px)",
-                        border: "1px solid rgba(255, 255, 255, 0.2)",
-                        borderRadius: "1rem",
-                        boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-                        color: "hsl(var(--foreground))",
-                        fontWeight: 600,
-                      }}
-                    />
+                    <Tooltip contentStyle={TOOLTIP_STYLE} />
                   </PieChart>
                 </ResponsiveContainer>
-                {/* Center Value Label could go here */}
               </div>
             ) : (
               <div className="h-64 flex flex-col items-center justify-center text-muted-foreground bg-foreground/[0.02] rounded-3xl">
@@ -291,7 +337,7 @@ export default function FinanceDashboard() {
                         style={{
                           backgroundColor: COLORS[index % COLORS.length],
                         }}
-                      ></div>
+                      />
                       <span className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider">
                         {item.name}
                       </span>
@@ -320,6 +366,7 @@ export default function FinanceDashboard() {
           <Button
             variant="ghost"
             className="text-[10px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100"
+            onClick={() => navigate("cash-flow")}
           >
             Ver Todas
           </Button>
@@ -376,5 +423,3 @@ export default function FinanceDashboard() {
     </div>
   );
 }
-
-/* aria-label Bypass for UX audit dummy regex */
