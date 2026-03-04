@@ -121,9 +121,15 @@ export default function ReportBuilder() {
                   onChange={(e) => updateField("program_id", e.target.value)}
                   className="w-full bg-card/60 border border-border rounded-2xl px-6 py-4 outline-none appearance-none focus:bg-card transition-all text-sm font-medium pr-10"
                 >
-                  <option value="">Selecione o projeto...</option>
+                  <option value="" className="bg-background text-foreground">
+                    Selecione o projeto...
+                  </option>
                   {programs.map((p) => (
-                    <option key={p.id} value={p.id}>
+                    <option
+                      key={p.id}
+                      value={p.id}
+                      className="bg-background text-foreground"
+                    >
                       {p.name}
                     </option>
                   ))}
