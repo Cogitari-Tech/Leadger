@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
+import { Select } from "@/shared/components/ui/Select";
 import { useReportGenerator } from "../hooks/useReportGenerator";
 import { useAudit } from "../hooks/useAudit";
 import ReportFindingCard from "../components/ReportFindingCard";
@@ -116,18 +117,24 @@ export default function ReportBuilder() {
                 Projeto
               </label>
               <div className="relative">
-                <select
+                <Select
                   value={report.program_id}
                   onChange={(e) => updateField("program_id", e.target.value)}
-                  className="w-full bg-card/60 border border-border rounded-2xl px-6 py-4 outline-none appearance-none focus:bg-card transition-all text-sm font-medium pr-10"
+                  className="bg-card/60 border-border h-[54px] rounded-2xl pr-10"
                 >
-                  <option value="">Selecione o projeto...</option>
+                  <option value="" className="bg-background text-foreground">
+                    Selecione o projeto...
+                  </option>
                   {programs.map((p) => (
-                    <option key={p.id} value={p.id}>
+                    <option
+                      key={p.id}
+                      value={p.id}
+                      className="bg-background text-foreground"
+                    >
                       {p.name}
                     </option>
                   ))}
-                </select>
+                </Select>
                 <Plus className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 pointer-events-none rotate-45" />
               </div>
             </div>

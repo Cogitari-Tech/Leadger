@@ -402,18 +402,18 @@ export default function AuditPrograms() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full">
               <Button
                 variant="ghost"
                 onClick={() => setShowModal(false)}
-                className="py-4 rounded-2xl bg-foreground/5 text-muted-foreground hover:bg-white hover:text-black transition-all font-bold uppercase tracking-widest text-[10px]"
+                className="py-4 flex-1 rounded-2xl bg-foreground/5 text-muted-foreground hover:bg-white hover:text-black transition-all font-bold uppercase tracking-widest text-[10px]"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleCreate}
                 disabled={!form.name || loading}
-                className="py-4 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-bold uppercase tracking-widest text-[10px] px-10"
+                className="py-4 flex-1 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-bold uppercase tracking-widest text-[10px] px-10"
               >
                 {loading ? "Processando..." : "Criar Ciclo de Auditoria"}
               </Button>
