@@ -100,40 +100,41 @@ export function useExecutiveDashboard(): ExecutiveKPIs {
           transactionsCountRes,
           accountsCountRes,
           monthlyTransactionsRes,
+          accountsDataRes,
         ] = await Promise.all([
-          // Audit Programs
+          // Audit Programs (0)
           supabase
             .from("audit_programs")
             .select("id, status")
             .eq("tenant_id", tenantId)
             .in("status", ["draft", "in_progress", "under_review", "approved"]),
 
-          // Audit Findings (open)
+          // Audit Findings (open) (1)
           supabase
             .from("audit_findings")
             .select("id, risk_level, status")
             .in("status", ["open", "in_progress", "draft"]),
 
-          // Frameworks
+          // Frameworks (2)
           supabase.from("audit_frameworks").select("id"),
 
-          // Checklists
+          // Checklists (3)
           supabase.from("audit_program_checklists").select("id, status"),
 
-          // GitHub Repos
+          // GitHub Repos (4)
           supabase
             .from("github_repositories")
             .select("id, name, open_vulnerabilities_count")
             .eq("tenant_id", tenantId)
             .order("open_vulnerabilities_count", { ascending: false }),
 
-          // GitHub Security Alerts
+          // GitHub Security Alerts (5)
           supabase
             .from("github_security_alerts")
             .select("id, severity, state")
             .eq("state", "open"),
 
-          // Pending Approvals (under_review programs)
+          // Pending Approvals (under_review programs) (6)
           supabase
             .from("audit_programs")
             .select("id, name, updated_at")
@@ -142,24 +143,24 @@ export function useExecutiveDashboard(): ExecutiveKPIs {
             .order("updated_at", { ascending: false })
             .limit(5),
 
-          // Finance: Total transactions count
+          // Finance: Total transactions count (7)
           supabase
             .from("transactions")
             .select("id", { count: "exact", head: true }),
 
-          // Finance: Total accounts count
+          // Finance: Total accounts count (8)
           supabase
             .from("accounts")
             .select("id", { count: "exact", head: true }),
 
-          // Finance: Monthly transactions with amount and accounts
+          // Finance: Monthly transactions with amount and accounts (9)
           supabase
             .from("transactions")
             .select("id, amount, account_debit_id, account_credit_id, date")
             .gte("date", monthStart)
             .lte("date", monthEnd),
 
-          // Finance: Accounts to determine Revenue/Expense
+          // Finance: Accounts to determine Revenue/Expense (10)
           supabase.from("accounts").select("id, type"),
         ]);
 
@@ -171,10 +172,7 @@ export function useExecutiveDashboard(): ExecutiveKPIs {
         const alerts = alertsRes.data || [];
         const pendingApprovals = pendingApprovalsRes.data || [];
         const monthlyTransactions = monthlyTransactionsRes.data || [];
-        const accountsData = arguments[0]?.[10]?.data || []; // Since we added it to Promise.all
-        // Oh wait, `arguments` might be messy. Let's just grab the 11th item manually if we can, but since the Promise.all is array-destructured:
-        // Actually, let me use the correct index if I change it.
-        // Let's rewrite the replacement block properly in the next call.
+        const accountsData = accountsDataRes.data || [];
 
         // Aggregate audit KPIs
         const activePrograms = programs.filter((p) =>

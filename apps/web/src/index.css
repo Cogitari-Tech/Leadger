@@ -45,14 +45,14 @@
   }
 
   .dark {
-    /* Deep Glass Dark - Soft but intense */
-    --background: 222 47% 7%;
+    /* Deep Glass Dark - Soft but intense - Optimized for mobile UI */
+    --background: 222 20% 12%;
     --foreground: 210 20% 98%;
 
-    --card: 222 47% 9%;
+    --card: 222 20% 14%;
     --card-foreground: 210 20% 98%;
 
-    --popover: 222 47% 7%;
+    --popover: 222 20% 12%;
     --popover-foreground: 210 20% 98%;
 
     --primary: 24.6 95% 53.1%;
