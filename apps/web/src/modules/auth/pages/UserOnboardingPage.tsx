@@ -34,6 +34,9 @@ export function UserOnboardingPage() {
 
       if (dbError) throw dbError;
 
+      // Set session flag for the tour
+      sessionStorage.setItem("has_seen_tour", "true");
+
       // Force a reload so AuthContext picks up the new user_onboarding_completed state
       window.location.href = "/dashboard";
     } catch (err: any) {

@@ -147,6 +147,18 @@ export function AuthGuard({ children }: AuthGuardProps) {
         }
       }
     } else {
+      // --- Special case for Test User: always see onboarding once per session ---
+      const isTestUser = user.email === "teste@cogitari.com";
+      const hasSeenTour = sessionStorage.getItem("has_seen_tour");
+
+      if (
+        isTestUser &&
+        !hasSeenTour &&
+        location.pathname !== "/user-onboarding"
+      ) {
+        return <Navigate to="/user-onboarding" replace />;
+      }
+
       // Tenant is set up. Now check user onboarding.
       // E.g. /user-onboarding is the route for individual user setup
       if (

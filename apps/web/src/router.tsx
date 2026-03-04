@@ -20,6 +20,7 @@ import { LandingPage } from "./modules/public/pages/LandingPage";
 import { TermsOfUse } from "./modules/public/pages/TermsOfUse";
 import { PrivacyPolicy } from "./modules/public/pages/PrivacyPolicy";
 import { Disclaimer } from "./modules/public/pages/Disclaimer";
+import UsageManual from "./modules/public/pages/UsageManual";
 
 const ExecutiveDashboard = lazy(
   () => import("./modules/dashboard/pages/ExecutiveDashboard"),
@@ -163,6 +164,10 @@ export const createAppRouter = () =>
         {
           path: "profile",
           element: <ProfilePage />,
+        },
+        {
+          path: "manual-uso",
+          element: <UsageManual />,
         },
         ...moduleRegistry.getAllRoutes(),
       ],

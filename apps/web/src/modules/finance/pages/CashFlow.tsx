@@ -470,9 +470,15 @@ export default function CashFlow() {
                     className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none appearance-none cursor-pointer"
                     required
                   >
-                    <option value="">Selecione...</option>
+                    <option value="" className="bg-background text-foreground">
+                      Selecione...
+                    </option>
                     {analyticalAccounts.map((account) => (
-                      <option key={account.id} value={account.id}>
+                      <option
+                        key={account.id}
+                        value={account.id}
+                        className="bg-background text-foreground"
+                      >
                         {account.code} - {account.name}
                       </option>
                     ))}
@@ -494,9 +500,15 @@ export default function CashFlow() {
                     className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none appearance-none cursor-pointer"
                     required
                   >
-                    <option value="">Selecione...</option>
+                    <option value="" className="bg-background text-foreground">
+                      Selecione...
+                    </option>
                     {analyticalAccounts.map((account) => (
-                      <option key={account.id} value={account.id}>
+                      <option
+                        key={account.id}
+                        value={account.id}
+                        className="bg-background text-foreground"
+                      >
                         {account.code} - {account.name}
                       </option>
                     ))}
