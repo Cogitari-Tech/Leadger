@@ -173,7 +173,9 @@ export default function AuditFindings() {
               onChange={(e) => setFilterRisk(e.target.value)}
               className="bg-foreground/5 border-transparent rounded-2xl px-4 h-12 min-w-[160px]"
             >
-              <option value="">Risco (Todos)</option>
+              <option value="" className="bg-background text-foreground">
+                Risco (Todos)
+              </option>
               {Object.entries(RISK_CONFIG).map(([val, cfg]) => (
                 <option
                   key={val}
@@ -190,7 +192,9 @@ export default function AuditFindings() {
             onChange={(e) => setFilterStatus(e.target.value)}
             className="bg-foreground/5 border-transparent rounded-2xl px-4 h-12 min-w-[160px] w-full sm:w-auto"
           >
-            <option value="">Status (Todos)</option>
+            <option value="" className="bg-background text-foreground">
+              Status (Todos)
+            </option>
             {Object.entries(STATUS_LABELS).map(([val, label]) => (
               <option
                 key={val}
@@ -210,7 +214,7 @@ export default function AuditFindings() {
           Sincronizando registros...
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-24 glass-card bg-white/5 dark:bg-black/20 backdrop-blur-xl rounded-[3rem] border border-white/5 soft-shadow text-center">
+        <div className="flex flex-col items-center justify-center p-8 md:p-24 glass-card bg-white/5 dark:bg-black/20 backdrop-blur-xl rounded-[3rem] border border-white/5 soft-shadow text-center">
           <div className="w-24 h-24 rounded-[2.5rem] bg-foreground/5 flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/5">
             <AlertTriangle className="w-10 h-10 text-muted-foreground/20" />
           </div>
@@ -428,9 +432,15 @@ export default function AuditFindings() {
                   }
                   className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4"
                 >
-                  <option value="">Selecione o Ciclo...</option>
+                  <option value="" className="bg-background text-foreground">
+                    Selecione o Ciclo...
+                  </option>
                   {programs.map((p) => (
-                    <option key={p.id} value={p.id}>
+                    <option
+                      key={p.id}
+                      value={p.id}
+                      className="bg-background text-foreground"
+                    >
                       {p.name}
                     </option>
                   ))}
@@ -482,7 +492,11 @@ export default function AuditFindings() {
                     className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4"
                   >
                     {Object.entries(RISK_CONFIG).map(([val, cfg]) => (
-                      <option key={val} value={val}>
+                      <option
+                        key={val}
+                        value={val}
+                        className="bg-background text-foreground"
+                      >
                         {cfg.label}
                       </option>
                     ))}
@@ -504,21 +518,21 @@ export default function AuditFindings() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full">
               <Button
                 variant="ghost"
                 onClick={() => {
                   setShowModal(false);
                   setEditingFinding(null);
                 }}
-                className="py-4 rounded-2xl bg-foreground/5 text-muted-foreground hover:bg-white hover:text-black transition-all font-bold uppercase tracking-widest text-[10px]"
+                className="py-4 flex-1 rounded-2xl bg-foreground/5 text-muted-foreground hover:bg-white hover:text-black transition-all font-bold uppercase tracking-widest text-[10px]"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={!form.program_id || !form.title || loading}
-                className="py-4 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-bold uppercase tracking-widest text-[10px] px-10"
+                className="py-4 flex-1 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-bold uppercase tracking-widest text-[10px] px-10"
               >
                 {loading
                   ? "Processando..."
@@ -555,23 +569,29 @@ export default function AuditFindings() {
                 onChange={(e) => setSelectedRepoId(e.target.value)}
                 className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4 w-full"
               >
-                <option value="">Selecione o repositório...</option>
+                <option value="" className="bg-background text-foreground">
+                  Selecione o repositório...
+                </option>
                 {repositories.map((r) => (
-                  <option key={r.id} value={r.id}>
+                  <option
+                    key={r.id}
+                    value={r.id}
+                    className="bg-background text-foreground"
+                  >
                     {r.full_name}
                   </option>
                 ))}
               </Select>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 w-full">
               <Button
                 variant="ghost"
                 onClick={() => {
                   setShowGithubModal(null);
                   setSelectedRepoId("");
                 }}
-                className="py-4 rounded-2xl bg-foreground/5 text-muted-foreground hover:bg-white hover:text-black font-bold uppercase tracking-widest text-[10px]"
+                className="py-4 flex-1 rounded-2xl bg-foreground/5 text-muted-foreground hover:bg-white hover:text-black font-bold uppercase tracking-widest text-[10px]"
               >
                 Cancelar
               </Button>
@@ -581,7 +601,7 @@ export default function AuditFindings() {
                   if (f) handleCreateGitHubIssue(f);
                 }}
                 disabled={!selectedRepoId || creatingIssue}
-                className="py-4 rounded-2xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black font-bold uppercase tracking-widest text-[10px] px-8 flex items-center gap-2"
+                className="py-4 flex-[2] rounded-2xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black font-bold uppercase tracking-widest text-[10px] px-8 flex items-center justify-center gap-2"
               >
                 {creatingIssue && <Loader2 className="w-4 h-4 animate-spin" />}
                 {creatingIssue ? "Criando..." : "Confirmar e Criar"}
