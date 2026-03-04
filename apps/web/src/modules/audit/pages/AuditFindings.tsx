@@ -173,7 +173,9 @@ export default function AuditFindings() {
               onChange={(e) => setFilterRisk(e.target.value)}
               className="bg-foreground/5 border-transparent rounded-2xl px-4 h-12 min-w-[160px]"
             >
-              <option value="">Risco (Todos)</option>
+              <option value="" className="bg-background text-foreground">
+                Risco (Todos)
+              </option>
               {Object.entries(RISK_CONFIG).map(([val, cfg]) => (
                 <option
                   key={val}
@@ -190,7 +192,9 @@ export default function AuditFindings() {
             onChange={(e) => setFilterStatus(e.target.value)}
             className="bg-foreground/5 border-transparent rounded-2xl px-4 h-12 min-w-[160px] w-full sm:w-auto"
           >
-            <option value="">Status (Todos)</option>
+            <option value="" className="bg-background text-foreground">
+              Status (Todos)
+            </option>
             {Object.entries(STATUS_LABELS).map(([val, label]) => (
               <option
                 key={val}
@@ -210,7 +214,7 @@ export default function AuditFindings() {
           Sincronizando registros...
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-24 glass-card bg-white/5 dark:bg-black/20 backdrop-blur-xl rounded-[3rem] border border-white/5 soft-shadow text-center">
+        <div className="flex flex-col items-center justify-center p-8 md:p-24 glass-card bg-white/5 dark:bg-black/20 backdrop-blur-xl rounded-[3rem] border border-white/5 soft-shadow text-center">
           <div className="w-24 h-24 rounded-[2.5rem] bg-foreground/5 flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/5">
             <AlertTriangle className="w-10 h-10 text-muted-foreground/20" />
           </div>
@@ -404,7 +408,7 @@ export default function AuditFindings() {
       {/* Create Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-xl">
-          <div className="glass-card bg-white/5 border border-white/10 rounded-[3rem] p-12 max-w-2xl w-full shadow-2xl space-y-10 relative scale-up">
+          <div className="glass-card bg-card border border-border rounded-[3rem] p-8 md:p-12 max-w-2xl w-full shadow-2xl space-y-10 relative scale-up">
             <div className="space-y-2">
               <h3 className="text-3xl font-bold text-foreground font-display tracking-tight">
                 {editingFinding ? "Editar Achado" : "Registrar Achado"}
@@ -426,11 +430,17 @@ export default function AuditFindings() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, program_id: e.target.value }))
                   }
-                  className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4"
+                  className="bg-background/50 border-border rounded-2xl h-[54px]"
                 >
-                  <option value="">Selecione o Ciclo...</option>
+                  <option value="" className="bg-background text-foreground">
+                    Selecione o Ciclo...
+                  </option>
                   {programs.map((p) => (
-                    <option key={p.id} value={p.id}>
+                    <option
+                      key={p.id}
+                      value={p.id}
+                      className="bg-background text-foreground"
+                    >
                       {p.name}
                     </option>
                   ))}
@@ -447,7 +457,7 @@ export default function AuditFindings() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, title: e.target.value }))
                   }
-                  className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4 focus:bg-white/10 transition-all font-medium"
+                  className="bg-background/50 border-border rounded-2xl px-6 h-[54px] focus:bg-background transition-all font-medium"
                 />
               </div>
 
@@ -462,7 +472,7 @@ export default function AuditFindings() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, description: e.target.value }))
                   }
-                  className="w-full bg-foreground/5 border border-white/5 rounded-2xl px-6 py-4 outline-none focus:bg-white/10 transition-all text-sm font-medium resize-none"
+                  className="w-full bg-background/50 border border-border rounded-2xl px-6 py-4 outline-none focus:bg-background transition-all text-sm font-medium resize-none"
                 />
               </div>
 
@@ -479,10 +489,14 @@ export default function AuditFindings() {
                         risk_level: e.target.value as FindingRiskLevel,
                       }))
                     }
-                    className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4"
+                    className="bg-background/50 border-border rounded-2xl h-[54px]"
                   >
                     {Object.entries(RISK_CONFIG).map(([val, cfg]) => (
-                      <option key={val} value={val}>
+                      <option
+                        key={val}
+                        value={val}
+                        className="bg-background text-foreground"
+                      >
                         {cfg.label}
                       </option>
                     ))}
@@ -498,33 +512,33 @@ export default function AuditFindings() {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, due_date: e.target.value }))
                     }
-                    className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4"
+                    className="bg-background/50 border-border rounded-2xl px-6 h-[54px] [color-scheme:dark]"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full">
               <Button
                 variant="ghost"
                 onClick={() => {
                   setShowModal(false);
                   setEditingFinding(null);
                 }}
-                className="py-4 rounded-2xl bg-foreground/5 text-muted-foreground hover:bg-white hover:text-black transition-all font-bold uppercase tracking-widest text-[10px]"
+                className="py-4 h-[54px] flex-1 rounded-2xl border border-border bg-foreground/5 text-muted-foreground hover:bg-foreground hover:text-background transition-all font-bold uppercase tracking-widest text-[10px]"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={!form.program_id || !form.title || loading}
-                className="py-4 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-bold uppercase tracking-widest text-[10px] px-10"
+                className="py-4 h-[54px] flex-1 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all font-bold uppercase tracking-widest text-[10px] px-10"
               >
                 {loading
                   ? "Processando..."
                   : editingFinding
                     ? "Salvar Achado"
-                    : "Registrar Achado"}
+                    : "Registrar"}
               </Button>
             </div>
           </div>
@@ -534,7 +548,7 @@ export default function AuditFindings() {
       {/* GitHub Issue Modal */}
       {showGithubModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-xl">
-          <div className="glass-card bg-white/5 border border-white/10 rounded-[3rem] p-12 max-w-lg w-full shadow-2xl space-y-8 relative scale-up">
+          <div className="glass-card bg-card border border-border rounded-[3rem] p-8 md:p-12 max-w-lg w-full shadow-2xl space-y-8 relative scale-up">
             <div className="space-y-2">
               <h3 className="text-2xl font-bold text-foreground font-display tracking-tight flex items-center gap-2">
                 <Github className="w-6 h-6" />
@@ -553,25 +567,31 @@ export default function AuditFindings() {
               <Select
                 value={selectedRepoId}
                 onChange={(e) => setSelectedRepoId(e.target.value)}
-                className="bg-foreground/5 border-white/5 rounded-2xl px-6 py-4 w-full"
+                className="bg-background/50 border-border rounded-2xl h-[54px] w-full"
               >
-                <option value="">Selecione o repositório...</option>
+                <option value="" className="bg-background text-foreground">
+                  Selecione o repositório...
+                </option>
                 {repositories.map((r) => (
-                  <option key={r.id} value={r.id}>
+                  <option
+                    key={r.id}
+                    value={r.id}
+                    className="bg-background text-foreground"
+                  >
                     {r.full_name}
                   </option>
                 ))}
               </Select>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 w-full">
               <Button
                 variant="ghost"
                 onClick={() => {
                   setShowGithubModal(null);
                   setSelectedRepoId("");
                 }}
-                className="py-4 rounded-2xl bg-foreground/5 text-muted-foreground hover:bg-white hover:text-black font-bold uppercase tracking-widest text-[10px]"
+                className="py-4 h-[54px] flex-1 rounded-2xl border border-border bg-foreground/5 text-muted-foreground hover:bg-foreground hover:text-background font-bold uppercase tracking-widest text-[10px]"
               >
                 Cancelar
               </Button>
@@ -581,7 +601,7 @@ export default function AuditFindings() {
                   if (f) handleCreateGitHubIssue(f);
                 }}
                 disabled={!selectedRepoId || creatingIssue}
-                className="py-4 rounded-2xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black font-bold uppercase tracking-widest text-[10px] px-8 flex items-center gap-2"
+                className="py-4 h-[54px] flex-[2] rounded-2xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black hover:scale-105 active:scale-95 transition-all font-bold uppercase tracking-widest text-[10px] px-8 flex items-center justify-center gap-2"
               >
                 {creatingIssue && <Loader2 className="w-4 h-4 animate-spin" />}
                 {creatingIssue ? "Criando..." : "Confirmar e Criar"}

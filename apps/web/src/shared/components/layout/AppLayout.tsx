@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { moduleRegistry } from "../../../modules/registry";
 import { useAuth } from "../../../modules/auth/context/AuthContext";
@@ -182,6 +183,7 @@ export const AppLayout: React.FC = () => {
                         />
                       </button>
                       <button
+                        data-tooltip={section.module}
                         onClick={() =>
                           setActiveTooltip(
                             activeTooltip === section.module
@@ -194,13 +196,33 @@ export const AppLayout: React.FC = () => {
                         <HelpCircle className="w-3.5 h-3.5" />
                       </button>
                       {activeTooltip === section.module && (
-                        <div className="absolute left-60 z-50 w-48 p-3 text-xs bg-popover border border-border rounded-xl shadow-xl">
-                          {tooltipDescriptions[section.module]}
-                          <div
-                            className="fixed inset-0 -z-10"
-                            onClick={() => setActiveTooltip(null)}
-                          />
-                        </div>
+                        <>
+                          {(() => {
+                            const btn = document.querySelector(
+                              `[data-tooltip="${section.module}"]`,
+                            );
+                            const rect = btn?.getBoundingClientRect();
+                            if (!rect) return null;
+                            return createPortal(
+                              <>
+                                <div
+                                  className="fixed inset-0 z-[9998]"
+                                  onClick={() => setActiveTooltip(null)}
+                                />
+                                <div
+                                  className="fixed z-[9999] w-56 p-3 text-xs bg-popover border border-border rounded-xl shadow-xl"
+                                  style={{
+                                    top: rect.top,
+                                    left: rect.right + 8,
+                                  }}
+                                >
+                                  {tooltipDescriptions[section.module]}
+                                </div>
+                              </>,
+                              document.body,
+                            );
+                          })()}
+                        </>
                       )}
                     </>
                   ) : (
