@@ -45,6 +45,7 @@
   }
 
   .dark {
+    color-scheme: dark;
     /* Deep Glass Dark - Soft but intense - Optimized for mobile UI */
     --background: 222 20% 12%;
     --foreground: 210 20% 98%;

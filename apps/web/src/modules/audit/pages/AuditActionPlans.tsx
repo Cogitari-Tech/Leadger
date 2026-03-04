@@ -300,112 +300,110 @@ export default function AuditActionPlans() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 animate-in fade-in duration-300">
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-lg"
+            className="absolute inset-0 bg-black/40 backdrop-blur-xl"
             onClick={() => setShowModal(false)}
           />
-          <div className="glass-card bg-white/5 border border-white/10 rounded-[3rem] p-12 max-w-2xl w-full shadow-2xl space-y-10 relative scale-up">
+          <div className="glass-card bg-card border border-border rounded-[3rem] p-8 md:p-12 max-w-2xl w-full shadow-2xl space-y-10 relative scale-up">
             <div className="space-y-2">
               <h2 className="text-4xl font-black font-outfit uppercase italic tracking-tighter">
                 Novo <span className="text-primary">Plano de Ação</span>
               </h2>
-              <p className="text-muted-foreground/40 font-medium">
+              <p className="text-muted-foreground/60 font-medium">
                 Defina as etapas para resolver o achado identificado.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-8">
-              <div className="space-y-6">
+            <div className="space-y-6">
+              <Select
+                label="Achado Relacionado"
+                value={form.finding_id}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setForm((f) => ({ ...f, finding_id: e.target.value }))
+                }
+                className="bg-background/50 border-border h-14 rounded-2xl"
+              >
+                <option value="" className="bg-background text-foreground">
+                  Selecione o achado...
+                </option>
+                {findings
+                  .filter((f) => f.status !== "resolved")
+                  .map((f) => (
+                    <option
+                      key={f.id}
+                      value={f.id}
+                      className="bg-background text-foreground"
+                    >
+                      [{f.risk_level.toUpperCase()}] {f.title}
+                    </option>
+                  ))}
+              </Select>
+
+              <Input
+                label="Título da Ação"
+                placeholder="Ex: Treinamento da equipe de TI"
+                value={form.title}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setForm((f) => ({ ...f, title: e.target.value }))
+                }
+                className="bg-background/50 border-border h-14 rounded-2xl px-6"
+              />
+
+              <Input
+                label="Descrição Detalhada"
+                placeholder="Descreva as etapas e responsáveis..."
+                value={form.description ?? ""}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setForm((f) => ({ ...f, description: e.target.value }))
+                }
+                className="bg-background/50 border-border h-14 rounded-2xl px-6"
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <Select
-                  label="Achado Relacionado"
-                  value={form.finding_id}
+                  label="Prioridade"
+                  value={form.priority}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                    setForm((f) => ({ ...f, finding_id: e.target.value }))
+                    setForm((f) => ({
+                      ...f,
+                      priority: e.target.value as ActionPlanPriority,
+                    }))
                   }
-                  className="bg-white/5 border-white/10 h-14 rounded-2xl"
+                  className="bg-background/50 border-border h-14 rounded-2xl"
                 >
-                  <option value="" className="bg-background text-foreground">
-                    Selecione o achado...
-                  </option>
-                  {findings
-                    .filter((f) => f.status !== "resolved")
-                    .map((f) => (
-                      <option
-                        key={f.id}
-                        value={f.id}
-                        className="bg-background text-foreground"
-                      >
-                        [{f.risk_level.toUpperCase()}] {f.title}
-                      </option>
-                    ))}
+                  {Object.entries(PRIORITY_CONFIG).map(([val, cfg]) => (
+                    <option
+                      key={val}
+                      value={val}
+                      className="bg-background text-foreground"
+                    >
+                      {cfg.label}
+                    </option>
+                  ))}
                 </Select>
 
                 <Input
-                  label="Título da Ação"
-                  placeholder="Ex: Treinamento da equipe de TI"
-                  value={form.title}
+                  label="Data Limite"
+                  type="date"
+                  value={form.due_date ?? ""}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setForm((f) => ({ ...f, title: e.target.value }))
+                    setForm((f) => ({ ...f, due_date: e.target.value }))
                   }
-                  className="bg-white/5 border-white/10 h-14 rounded-2xl px-6"
+                  className="bg-background/50 border-border h-14 rounded-2xl px-6"
                 />
-
-                <Input
-                  label="Descrição Detalhada"
-                  placeholder="Descreva as etapas e responsáveis..."
-                  value={form.description ?? ""}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setForm((f) => ({ ...f, description: e.target.value }))
-                  }
-                  className="bg-white/5 border-white/10 h-14 rounded-2xl px-6"
-                />
-
-                <div className="grid grid-cols-2 gap-6">
-                  <Select
-                    label="Prioridade"
-                    value={form.priority}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                      setForm((f) => ({
-                        ...f,
-                        priority: e.target.value as ActionPlanPriority,
-                      }))
-                    }
-                    className="bg-white/5 border-white/10 h-14 rounded-2xl"
-                  >
-                    {Object.entries(PRIORITY_CONFIG).map(([val, cfg]) => (
-                      <option
-                        key={val}
-                        value={val}
-                        className="bg-background text-foreground"
-                      >
-                        {cfg.label}
-                      </option>
-                    ))}
-                  </Select>
-
-                  <Input
-                    label="Data Limite"
-                    type="date"
-                    value={form.due_date ?? ""}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setForm((f) => ({ ...f, due_date: e.target.value }))
-                    }
-                    className="bg-white/5 border-white/10 h-14 rounded-2xl px-6 [color-scheme:dark]"
-                  />
-                </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-6 w-full">
                 <Button
                   variant="ghost"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 h-14 rounded-full font-bold border border-white/10 hover:bg-white/5"
+                  className="flex-1 h-14 rounded-full font-bold border border-border bg-foreground/5 text-muted-foreground hover:bg-foreground hover:text-background transition-all"
                 >
                   Cancelar
                 </Button>
                 <Button
                   onClick={handleCreate}
                   disabled={!form.finding_id || !form.title || loading}
-                  className="flex-1 h-14 rounded-full font-bold shadow-xl shadow-primary/20"
+                  className="flex-1 h-14 rounded-full font-bold shadow-xl shadow-primary/20 text-white bg-primary hover:scale-[1.02] active:scale-95 transition-all"
                 >
                   {loading ? "Processando..." : "Criar Plano de Ação"}
                 </Button>
