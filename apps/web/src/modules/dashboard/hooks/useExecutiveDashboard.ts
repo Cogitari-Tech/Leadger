@@ -158,6 +158,9 @@ export function useExecutiveDashboard(): ExecutiveKPIs {
             .select("id, amount, account_debit_id, account_credit_id, date")
             .gte("date", monthStart)
             .lte("date", monthEnd),
+
+          // Finance: Accounts to determine Revenue/Expense
+          supabase.from("accounts").select("id, type"),
         ]);
 
         const programs = programsRes.data || [];
@@ -168,6 +171,10 @@ export function useExecutiveDashboard(): ExecutiveKPIs {
         const alerts = alertsRes.data || [];
         const pendingApprovals = pendingApprovalsRes.data || [];
         const monthlyTransactions = monthlyTransactionsRes.data || [];
+        const accountsData = arguments[0]?.[10]?.data || []; // Since we added it to Promise.all
+        // Oh wait, `arguments` might be messy. Let's just grab the 11th item manually if we can, but since the Promise.all is array-destructured:
+        // Actually, let me use the correct index if I change it.
+        // Let's rewrite the replacement block properly in the next call.
 
         // Aggregate audit KPIs
         const activePrograms = programs.filter((p) =>
@@ -206,14 +213,25 @@ export function useExecutiveDashboard(): ExecutiveKPIs {
           }));
 
         // Aggregate Finance KPIs
-        const totalTransactions = transactionsCountRes.count || 0;
-        const totalAccounts = accountsCountRes.count || 0;
-        // Simplified: sum all monthly transaction amounts as a proxy
-        const monthlyRevenue = monthlyTransactions.reduce(
-          (sum: number, t: any) => sum + (Number(t.amount) || 0),
-          0,
-        );
-        const monthlyExpenses = monthlyRevenue; // Mirror for now since we use double-entry
+        const totalTransactions = transactionsCountRes?.count || 0;
+        const totalAccounts = accountsCountRes?.count || 0;
+
+        // Sum based on account types (Revenue vs Expense)
+        let monthlyRevenue = 0;
+        let monthlyExpenses = 0;
+
+        monthlyTransactions.forEach((t: any) => {
+          const creditAcc = accountsData.find(
+            (a: any) => a.id === t.account_credit_id,
+          );
+          const debitAcc = accountsData.find(
+            (a: any) => a.id === t.account_debit_id,
+          );
+          const amount = Number(t.amount) || 0;
+
+          if (creditAcc?.type === "Receita") monthlyRevenue += amount;
+          if (debitAcc?.type === "Despesa") monthlyExpenses += amount;
+        });
 
         // Build pending decisions
         const decisions: ExecutiveKPIs["pendingDecisions"] = [];

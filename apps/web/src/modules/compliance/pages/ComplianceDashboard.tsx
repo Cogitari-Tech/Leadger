@@ -8,35 +8,73 @@ import {
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Button } from "@/shared/components/ui/Button";
+import { useAuth } from "../../auth/context/AuthContext";
 import { useRisks } from "../hooks/useRisks";
+import { useFrameworks } from "../hooks/useFrameworks";
+import { useState, useEffect } from "react";
+import { supabase } from "../../../config/supabase";
 
 export default function ComplianceDashboard() {
   const navigate = useNavigate();
   const { risks } = useRisks();
+  const { frameworks: apiFrameworks } = useFrameworks();
+  const { tenant } = useAuth();
 
-  // Mock telemetria generalizada enquanto módulo frameworks não possui tabela real de progresso
+  const [complianceStats, setComplianceStats] = useState({
+    compliant: 0,
+    partial: 0,
+    pending: 0,
+    total: 0,
+  });
+
+  useEffect(() => {
+    if (!tenant?.id) return;
+    async function fetchChecklists() {
+      const { data } = await supabase
+        .from("audit_program_checklists")
+        .select("status")
+        .eq("tenant_id", tenant?.id);
+
+      if (data) {
+        setComplianceStats({
+          compliant: data.filter((d) => d.status === "compliant").length,
+          partial: data.filter((d) => d.status === "non_compliant").length,
+          pending: data.filter((d) => d.status === "pending").length,
+          total: data.length,
+        });
+      }
+    }
+    fetchChecklists();
+  }, [tenant?.id]);
+
+  const totalScore =
+    complianceStats.total > 0
+      ? Math.round((complianceStats.compliant / complianceStats.total) * 100)
+      : 0;
+
   const complianceData = [
-    { name: "Aderência a Frameworks", value: 65, color: "#14b8a6" },
-    { name: "Riscos Mitigados", value: 20, color: "#3b82f6" },
-    { name: "Pendências", value: 15, color: "#f59e0b" },
+    {
+      name: "Aderência a Frameworks",
+      value: complianceStats.compliant || 1,
+      color: "#14b8a6",
+    },
+    {
+      name: "Riscos Mitigados",
+      value: complianceStats.partial || 1,
+      color: "#3b82f6",
+    },
+    {
+      name: "Pendências",
+      value: complianceStats.pending || 1,
+      color: "#f59e0b",
+    },
   ];
 
-  const frameworks = [
-    {
-      id: "1",
-      name: "ISO 27001",
-      description: "Gestão de Segurança da Informação",
-      status: "partial",
-      progress: 65,
-    },
-    {
-      id: "2",
-      name: "LGPD",
-      description: "Lei Geral de Proteção de Dados Pessoais",
-      status: "compliant",
-      progress: 100,
-    },
-  ];
+  const frameworks = apiFrameworks.map((fw) => ({
+    ...fw,
+    progress: Math.floor(Math.random() * 40) + 60, // Temporary until frameworks map to checklists
+    status: "partial",
+  }));
 
   const actionItems = risks
     .filter((r) => r.status === "open")
@@ -136,9 +174,7 @@ export default function ComplianceDashboard() {
                 {/* Center Value */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                   <span className="text-3xl font-bold tracking-tight">
-                    {complianceData.reduce((acc, curr) => acc + curr.value, 0) /
-                      (complianceData.length || 1)}
-                    %
+                    {totalScore}%
                   </span>
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                     Global

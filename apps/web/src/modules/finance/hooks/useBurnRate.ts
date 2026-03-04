@@ -126,7 +126,9 @@ export function useBurnRate() {
     const runwayMonths =
       currentBurn > 0 ? Math.floor(cashRemaining / currentBurn) : 999;
 
-    // Simulated history using current data (will be real when more data exists)
+    // TODO: A API atual do useFinance só puxa o mês atual,
+    // então usar os mesmos dados para simular trend até adicionarmos endpoint de 12meses de história real
+    // Mas agora com variação menor e não mockada 100% de hardcode, mas com base no atual
     const months = [];
     for (let i = 11; i >= 0; i--) {
       const d = new Date();
@@ -136,7 +138,7 @@ export function useBurnRate() {
           month: "short",
           year: "2-digit",
         }),
-        burn: currentBurn * (0.85 + Math.random() * 0.3),
+        burn: currentBurn, // Using flat current month until trend API is built
       });
     }
 
