@@ -204,63 +204,62 @@ async function main() {
       waitUntil: "domcontentloaded",
       timeout: 30000,
     });
-    await page.waitForTimeout(2000);
-    await screenshot(page, 1, "landing_page");
+    await page.waitForTimeout(3000);
+    await screenshot(page, 1, "landing_initial");
 
-    // ── Step 2: Navigate to Register ──────────────────────
-    console.log("📝 Step 2: Navigate to Register");
-    await page.goto(`${BASE_URL}/register`, {
-      waitUntil: "domcontentloaded",
-      timeout: 30000,
-    });
-    await page.waitForTimeout(1500);
-    await screenshot(page, 2, "register_page_empty");
+    // ── Step 2: Switch to Register Mode ───────────────────
+    console.log("📝 Step 2: Switching to Register Mode");
+    const registerToggle = page.locator('button:has-text("Cadastre-se")');
+    if (await registerToggle.count()) {
+      await registerToggle.first().click();
+      await page.waitForTimeout(1000);
+      console.log("  ✅ Toggled to register mode on Landing Page");
+    } else {
+      console.log("  ⚠️  Register toggle not found on Landing. Navigating to /register...");
+      await page.goto(`${BASE_URL}/register`, { waitUntil: "domcontentloaded" });
+    }
+    await screenshot(page, 2, "registration_mode_active");
 
     // ── Step 3: Fill Personal Info ────────────────────────
     console.log("📝 Step 3: Fill Personal Info");
 
-    // Name
-    const nameInput = page.locator('input[placeholder*="nome"], input#name');
-    if (await nameInput.count()) {
-      await nameInput.first().fill(TEST_NAME);
-    }
+    // Try Landing Page Specific IDs first
+    const landingName = page.locator("#register-name");
+    const landingEmail = page.locator("#register-email");
+    const landingPassword = page.locator("#register-password");
 
-    // Email
-    const emailInput = page.locator(
-      'input[type="email"], input[placeholder*="email"], input#email',
-    );
-    if (await emailInput.count()) {
-      await emailInput.first().fill(TEST_EMAIL);
+    if (await landingName.count()) {
+      console.log("  🔹 Using Landing Page registration form");
+      await landingName.fill(TEST_NAME);
+      await landingEmail.fill(TEST_EMAIL);
+      await landingPassword.fill(TEST_PASSWORD);
+      await screenshot(page, 3, "register_landing_filled");
+      
+      const submitBtn = page.locator('button[type="submit"]:has-text("Criar Ambiente Seguro")');
+      if (await submitBtn.count()) {
+        await submitBtn.click();
+      } else {
+        await page.locator('button[type="submit"]').first().click();
+      }
+    } else {
+      console.log("  🔹 Fallback to standalone Register Page form");
+      // Handle standard /register page (the old logic)
+      const nameInput = page.locator('input[placeholder*="nome"], input#name');
+      if (await nameInput.count()) await nameInput.first().fill(TEST_NAME);
+      
+      const emailInput = page.locator('input[type="email"], input#email');
+      if (await emailInput.count()) await emailInput.first().fill(TEST_EMAIL);
+      
+      const passwordInput = page.locator('input[type="password"], input#password');
+      if (await passwordInput.count()) await passwordInput.first().fill(TEST_PASSWORD);
+      
+      const termsCheckbox = page.locator('input[type="checkbox"], [role="checkbox"]');
+      if (await termsCheckbox.count()) await termsCheckbox.first().click();
+      
+      await screenshot(page, 3, "register_standalone_filled");
+      await page.locator('button[type="submit"]').first().click();
     }
-
-    // Password
-    const passwordInput = page.locator(
-      'input[type="password"], input#password',
-    );
-    if (await passwordInput.count()) {
-      await passwordInput.first().fill(TEST_PASSWORD);
-    }
-
-    // Accept terms checkbox
-    const termsCheckbox = page.locator(
-      'input[type="checkbox"], [role="checkbox"]',
-    );
-    if (await termsCheckbox.count()) {
-      await termsCheckbox.first().click();
-    }
-
-    await page.waitForTimeout(500);
-    await screenshot(page, 3, "register_personal_filled");
-
-    // ── Step 4: Submit Personal Step ──────────────────────
-    console.log("📝 Step 4: Submit Personal Step");
-    const nextButton = page.locator(
-      'button[type="submit"], button:has-text("Continuar"), button:has-text("Próximo")',
-    );
-    if (await nextButton.count()) {
-      await nextButton.first().click();
-    }
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(3000);
     await screenshot(page, 4, "register_choice_step");
 
     // ── Step 5: Choose "Create Company" ──────────────────

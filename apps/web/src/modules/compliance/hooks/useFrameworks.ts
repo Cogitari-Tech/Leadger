@@ -20,21 +20,50 @@ export function useFrameworks() {
       .eq("tenant_id", tenant.id);
 
     if (!fwError && fwData) {
-      // Map to UI types (mocking progress/status since they aren't on base table)
-      const mappedFw: Framework[] = fwData.map((f: any) => ({
-        id: f.id,
-        name: f.name,
-        description: f.description || "",
-        version: f.version || "1.0",
-        status: "active", // mock
-        progress: 0, // mock
-        controlsCount: 0,
-        compliantCount: 0,
-        lastUpdated: new Date(f.created_at).toLocaleDateString(),
-      }));
-      setFrameworks(mappedFw);
+      // Fetch programs for these frameworks to link with checklists
+      const { data: programsData } = await supabase
+        .from("audit_programs")
+        .select("id, framework_id")
+        .eq("tenant_id", tenant.id);
 
-      // Fetch controls if needed ideally here, but since there is no table for that yet in this request, we leave controls empty.
+      // Fetch all checklists for tenant
+      const { data: checklistData } = await supabase
+        .from("audit_program_checklists")
+        .select("status, audit_program_id")
+        .eq("tenant_id", tenant.id);
+
+      // Map to UI types
+      const mappedFw: Framework[] = fwData.map((f: any) => {
+        const fwPrograms =
+          programsData?.filter((p) => p.framework_id === f.id) || [];
+        const programIds = fwPrograms.map((p) => p.id);
+
+        const fwChecklists =
+          checklistData?.filter((c) =>
+            programIds.includes(c.audit_program_id),
+          ) || [];
+        const total = fwChecklists.length;
+        const compliant = fwChecklists.filter(
+          (c) => c.status === "compliant",
+        ).length;
+        const progress = total > 0 ? Math.round((compliant / total) * 100) : 0;
+        let status: Framework["status"] = "pending";
+        if (progress >= 100) status = "compliant";
+        else if (progress > 0) status = "partial";
+
+        return {
+          id: f.id,
+          name: f.name,
+          description: f.description || "",
+          version: f.version || "1.0",
+          status: status,
+          progress,
+          controlsCount: total,
+          compliantCount: compliant,
+          lastUpdated: new Date(f.created_at).toLocaleDateString(),
+        };
+      });
+      setFrameworks(mappedFw);
     }
     setLoading(false);
   }, [tenant]);

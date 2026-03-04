@@ -33,15 +33,28 @@ export interface BurnRateMetrics {
  */
 export function useBurnRate() {
   const { user } = useAuth();
-  const { getMonthSummary, formatCurrency } = useFinance();
+  const {
+    getMonthSummary,
+    formatCurrency,
+    getHistoricalMetrics,
+    getAccountBalances,
+  } = useFinance();
   const summary = getMonthSummary();
 
   const [alerts, setAlerts] = useState<BurnRateAlert[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<
+    Array<{
+      month: string;
+      revenue: number;
+      expenses: number;
+      netIncome: number;
+    }>
+  >([]);
+  const [cashBalance, setCashBalance] = useState(0);
 
   const loadAlerts = useCallback(async () => {
-    setLoading(true);
     try {
       const { data, error: err } = await supabase
         .from("burn_rate_alerts")
@@ -50,11 +63,39 @@ export function useBurnRate() {
       if (err) throw err;
       setAlerts(data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao carregar alertas");
+      console.error("Error loading alerts:", err);
+    }
+  }, []);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [historyData, balances] = await Promise.all([
+        getHistoricalMetrics(),
+        getAccountBalances(new Date(1900, 0, 1), new Date()),
+      ]);
+
+      setHistory(historyData);
+
+      // Cash remaining = Sum of "Ativo" liquid accounts (simplified as all Ativo analytical accounts for now)
+      const totalCash = balances
+        .filter((b: any) => b.accountType === "Ativo" && b.isAnalytical)
+        .reduce((sum: number, b: any) => sum + b.balance, 0);
+
+      setCashBalance(totalCash);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao carregar dados de burn",
+      );
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [getHistoricalMetrics, getAccountBalances]);
+
+  useEffect(() => {
+    loadData();
+    loadAlerts();
+  }, [loadData, loadAlerts]);
 
   const createAlert = useCallback(
     async (
@@ -121,38 +162,69 @@ export function useBurnRate() {
   /** Métricas calculadas a partir dos dados financeiros atuais */
   const metrics = useMemo((): BurnRateMetrics => {
     const currentBurn = Math.max(summary.expenses - summary.revenue, 0);
-    const cashRemaining =
-      summary.netIncome > 0 ? summary.netIncome * 6 : 100000;
-    const runwayMonths =
-      currentBurn > 0 ? Math.floor(cashRemaining / currentBurn) : 999;
+    const cashRemaining = cashBalance;
 
-    // TODO: A API atual do useFinance só puxa o mês atual,
-    // então usar os mesmos dados para simular trend até adicionarmos endpoint de 12meses de história real
-    // Mas agora com variação menor e não mockada 100% de hardcode, mas com base no atual
-    const months = [];
-    for (let i = 11; i >= 0; i--) {
-      const d = new Date();
-      d.setMonth(d.getMonth() - i);
-      months.push({
-        month: d.toLocaleDateString("pt-BR", {
-          month: "short",
-          year: "2-digit",
-        }),
-        burn: currentBurn, // Using flat current month until trend API is built
-      });
+    // Calculate averages from history
+    const last3m = history.slice(-3);
+    const last6m = history.slice(-6);
+
+    const avg3m =
+      last3m.length > 0
+        ? last3m.reduce(
+            (sum, h) => sum + Math.max(h.expenses - h.revenue, 0),
+            0,
+          ) / last3m.length
+        : currentBurn;
+
+    const avg6m =
+      last6m.length > 0
+        ? last6m.reduce(
+            (sum, h) => sum + Math.max(h.expenses - h.revenue, 0),
+            0,
+          ) / last6m.length
+        : currentBurn;
+
+    const avg12m =
+      history.length > 0
+        ? history.reduce(
+            (sum, h) => sum + Math.max(h.expenses - h.revenue, 0),
+            0,
+          ) / history.length
+        : currentBurn;
+
+    const runwayMonths = avg3m > 0 ? Math.floor(cashRemaining / avg3m) : 999;
+
+    // Detect trend
+    let trend: BurnRateMetrics["trend"] = "stable";
+    if (history.length >= 2) {
+      const lastMonthBurn = Math.max(
+        history[history.length - 1].expenses -
+          history[history.length - 1].revenue,
+        0,
+      );
+      const prevMonthBurn = Math.max(
+        history[history.length - 2].expenses -
+          history[history.length - 2].revenue,
+        0,
+      );
+      if (lastMonthBurn > prevMonthBurn * 1.05) trend = "increasing";
+      else if (lastMonthBurn < prevMonthBurn * 0.95) trend = "decreasing";
     }
 
     return {
       currentMonthlyBurn: currentBurn,
-      avgBurn3m: currentBurn,
-      avgBurn6m: currentBurn,
-      avgBurn12m: currentBurn,
+      avgBurn3m: avg3m,
+      avgBurn6m: avg6m,
+      avgBurn12m: avg12m,
       cashRemaining,
       runwayMonths,
-      trend: "stable",
-      burnHistory: months,
+      trend,
+      burnHistory: history.map((h) => ({
+        month: h.month,
+        burn: Math.max(h.expenses - h.revenue, 0),
+      })),
     };
-  }, [summary]);
+  }, [summary, history, cashBalance]);
 
   /** Verifica se algum alerta deveria ser disparado */
   const triggeredAlerts = useMemo(() => {
@@ -176,10 +248,6 @@ export function useBurnRate() {
       }
     });
   }, [alerts, metrics]);
-
-  useEffect(() => {
-    loadAlerts();
-  }, [loadAlerts]);
 
   return {
     alerts,
