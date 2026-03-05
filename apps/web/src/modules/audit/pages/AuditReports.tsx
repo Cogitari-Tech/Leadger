@@ -105,14 +105,14 @@ export default function AuditReports() {
       </div>
 
       {/* Toolbar */}
-      <div className="glass-card p-4 rounded-3xl border border-white/5 bg-white/5 dark:bg-black/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="relative w-full sm:w-96">
-          <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+      <div className="glass-card p-4 rounded-3xl border border-border bg-card/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="relative w-full sm:w-96 group">
+          <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="Buscar por nome do programa..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-foreground/5 border-none rounded-xl text-sm font-medium focus:bg-white/10 transition-colors"
+            className="w-full pl-10 pr-4 py-3 bg-muted/50 border-border rounded-xl text-sm font-medium focus:bg-muted transition-colors"
           />
         </div>
       </div>
