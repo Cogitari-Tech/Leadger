@@ -35,13 +35,12 @@ export const AppLayout: React.FC = () => {
   const tooltipDescriptions: Record<string, string> = {
     "Gerir Auditorias":
       "Crie programas, responda checklists e acompanhe não-conformidades.",
-    "Gestão Financeira":
-      "Acompanhe fluxo de caixa, burn rate e contas bancárias.",
+    "Gerir Finanças": "Acompanhe fluxo de caixa, burn rate e contas bancárias.",
     "Garantir Conformidade":
       "Mapeie frameworks estruturados e controle matrizes de riscos.",
-    "Automação GitHub":
+    "Auditar Código":
       "Integre repositórios para auditoria contínua de segurança.",
-    Administração:
+    "Administrar Sistema":
       "Gerencie a equipe, cargos, faturas e configurações do sistema.",
   };
 
