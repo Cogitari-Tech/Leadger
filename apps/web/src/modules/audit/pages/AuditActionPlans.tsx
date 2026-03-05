@@ -162,7 +162,7 @@ export default function AuditActionPlans() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setSearch(e.target.value)
               }
-              className="pl-12 w-80 bg-white/5 border-white/10 rounded-full h-14 text-sm focus:bg-white/10 focus:ring-primary/20 transition-all duration-300 backdrop-blur-md"
+              className="pl-12 w-80 bg-background/50 border-border rounded-full h-14 text-sm focus:bg-background focus:ring-primary/20 transition-all duration-300 backdrop-blur-md dark:bg-card/50"
             />
           </div>
           <Button
@@ -183,9 +183,9 @@ export default function AuditActionPlans() {
           </p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="glass-card bg-white/5 border border-white/10 rounded-[3rem] p-32 flex flex-col items-center text-center space-y-8 backdrop-blur-3xl shadow-2xl">
-          <div className="w-24 h-24 rounded-[2rem] bg-white/5 flex items-center justify-center border border-white/10 rotate-12 group hover:rotate-0 transition-transform duration-500">
-            <ClipboardCheck className="w-10 h-10 text-white/20 group-hover:text-primary transition-colors duration-500" />
+        <div className="glass-card bg-card border border-border rounded-[3rem] p-32 flex flex-col items-center text-center space-y-8 backdrop-blur-3xl shadow-2xl">
+          <div className="w-24 h-24 rounded-[2rem] bg-muted flex items-center justify-center border border-border rotate-12 group hover:rotate-0 transition-transform duration-500">
+            <ClipboardCheck className="w-10 h-10 text-muted-foreground group-hover:text-primary transition-colors duration-500" />
           </div>
           <div className="space-y-2">
             <h3 className="text-3xl font-bold font-outfit uppercase">
@@ -199,7 +199,7 @@ export default function AuditActionPlans() {
           <Button
             variant="ghost"
             onClick={() => setShowModal(true)}
-            className="rounded-full h-14 px-8 font-bold gap-3 border border-white/10 hover:bg-white/5"
+            className="rounded-full h-14 px-8 font-bold gap-3 border border-border hover:bg-muted"
           >
             <Plus className="w-5 h-5" />
             <span>Novo Plano</span>
@@ -210,7 +210,7 @@ export default function AuditActionPlans() {
           {filtered.map((ap) => (
             <div
               key={ap.id}
-              className={`group glass-card relative bg-white/5 border border-white/10 rounded-[2.5rem] p-8 space-y-6 transition-all duration-500 hover:scale-[1.02] hover:bg-white/10 backdrop-blur-xl ${
+              className={`group glass-card relative bg-card border border-border rounded-[2.5rem] p-8 space-y-6 transition-all duration-500 hover:scale-[1.02] hover:bg-muted/50 backdrop-blur-xl ${
                 isOverdue(ap) ? "ring-2 ring-red-500/20" : ""
               }`}
             >
@@ -241,11 +241,11 @@ export default function AuditActionPlans() {
               )}
 
               <div className="flex flex-col gap-4">
-                <div className="h-px w-full bg-white/5" />
+                <div className="h-px w-full bg-border" />
                 <div className="flex items-center justify-between">
                   {ap.due_date && (
                     <div
-                      className={`flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-white/5 border border-white/5 ${
+                      className={`flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-background border border-border ${
                         isOverdue(ap)
                           ? "text-red-400 border-red-400/20 bg-red-400/5 font-bold"
                           : "text-muted-foreground/60"
@@ -269,7 +269,7 @@ export default function AuditActionPlans() {
                         onClick={() =>
                           updateActionPlan(ap.id, { status: "in_progress" })
                         }
-                        className="rounded-full h-8 px-4 font-bold text-[10px] uppercase border border-white/10 hover:bg-primary hover:text-white"
+                        className="rounded-full h-8 px-4 font-bold text-[10px] uppercase border border-border hover:bg-primary hover:text-white"
                       >
                         Iniciar
                       </Button>
@@ -280,7 +280,7 @@ export default function AuditActionPlans() {
                         variant="ghost"
                         onClick={() => handleCompleteActionPlan(ap)}
                         disabled={processingId === ap.id}
-                        className="rounded-full h-8 px-4 font-bold text-[10px] uppercase border border-white/10 hover:bg-emerald-500 hover:text-white flex items-center gap-1.5"
+                        className="rounded-full h-8 px-4 font-bold text-[10px] uppercase border border-border hover:bg-emerald-500 hover:text-white flex items-center gap-1.5"
                       >
                         {processingId === ap.id && (
                           <Loader2 className="w-3 h-3 animate-spin" />

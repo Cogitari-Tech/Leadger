@@ -385,6 +385,20 @@ export function RegisterPage() {
           </label>
         </div>
 
+        {/* Hint about company choice */}
+        <div className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/10 rounded-xl">
+          <Building2 className="w-4 h-4 text-primary flex-shrink-0" />
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            Na próxima etapa, você poderá{" "}
+            <strong className="text-foreground">criar uma nova empresa</strong>{" "}
+            ou{" "}
+            <strong className="text-foreground">
+              ingressar em uma existente
+            </strong>
+            .
+          </p>
+        </div>
+
         {/* Turnstile */}
         {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
           <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-hidden">
