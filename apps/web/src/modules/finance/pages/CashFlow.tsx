@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Plus, TrendingUp, TrendingDown, DollarSign, X } from "lucide-react";
+import { Select } from "@/shared/components/ui/Select";
 
 /**
  * Página de Fluxo de Caixa
@@ -459,7 +460,7 @@ export default function CashFlow() {
                   <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">
                     Conta de Débito
                   </label>
-                  <select
+                  <Select
                     value={formData.accountDebitId}
                     onChange={(e) =>
                       setFormData({
@@ -467,8 +468,6 @@ export default function CashFlow() {
                         accountDebitId: e.target.value,
                       })
                     }
-                    className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none appearance-none cursor-pointer"
-                    required
                   >
                     <option value="" className="bg-background text-foreground">
                       Selecione...
@@ -482,14 +481,14 @@ export default function CashFlow() {
                         {account.code} - {account.name}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
 
                 <div className="space-y-3">
                   <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest ml-1">
                     Conta de Crédito
                   </label>
-                  <select
+                  <Select
                     value={formData.accountCreditId}
                     onChange={(e) =>
                       setFormData({
@@ -497,8 +496,6 @@ export default function CashFlow() {
                         accountCreditId: e.target.value,
                       })
                     }
-                    className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none appearance-none cursor-pointer"
-                    required
                   >
                     <option value="" className="bg-background text-foreground">
                       Selecione...
@@ -512,7 +509,7 @@ export default function CashFlow() {
                         {account.code} - {account.name}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
               </div>
 

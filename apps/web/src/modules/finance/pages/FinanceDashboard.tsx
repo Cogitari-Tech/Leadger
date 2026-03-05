@@ -143,7 +143,11 @@ export default function FinanceDashboard() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="secondary" className="rounded-2xl px-6">
+          <Button
+            variant="secondary"
+            className="rounded-2xl px-6"
+            onClick={() => window.print()}
+          >
             <Download className="w-4 h-4 mr-2" /> Exportar
           </Button>
           <Button

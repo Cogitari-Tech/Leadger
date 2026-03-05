@@ -214,21 +214,19 @@ export function useExecutiveDashboard(): ExecutiveKPIs {
         const totalTransactions = transactionsCountRes?.count || 0;
         const totalAccounts = accountsCountRes?.count || 0;
 
-        // Sum based on account types (Revenue vs Expense)
+        // Build Map for O(1) account type lookups (avoids O(n*m) with .find())
+        const accountTypeMap = new Map<string, string>();
+        accountsData.forEach((a: any) => accountTypeMap.set(a.id, a.type));
+
         let monthlyRevenue = 0;
         let monthlyExpenses = 0;
 
         monthlyTransactions.forEach((t: any) => {
-          const creditAcc = accountsData.find(
-            (a: any) => a.id === t.account_credit_id,
-          );
-          const debitAcc = accountsData.find(
-            (a: any) => a.id === t.account_debit_id,
-          );
           const amount = Number(t.amount) || 0;
-
-          if (creditAcc?.type === "Receita") monthlyRevenue += amount;
-          if (debitAcc?.type === "Despesa") monthlyExpenses += amount;
+          if (accountTypeMap.get(t.account_credit_id) === "Receita")
+            monthlyRevenue += amount;
+          if (accountTypeMap.get(t.account_debit_id) === "Despesa")
+            monthlyExpenses += amount;
         });
 
         // Build pending decisions

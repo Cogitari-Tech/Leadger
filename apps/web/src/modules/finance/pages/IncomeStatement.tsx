@@ -198,9 +198,14 @@ export default function IncomeStatement() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center glass border border-white/20 rounded-xl px-3 py-2 shadow-sm text-slate-700 dark:text-slate-200">
-            <Calendar className="w-4 h-4 text-slate-500 dark:text-slate-400 mr-2" />
-            <span className="text-sm font-medium">Mês Atual</span>
+          <div className="flex items-center glass border border-white/20 rounded-xl px-0 shadow-sm text-slate-700 dark:text-slate-200 overflow-hidden relative">
+            <Calendar className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3 pointer-events-none" />
+            <input
+              type="month"
+              className="bg-transparent pl-9 pr-3 py-2 text-sm font-medium outline-none cursor-pointer appearance-none dark:[color-scheme:dark]"
+              defaultValue={`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`}
+              onChange={loadData}
+            />
           </div>
           <Button
             variant="secondary"
@@ -210,7 +215,11 @@ export default function IncomeStatement() {
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
-          <Button variant="secondary" className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            className="flex items-center gap-2"
+            onClick={() => window.print()}
+          >
             <Download className="w-4 h-4" /> Exportar
           </Button>
         </div>
