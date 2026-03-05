@@ -24,6 +24,7 @@ import {
   Minus,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
+import { Select } from "@/shared/components/ui/Select";
 import { useBurnRate, BurnRateAlert } from "../hooks/useBurnRate";
 
 const ALERT_TYPE_LABELS: Record<string, string> = {
@@ -445,7 +446,7 @@ export default function BurnRate() {
                 <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                   Tipo de Alerta
                 </label>
-                <select
+                <Select
                   value={alertForm.alert_type}
                   onChange={(e) =>
                     setAlertForm({
@@ -453,7 +454,7 @@ export default function BurnRate() {
                       alert_type: e.target.value as BurnRateAlert["alert_type"],
                     })
                   }
-                  className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
+                  className="w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm"
                 >
                   <option
                     value="runway_months"
@@ -473,7 +474,7 @@ export default function BurnRate() {
                   >
                     Caixa Mínimo
                   </option>
-                </select>
+                </Select>
               </div>
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -497,7 +498,7 @@ export default function BurnRate() {
                   <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                     Condição
                   </label>
-                  <select
+                  <Select
                     value={alertForm.comparison}
                     onChange={(e) =>
                       setAlertForm({
@@ -505,7 +506,7 @@ export default function BurnRate() {
                         comparison: e.target.value as "below" | "above",
                       })
                     }
-                    className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
+                    className="w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm"
                   >
                     <option
                       value="below"
@@ -519,7 +520,7 @@ export default function BurnRate() {
                     >
                       Acima de
                     </option>
-                  </select>
+                  </Select>
                 </div>
               </div>
               <div className="flex gap-6">
