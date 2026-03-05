@@ -10,6 +10,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
+import { Select } from "@/shared/components/ui/Select";
 import { useCapTable, SimulationInput } from "../hooks/useCapTable";
 
 const COLORS = [
@@ -506,12 +507,11 @@ export default function CapTable() {
                   <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                     Tipo
                   </label>
-                  <select
+                  <Select
                     value={roundForm.round_type}
                     onChange={(e) =>
                       setRoundForm({ ...roundForm, round_type: e.target.value })
                     }
-                    className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
                   >
                     {Object.entries(ROUND_TYPE_LABELS).map(([k, v]) => (
                       <option
@@ -522,7 +522,7 @@ export default function CapTable() {
                         {v}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-6">
@@ -631,7 +631,7 @@ export default function CapTable() {
                   <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                     Tipo
                   </label>
-                  <select
+                  <Select
                     value={shareholderForm.shareholder_type}
                     onChange={(e) =>
                       setShareholderForm({
@@ -639,7 +639,6 @@ export default function CapTable() {
                         shareholder_type: e.target.value,
                       })
                     }
-                    className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
                   >
                     <option
                       value="founder"
@@ -671,7 +670,7 @@ export default function CapTable() {
                     >
                       Outro
                     </option>
-                  </select>
+                  </Select>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-6">

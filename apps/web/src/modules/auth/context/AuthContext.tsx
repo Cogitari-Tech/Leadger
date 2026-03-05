@@ -95,22 +95,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         if (actualTenantId) {
-          // Fetch tenant
-          const { data: tenantData } = await supabase
-            .from("tenants")
-            .select("*")
-            .eq("id", actualTenantId)
-            .single();
-          tenant = tenantData;
+          // Parallel batch 1: Fetch tenant + member simultaneously
+          const [tenantRes, memberRes] = await Promise.all([
+            supabase
+              .from("tenants")
+              .select("*")
+              .eq("id", actualTenantId)
+              .single(),
+            supabase
+              .from("tenant_members")
+              .select("*")
+              .eq("tenant_id", actualTenantId)
+              .eq("user_id", supabaseUser.id)
+              .eq("status", "active")
+              .single(),
+          ]);
 
-          // Fetch member (without role join — avoids PostgREST FK ambiguity)
-          const { data: memberData } = await supabase
-            .from("tenant_members")
-            .select("*")
-            .eq("tenant_id", actualTenantId)
-            .eq("user_id", supabaseUser.id)
-            .eq("status", "active")
-            .single();
+          tenant = tenantRes.data;
+          const memberData = memberRes.data;
 
           if (memberData) {
             userOnboardingCompleted =
@@ -118,25 +120,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
 
           if (memberData?.role_id) {
-            // Fetch role separately
-            const { data: roleData } = await supabase
-              .from("roles")
-              .select("*")
-              .eq("id", memberData.role_id)
-              .single();
+            // Parallel batch 2: Fetch role + all permissions simultaneously
+            // (fetch all permissions speculatively — cheap query, avoids extra roundtrip)
+            const [roleRes, allPermsRes] = await Promise.all([
+              supabase
+                .from("roles")
+                .select("*")
+                .eq("id", memberData.role_id)
+                .single(),
+              supabase.from("permissions").select("code"),
+            ]);
 
-            if (roleData) {
-              role = roleData as Role;
+            if (roleRes.data) {
+              role = roleRes.data as Role;
             }
 
-            // Admin and Owner get all permissions
             if (role && (role.name === "admin" || role.name === "owner")) {
-              const { data: allPerms } = await supabase
-                .from("permissions")
-                .select("code");
-              permissions = allPerms?.map((p) => p.code) ?? [];
+              permissions = allPermsRes.data?.map((p) => p.code) ?? [];
             } else if (role) {
-              // Fetch role permissions
+              // Fetch role-specific permissions (only when not admin/owner)
               const { data: rolePerms } = await supabase
                 .from("role_permissions")
                 .select("permission:permissions(code)")
