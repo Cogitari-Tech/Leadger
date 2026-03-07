@@ -168,7 +168,7 @@ export async function exportDocx(report: AuditReport): Promise<void> {
             spacing: { after: 300 },
             children: [
               new TextRun({
-                text: "Cogitari Tech",
+                text: "Leadgers Tech",
                 size: 22,
                 font: "Arial",
                 color: "888888",

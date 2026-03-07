@@ -100,7 +100,7 @@ export function AcceptInvitePage() {
     const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
     const isTestKey = siteKey === "1x00000000000000000000AA";
     const automationBypass =
-      localStorage.getItem("AMURI_AUTOMATION_BYPASS") === "true";
+      localStorage.getItem("LEADGERS_AUTOMATION_BYPASS") === "true";
 
     if (siteKey && !turnstileToken && !isTestKey && !automationBypass) {
       setError("Por favor, confirme que você não é um robô.");
@@ -185,38 +185,33 @@ export function AcceptInvitePage() {
     <div className="min-h-screen bg-background font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden text-foreground flex flex-col items-center justify-center relative">
       {/* SEO Metadata */}
       <div className="hidden" aria-hidden="true">
-        <title>Aceitar Convite | Cogitari Governance</title>
+        <title>Aceitar Convite | Leadgers Governance</title>
         <meta
           name="description"
-          content="Aceite seu convite para participar da plataforma Cogitari Governance."
+          content="Aceite seu convite para participar da plataforma Leadgers Governance."
         />
         <meta
           property="og:title"
-          content="Aceitar Convite - Cogitari Governance"
+          content="Aceitar Convite - Leadgers Governance"
         />
         <meta
           property="og:description"
           content="Inicie sua jornada na governança corporativa."
         />
       </div>
-      {/* ─── NAV HEADER ────────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-50 px-6 py-5 bg-background/40 backdrop-blur-sm transition-all duration-300 flex items-center justify-between border-transparent">
         <div className="flex items-center gap-3">
           <Link to="/">
             <img
-              src="/images/logo-cogitari.png"
-              alt="Cogitari Governance"
+              src="/images/logo-light.webp"
+              alt="Leadgers Governance"
               className="h-7 w-auto mix-blend-screen hidden dark:block"
               aria-hidden="true"
             />
             <img
-              src="/images/logo-cogitari-dark.png"
-              alt="Cogitari Governance"
+              src="/images/logo-dark.webp"
+              alt="Leadgers Governance"
               className="h-7 w-auto block dark:hidden"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src =
-                  "/images/logo-cogitari.png";
-              }}
               aria-hidden="true"
             />
           </Link>
@@ -407,7 +402,7 @@ export function AcceptInvitePage() {
                         !turnstileToken &&
                         import.meta.env.VITE_TURNSTILE_SITE_KEY !==
                           "1x00000000000000000000AA" &&
-                        localStorage.getItem("AMURI_AUTOMATION_BYPASS") !==
+                        localStorage.getItem("LEADGERS_AUTOMATION_BYPASS") !==
                           "true")
                     }
                     className={

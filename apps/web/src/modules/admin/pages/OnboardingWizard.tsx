@@ -188,20 +188,19 @@ export default function OnboardingWizard() {
       <div className="w-full max-w-2xl relative z-10 space-y-8">
         {/* Header */}
         <div className="text-center space-y-2">
-          <img
-            src="/images/logo-cogitari.png"
-            alt="Cogitari"
-            className="h-8 w-auto mx-auto block dark:hidden opacity-90"
-          />
-          <img
-            src="/images/logo-cogitari-dark.png"
-            alt="Cogitari"
-            className="h-8 w-auto mx-auto hidden dark:block opacity-90"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/images/logo-cogitari.png";
-            }}
-          />
-          <p className="text-xs text-muted-foreground mt-4 uppercase tracking-widest font-bold">
+          <div className="flex items-center justify-center mb-2">
+            <img
+              src="/images/logo-light.webp"
+              alt="Leadgers"
+              className="h-6 w-auto hidden dark:block"
+            />
+            <img
+              src="/images/logo-dark.webp"
+              alt="Leadgers"
+              className="h-6 w-auto block dark:hidden"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">
             Configuração da Empresa
           </p>
         </div>
@@ -292,7 +291,7 @@ export default function OnboardingWizard() {
                   </label>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground bg-muted/30 px-3 py-2.5 rounded-l-xl border border-r-0 border-border/40 font-mono">
-                      audit.leadgers.com/
+                      app.leadgers.com/
                     </span>
                     <input
                       id="workspaceSlug"

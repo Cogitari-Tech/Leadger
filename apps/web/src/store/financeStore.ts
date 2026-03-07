@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { Transaction } from '@cogitari-platform/core/entities/Transaction';
-import { Account } from '@cogitari-platform/core/entities/Account';
+import { create } from "zustand";
+import { Transaction } from "@leadgers/core/entities/Transaction";
+import { Account } from "@leadgers/core/entities/Account";
 
 interface FinanceState {
   transactions: Transaction[];

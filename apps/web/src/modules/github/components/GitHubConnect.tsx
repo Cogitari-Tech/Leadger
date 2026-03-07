@@ -48,7 +48,7 @@ export function GitHubConnect() {
                 Advanced Security
               </span>{" "}
               e gerenciar permissões de repositórios dinamicamente através do
-              Amuri Audit.
+              Leadgers Governance.
             </p>
           </div>
         </div>
