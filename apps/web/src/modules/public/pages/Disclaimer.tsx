@@ -114,10 +114,10 @@ export function Disclaimer() {
               dúvida sobre o escopo da plataforma ou necessidade de revisão
               técnica, entre em contato via{" "}
               <a
-                href="mailto:support@cogitari.com.br"
+                href="mailto:support@leadgers.com"
                 className="text-brand-600 hover:underline"
               >
-                support@cogitari.com.br
+                support@leadgers.com
               </a>
               .
             </p>

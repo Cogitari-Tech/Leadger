@@ -292,7 +292,7 @@ export default function OnboardingWizard() {
                   </label>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground bg-muted/30 px-3 py-2.5 rounded-l-xl border border-r-0 border-border/40 font-mono">
-                      audit.cogitari.com.br/
+                      audit.leadgers.com/
                     </span>
                     <input
                       id="workspaceSlug"
@@ -411,29 +411,26 @@ export default function OnboardingWizard() {
                     name: "GitHub",
                     desc: "Repos, segurança, issues",
                     icon: "🐙",
-                    path: "/github",
+                    available: true,
                   },
                   {
                     name: "Google Workspace",
                     desc: "Drive, Sheets, relatórios",
                     icon: "📊",
-                    path: null,
+                    available: false,
                   },
                   {
                     name: "Open Banking",
                     desc: "Em breve",
                     icon: "🏦",
-                    path: null,
+                    available: false,
                   },
                 ].map((item) => (
                   <div
                     key={item.name}
                     className={`flex items-center justify-between p-4 border border-border/20 rounded-xl ${
-                      item.path
-                        ? "hover:border-primary/30 cursor-pointer"
-                        : "opacity-50"
+                      item.available ? "bg-background/50" : "opacity-50"
                     }`}
-                    onClick={() => item.path && navigate(item.path)}
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{item.icon}</span>
@@ -444,9 +441,9 @@ export default function OnboardingWizard() {
                         </p>
                       </div>
                     </div>
-                    {item.path ? (
-                      <span className="text-xs text-primary font-medium">
-                        Configurar →
+                    {item.available ? (
+                      <span className="text-xs text-muted-foreground font-medium bg-muted/50 px-2 py-1 rounded-md">
+                        Disponível no Dashboard
                       </span>
                     ) : (
                       <span className="text-[10px] text-muted-foreground uppercase font-bold">
