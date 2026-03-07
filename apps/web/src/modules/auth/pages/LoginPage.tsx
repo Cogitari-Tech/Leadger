@@ -123,25 +123,14 @@ export function LoginPage() {
         <ThemeToggle />
       </header>
 
-      {/* Unified Background Layer (Synced with LandingPage) */}
-      <div
-        className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 mix-blend-overlay dark:opacity-10 pointer-events-none z-0"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background pointer-events-none z-0"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-10 pointer-events-none z-0"
-        aria-hidden="true"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-primary via-transparent to-transparent blur-3xl" />
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[150px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
       </div>
 
       {/* Login Card */}
       <main className="w-full max-w-md relative z-10 px-6 py-24 sm:py-32">
-        <div className="w-full bg-background text-foreground rounded-[2rem] shadow-[0_0_60px_-15px_rgba(0,0,0,0.5)] border border-white/10 dark:border-white/5 overflow-hidden p-8 md:p-10">
+        <div className="w-full bg-background/40 backdrop-blur-3xl text-foreground rounded-[2rem] shadow-2xl border border-border/20 overflow-hidden p-8 md:p-10">
           <div className="mb-8 text-center sm:text-left">
             <h1 className="text-3xl md:text-3xl font-bold tracking-tight text-foreground">
               Acesso
