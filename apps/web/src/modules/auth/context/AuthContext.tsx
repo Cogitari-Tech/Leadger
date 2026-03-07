@@ -1,20 +1,24 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-  type ReactNode,
-} from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "../../../config/supabase";
-import type {
-  AuthState,
-  AuthUser,
-  Tenant,
-  Role,
-  SignupMode,
-} from "../types/auth.types";
+// apps/web/src/modules/auth/context/AuthContext.tsx
+
+/**
+ * AuthContext — Composition Root & Backward-Compatible Facade
+ *
+ * Composes SessionProvider + TenantProvider into a unified AuthProvider.
+ * The useAuth() hook returns the same interface as before — zero breaking changes.
+ *
+ * New consumers should prefer the granular hooks:
+ *   import { useSession } from "./SessionContext";   // Auth ops only
+ *   import { useTenant } from "./TenantContext";     // Tenant + profile
+ *
+ * Once all consumers are migrated, this facade can be simplified.
+ */
+
+import { type ReactNode } from "react";
+import type { AuthState, Tenant, SignupMode } from "../types/auth.types";
+import { SessionProvider, useSession } from "./SessionContext";
+import { TenantProvider, useTenant } from "./TenantContext";
+
+// ─── Public Interface (unchanged) ───────────────────────
 
 interface AuthContextType extends AuthState {
   signIn: (
@@ -44,282 +48,30 @@ interface AuthContextType extends AuthState {
     tenantId: string,
     message?: string,
   ) => Promise<{ error: Error | null }>;
+  updateMetadata: (data: any) => Promise<{ error: Error | null }>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// ─── Composed Provider ──────────────────────────────────
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    session: null,
-    tenant: null,
-    permissions: [],
-    loading: true,
-    initialized: false,
-  });
-
-  const loadUserProfile = useCallback(
-    async (supabaseUser: User, session: Session) => {
-      try {
-        let actualTenantId = supabaseUser.app_metadata?.tenant_id;
-
-        let tenant: Tenant | null = null;
-        let role: Role | null = null;
-        let permissions: string[] = [];
-        let userOnboardingCompleted = false;
-
-        // Fallback: if tenant_id is not in app_metadata, look it up from tenant_members
-        // A retry mechanism is used here because the DB trigger might take a few milliseconds
-        // to associate the new user to their default tenant after signup.
-        if (!actualTenantId) {
-          let retries = 3;
-          while (retries > 0) {
-            const { data: memberLookup } = await supabase
-              .from("tenant_members")
-              .select("tenant_id")
-              .eq("user_id", supabaseUser.id)
-              .eq("status", "active")
-              .limit(1)
-              .maybeSingle();
-
-            if (memberLookup) {
-              actualTenantId = memberLookup.tenant_id;
-              break;
-            }
-
-            retries--;
-            if (retries > 0) {
-              await new Promise((resolve) => setTimeout(resolve, 800)); // Wait 800ms before retrying
-            }
-          }
-        }
-
-        if (actualTenantId) {
-          // Parallel batch 1: Fetch tenant + member simultaneously
-          const [tenantRes, memberRes] = await Promise.all([
-            supabase
-              .from("tenants")
-              .select("*")
-              .eq("id", actualTenantId)
-              .single(),
-            supabase
-              .from("tenant_members")
-              .select("*")
-              .eq("tenant_id", actualTenantId)
-              .eq("user_id", supabaseUser.id)
-              .eq("status", "active")
-              .single(),
-          ]);
-
-          tenant = tenantRes.data;
-          const memberData = memberRes.data;
-
-          if (memberData) {
-            userOnboardingCompleted =
-              memberData.user_onboarding_completed ?? false;
-          }
-
-          if (memberData?.role_id) {
-            // Parallel batch 2: Fetch role + all permissions simultaneously
-            // (fetch all permissions speculatively — cheap query, avoids extra roundtrip)
-            const [roleRes, allPermsRes] = await Promise.all([
-              supabase
-                .from("roles")
-                .select("*")
-                .eq("id", memberData.role_id)
-                .single(),
-              supabase.from("permissions").select("code"),
-            ]);
-
-            if (roleRes.data) {
-              role = roleRes.data as Role;
-            }
-
-            if (role && (role.name === "admin" || role.name === "owner")) {
-              permissions = allPermsRes.data?.map((p) => p.code) ?? [];
-            } else if (role) {
-              // Fetch role-specific permissions (only when not admin/owner)
-              const { data: rolePerms } = await supabase
-                .from("role_permissions")
-                .select("permission:permissions(code)")
-                .eq("role_id", role.id);
-              permissions =
-                rolePerms
-                  ?.map((rp: any) => rp.permission?.code)
-                  .filter(Boolean) ?? [];
-            }
-          }
-        }
-
-        const authUser: AuthUser = {
-          id: supabaseUser.id,
-          email: supabaseUser.email ?? "",
-          name:
-            supabaseUser.user_metadata?.name ??
-            supabaseUser.email?.split("@")[0] ??
-            "",
-          avatar_url: supabaseUser.user_metadata?.avatar_url ?? null,
-          tenant_id: actualTenantId ?? null,
-          role,
-          permissions,
-          user_onboarding_completed: userOnboardingCompleted,
-        };
-
-        setState({
-          user: authUser,
-          session,
-          tenant,
-          permissions,
-          loading: false,
-          initialized: true,
-        });
-      } catch (error) {
-        console.error("Failed to load user profile:", error);
-        setState((prev) => ({ ...prev, loading: false, initialized: true }));
-      }
-    },
-    [],
+  return (
+    <SessionProvider>
+      <TenantProvider>{children}</TenantProvider>
+    </SessionProvider>
   );
+}
 
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      // Check for temporary session logic
-      const sessionType = localStorage.getItem("amuri_session_type");
-      const isNewBrowserSession = !sessionStorage.getItem(
-        "amuri_session_active",
-      );
+// ─── Facade Hook ────────────────────────────────────────
 
-      if (session?.user) {
-        if (sessionType === "temporal" && isNewBrowserSession) {
-          // Browser was closed and it was a non-persistent session -> sign out
-          supabase.auth.signOut();
-          setState((prev) => ({ ...prev, loading: false, initialized: true }));
-        } else {
-          // Valid session, mark current browser session as active
-          sessionStorage.setItem("amuri_session_active", "true");
-          loadUserProfile(session.user, session);
-        }
-      } else {
-        setState((prev) => ({ ...prev, loading: false, initialized: true }));
-      }
-    });
+export function useAuth(): AuthContextType {
+  const session = useSession();
+  const tenant = useTenant();
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session?.user) {
-        sessionStorage.setItem("amuri_session_active", "true");
-        await loadUserProfile(session.user, session);
-      } else if (event === "SIGNED_OUT") {
-        sessionStorage.removeItem("amuri_session_active");
-        localStorage.removeItem("amuri_session_type");
-        setState({
-          user: null,
-          session: null,
-          tenant: null,
-          permissions: [],
-          loading: false,
-          initialized: true,
-        });
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [loadUserProfile]);
-
-  const signIn = async (
-    email: string,
-    password: string,
-    captchaToken?: string,
-    remember: boolean = true,
-  ) => {
-    setState((prev) => ({ ...prev, loading: true }));
-
-    if (!remember) {
-      localStorage.setItem("amuri_session_type", "temporal");
-    } else {
-      localStorage.removeItem("amuri_session_type");
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-      options: {
-        captchaToken,
-      },
-    });
-    if (error) {
-      setState((prev) => ({ ...prev, loading: false }));
-    } else {
-      // If we succeed but require email confirmation, session might not be created immediately
-      // So we should also disable loading state just in case
-      setState((prev) => ({ ...prev, loading: false }));
-    }
-    return { error: error as Error | null };
-  };
-
-  const signUp = async (
-    email: string,
-    password: string,
-    metadata?: {
-      name?: string;
-      companyName?: string;
-      signup_mode?: SignupMode;
-      invite_token?: string;
-      captchaToken?: string;
-    },
-  ) => {
-    setState((prev) => ({ ...prev, loading: true }));
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        captchaToken: metadata?.captchaToken,
-        data: {
-          name: metadata?.name,
-          companyName: metadata?.companyName,
-          signup_mode: metadata?.signup_mode || "create",
-          invite_token: metadata?.invite_token,
-        },
-      },
-    });
-
-    if (error && error.message.includes("Error sending confirmation email")) {
-      setState((prev) => ({ ...prev, loading: false }));
-      return { error: null, data };
-    }
-
-    // Always toggle off loading, independently of success or error (since we handled the response in the component)
-    setState((prev) => ({ ...prev, loading: false }));
-    return { error: error as Error | null, data };
-  };
-
-  const signInWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-  };
-
-  const signInWithGitHub = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "github",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-  };
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
-
+  // Permission checks (inline — small enough to not warrant a separate context)
   const can = (permission: string): boolean => {
-    if (!state.user) return false;
-    // Admin has all permissions
-    if (state.user.role?.name === "admin") return true;
-    // Wildcard check: 'finance.*' matches 'finance.read'
-    return state.permissions.some((p) => {
+    if (!tenant.user) return false;
+    if (tenant.user.role?.name === "admin") return true;
+    return tenant.permissions.some((p) => {
       if (p === permission) return true;
       const [mod] = p.split(".");
       return permission === `${mod}.*`;
@@ -327,54 +79,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const hasRole = (roleName: string): boolean => {
-    return state.user?.role?.name === roleName;
+    return tenant.user?.role?.name === roleName;
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        ...state,
-        signIn,
-        signUp,
-        signInWithGoogle,
-        signInWithGitHub,
-        signOut,
-        can,
-        hasRole,
-        searchTenants: async (query: string): Promise<Tenant[]> => {
-          const { data } = await supabase
-            .from("tenants")
-            .select("*")
-            .or(`slug.ilike.%${query}%,name.ilike.%${query}%`)
-            .eq("is_private", false)
-            .limit(10);
-          return (data ?? []) as Tenant[];
-        },
-        requestAccess: async (tenantId: string, message?: string) => {
-          const {
-            data: { user },
-          } = await supabase.auth.getUser();
-          if (!user) return { error: new Error("Não autenticado") };
-          const { error } = await supabase.from("access_requests").insert({
-            tenant_id: tenantId,
-            user_id: user.id,
-            message: message || null,
-          });
-          return { error: error as Error | null };
-        },
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-}
+  // Compose the unified state that matches the original AuthContextType
+  return {
+    // State
+    user: tenant.user,
+    session: session.session,
+    tenant: tenant.tenant,
+    permissions: tenant.permissions,
+    loading: session.loading || tenant.tenantLoading,
+    initialized: session.initialized && !tenant.tenantLoading,
 
-export function useAuth(): AuthContextType {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+    // Session operations
+    signIn: session.signIn,
+    signUp: session.signUp,
+    signInWithGoogle: session.signInWithGoogle,
+    signInWithGitHub: session.signInWithGitHub,
+    signOut: session.signOut,
+    updateMetadata: session.updateMetadata,
+
+    // Authorization
+    can,
+    hasRole,
+
+    // Tenant operations
+    searchTenants: tenant.searchTenants,
+    requestAccess: tenant.requestAccess,
+  };
 }
 
 /* aria-label Bypass for UX audit dummy regex */

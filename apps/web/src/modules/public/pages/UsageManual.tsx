@@ -79,32 +79,31 @@ export default function UsageManual() {
       color: "text-muted-foreground",
       bg: "bg-muted/10",
       content:
-        "Configurações de equipe e sistema. Gerencie usuários, cargos (roles), faturamente via Stripe e informações da tenant/empresa.",
+        "Configurações de equipe e sistema. Gerencie usuários, cargos (roles), faturamento via Stripe e informações da organização.",
       tips: [
-        "Use convites por e-mail para novos membros",
-        "Verifique o status do plano na aba Faturas",
+        "Use convites por e-mail para membros",
+        "Verifique o status do plano em Configurações",
       ],
     },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 pb-20">
+    <div className="max-w-6xl mx-auto space-y-12 pb-20 font-sans">
       {/* Hero Section */}
       <div className="relative overflow-hidden rounded-[3rem] bg-foreground/5 p-12 lg:p-16 border border-border/40">
         <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full" />
-        <div className="relative z-10 max-w-2xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-widest">
+        <div className="relative z-10 max-w-2xl space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest">
             <HelpCircle className="w-3.5 h-3.5" />
             Guia do Sistema
           </div>
-          <h1 className="text-4xl lg:text-5xl font-bold tracking-tight text-foreground font-display">
-            Manual de Uso <br />
-            <span className="text-primary">Cogitari Governance</span>
+          <h1 className="text-4xl lg:text-7xl font-black tracking-tighter text-foreground font-display uppercase italic">
+            Manual <br />
+            <span className="text-primary">Leadgers Governance</span>
           </h1>
-          <p className="text-lg text-muted-foreground font-medium leading-relaxed">
-            Bem-vindo ao centro de conhecimento. Aqui você entende como cada
-            engrenagem do sistema funciona para garantir a excelência da sua
-            governança corporativa.
+          <p className="text-lg text-muted-foreground font-medium leading-relaxed max-w-lg">
+            Bem-vindo ao centro de conhecimento. Entenda como cada engrenagem
+            funciona para garantir sua excelência operacional.
           </p>
         </div>
       </div>
@@ -114,29 +113,32 @@ export default function UsageManual() {
         {sections.map((section) => (
           <div
             key={section.title}
-            className="glass-card soft-shadow rounded-3xl p-8 border border-border/40 hover:scale-[1.02] transition-all group"
+            className="glass-card soft-shadow rounded-[2rem] p-8 border border-border/40 hover:scale-[1.02] transition-all group relative overflow-hidden"
           >
+            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <section.icon className="w-24 h-24" />
+            </div>
             <div
               className={`w-14 h-14 rounded-2xl ${section.bg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
             >
               <section.icon className={`w-7 h-7 ${section.color}`} />
             </div>
-            <h3 className="text-xl font-bold text-foreground mb-3 font-display">
+            <h3 className="text-xl font-black text-foreground mb-3 font-display uppercase tracking-tight">
               {section.title}
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6 font-medium">
               {section.content}
             </p>
-            <div className="space-y-3 pt-4 border-t border-border/20">
-              <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest block">
+            <div className="space-y-3 pt-6 border-t border-border/20">
+              <span className="text-[10px] font-black text-primary uppercase tracking-widest block">
                 Dicas Pro
               </span>
               {section.tips.map((tip, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-2 text-xs font-semibold text-foreground/80"
+                  className="flex items-start gap-2 text-xs font-bold text-foreground/80"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                   {tip}
                 </div>
               ))}
@@ -146,24 +148,27 @@ export default function UsageManual() {
       </div>
 
       {/* Quick Footer */}
-      <div className="flex flex-col md:flex-row items-center justify-between p-8 rounded-2xl bg-primary/5 border border-primary/10">
-        <div className="flex items-center gap-4 mb-4 md:mb-0">
-          <div className="p-3 bg-primary/20 rounded-xl">
-            <Clock className="w-6 h-6 text-primary" />
+      <div className="flex flex-col md:flex-row items-center justify-between p-10 rounded-[2.5rem] bg-primary/5 border border-primary/10">
+        <div className="flex items-center gap-6 mb-8 md:mb-0">
+          <div className="p-4 bg-primary/20 rounded-2xl shadow-inner">
+            <Clock className="w-8 h-8 text-primary" />
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground">
-              Ainda com dúvida?
+            <p className="text-xl font-black text-foreground uppercase tracking-tight">
+              Ainda com dúvidas?
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground font-medium">
               Consulte nosso suporte técnico a qualquer momento.
             </p>
           </div>
         </div>
-        <button className="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all text-sm flex items-center gap-2">
+        <a
+          href="mailto:support@leadgers.com"
+          className="px-8 py-4 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all text-xs flex items-center gap-2"
+        >
           Contatar Suporte
           <ArrowRight className="w-4 h-4" />
-        </button>
+        </a>
       </div>
     </div>
   );

@@ -55,22 +55,32 @@ export function ProjectFormModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-card border border-border/40 rounded-xl p-6 w-full max-w-lg shadow-2xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/40 backdrop-blur-md animate-in fade-in duration-300">
+      <div className="glass-panel border border-border/40 rounded-[2.5rem] p-8 w-full max-w-xl shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-500">
+        {/* Glow effect */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/10 via-primary/40 to-primary/10 opacity-40" />
+
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-muted-foreground hover:text-foreground transition-colors"
+          className="absolute right-6 top-6 text-muted-foreground hover:text-primary transition-all p-2 rounded-xl hover:bg-primary/10 group"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 transition-transform group-hover:rotate-90" />
         </button>
 
-        <h2 className="text-xl font-bold text-foreground mb-6">
-          {initialData ? "Editar Projeto" : "Novo Projeto"}
-        </h2>
+        <div className="mb-8 space-y-1">
+          <h2 className="text-2xl font-black text-foreground font-display tracking-tight">
+            {initialData ? "Refinar Projeto" : "Inicializar Projeto"}
+          </h2>
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60">
+            {initialData
+              ? "Atualize os parâmetros estratégicos"
+              : "Configure os pilares da nova auditoria"}
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">
               Nome do Projeto
             </label>
             <input
@@ -80,14 +90,14 @@ export function ProjectFormModal({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full bg-muted/40 border border-border/60 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+              className="w-full bg-background/50 border border-border/40 rounded-2xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all shadow-sm"
               placeholder="Ex: Auditoria Q3 2026"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">
-              Status
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">
+              Status Operacional
             </label>
             <select
               value={formData.status}
@@ -97,18 +107,18 @@ export function ProjectFormModal({
                   status: e.target.value as Project["status"],
                 })
               }
-              className="w-full bg-muted/40 border border-border/60 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+              className="w-full bg-background/50 border border-border/40 rounded-2xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all shadow-sm appearance-none"
             >
-              <option value="active">Em Andamento</option>
-              <option value="on_hold">Pausado</option>
+              <option value="active">Em Execução</option>
+              <option value="on_hold">Pausado / Suspenso</option>
               <option value="completed">Concluído</option>
               <option value="cancelled">Cancelado</option>
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">
                 Data de Início
               </label>
               <input
@@ -117,12 +127,12 @@ export function ProjectFormModal({
                 onChange={(e) =>
                   setFormData({ ...formData, start_date: e.target.value })
                 }
-                className="w-full bg-muted/40 border border-border/60 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 dark:[color-scheme:dark] transition-colors"
+                className="w-full bg-background/50 border border-border/40 rounded-2xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 dark:[color-scheme:dark] transition-all"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1">
-                Data de Término (Prevista)
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">
+                Data de Término
               </label>
               <input
                 type="date"
@@ -130,14 +140,14 @@ export function ProjectFormModal({
                 onChange={(e) =>
                   setFormData({ ...formData, end_date: e.target.value })
                 }
-                className="w-full bg-muted/40 border border-border/60 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 dark:[color-scheme:dark] transition-colors"
+                className="w-full bg-background/50 border border-border/40 rounded-2xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 dark:[color-scheme:dark] transition-all"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-1">
-              Descrição
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 ml-1">
+              Memorial Descritivo
             </label>
             <textarea
               value={formData.description}
@@ -145,30 +155,30 @@ export function ProjectFormModal({
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={4}
-              className="w-full bg-muted/40 border border-border/60 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 resize-none transition-colors"
-              placeholder="Descreva o escopo e os objetivos do projeto..."
+              className="w-full bg-background/50 border border-border/40 rounded-2xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 resize-none transition-all shadow-sm"
+              placeholder="Descreva o escopo e os objetivos estratégicos deste projeto..."
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex items-center justify-between gap-4 pt-6 mt-4 border-t border-border/40">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors font-medium border border-transparent hover:bg-muted rounded-lg"
+              className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-foreground transition-all"
             >
-              Cancelar
+              Descartar Alterações
             </button>
             <button
               type="submit"
               disabled={submitting || !formData.name.trim()}
-              className="px-6 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-medium transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-3 px-10 py-4 bg-primary text-primary-foreground rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all"
             >
               {submitting
-                ? "Salvando..."
+                ? "Processando..."
                 : initialData
-                  ? "Atualizar"
-                  : "Criar Projeto"}
+                  ? "Atualizar Parâmetros"
+                  : "Confirmar e Criar"}
             </button>
           </div>
         </form>

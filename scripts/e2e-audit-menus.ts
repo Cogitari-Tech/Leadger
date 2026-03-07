@@ -17,7 +17,7 @@ async function runTest() {
 
   // Bypass Turnstile
   await context.addInitScript(() => {
-    localStorage.setItem("AMURI_AUTOMATION_BYPASS", "true");
+    localStorage.setItem("LEADGERS_AUTOMATION_BYPASS", "true");
   });
 
   const page = await context.newPage();

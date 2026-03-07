@@ -19,6 +19,7 @@ import {
   Settings,
   X,
   FileText,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import { useFinancialProjections } from "../hooks/useFinancialProjections";
@@ -53,7 +54,7 @@ export default function FinancialProjections() {
         win.document.write(`
           <html>
             <head>
-              <title>Projeções Financeiras - Pitch Deck</title>
+              <title>Projeções Financeiras - Leadgers Governance</title>
               <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
                 body { padding: 40px; background: #0a0a0a; color: #fafafa; }
@@ -73,7 +74,7 @@ export default function FinancialProjections() {
               </style>
             </head>
             <body>
-              <div class="header">Projeções Financeiras</div>
+              <div class="header">Leadgers Governance</div>
               <div class="subtitle">Projeção de ${yearsAhead} anos • Gerado em ${new Date().toLocaleDateString("pt-BR")}</div>
               ${printContent}
               <script>setTimeout(() => window.print(), 500);</script>
@@ -98,17 +99,17 @@ export default function FinancialProjections() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 font-sans">
       {/* SEO Metadata */}
       <div className="hidden" aria-hidden="true">
-        <title>Projeções Financeiras | Cogitari Governance</title>
+        <title>Projeções Financeiras | Leadgers Governance</title>
         <meta
           name="description"
           content="Gere projeções financeiras detalhadas para o seu pitch deck com 3 cenários integrados."
         />
         <meta
           property="og:title"
-          content="Projeções Financeiras - Cogitari Governance"
+          content="Projeções Financeiras - Leadgers Governance"
         />
         <meta
           property="og:description"
@@ -117,35 +118,37 @@ export default function FinancialProjections() {
       </div>
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-8 h-1 bg-primary rounded-full" />
-            <h1 className="text-4xl font-bold tracking-tight font-display">
-              Projeções Financeiras
-            </h1>
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest">
+            <Presentation className="w-3.5 h-3.5" />
+            Financial Engineering
           </div>
-          <p className="text-muted-foreground font-medium">
-            Projeções de {yearsAhead} anos para pitch — 3 cenários.
+          <h1 className="text-4xl lg:text-5xl font-black tracking-tighter font-display uppercase italic">
+            Projeções <span className="text-primary">Financeiras</span>
+          </h1>
+          <p className="text-muted-foreground font-medium max-w-lg">
+            Modelagem preditiva de {yearsAhead} anos para Pitch Decks e
+            Governança de Caixa.
           </p>
         </div>
         <div className="flex gap-3">
           <Button
             variant="secondary"
-            className="rounded-2xl px-6"
+            className="rounded-2xl px-6 h-12 font-black uppercase tracking-widest text-[10px]"
             onClick={() => setShowSettings(!showSettings)}
           >
             <Settings className="w-4 h-4 mr-2" /> Premissas
           </Button>
           <Button
             variant="secondary"
-            className="rounded-2xl px-6"
+            className="rounded-2xl px-6 h-12 font-black uppercase tracking-widest text-[10px]"
             onClick={() => setShowSaveModal(true)}
           >
             <Save className="w-4 h-4 mr-2" /> Salvar
           </Button>
           <Button
             variant="primary"
-            className="rounded-2xl px-6 shadow-lg shadow-primary/20"
+            className="rounded-2xl px-8 h-12 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20"
             onClick={handleExportPDF}
           >
             <Download className="w-4 h-4 mr-2" /> Exportar Pitch
@@ -155,13 +158,13 @@ export default function FinancialProjections() {
 
       {/* Settings Panel */}
       {showSettings && (
-        <div className="glass-card soft-shadow p-8 bg-muted/20 dark:bg-card/40 backdrop-blur-xl rounded-[2.5rem] border border-border">
-          <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6">
-            Premissas do Modelo
+        <div className="glass-card soft-shadow p-10 bg-muted/20 backdrop-blur-3xl rounded-[2.5rem] border border-border animate-in slide-in-from-top-4">
+          <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-8">
+            Premissas do Modelo Preditivo
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="space-y-4">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 Crescimento Receita Base (%)
               </label>
               <input
@@ -173,11 +176,11 @@ export default function FinancialProjections() {
                     revenueGrowthBase: Number(e.target.value) / 100,
                   })
                 }
-                className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-sm outline-none"
+                className="w-full px-6 py-4 rounded-2xl bg-background/50 border border-border/40 text-sm font-bold outline-none focus:border-primary transition-all"
               />
             </div>
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+            <div className="space-y-4">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 Crescimento Despesa Base (%)
               </label>
               <input
@@ -189,11 +192,11 @@ export default function FinancialProjections() {
                     expenseGrowthBase: Number(e.target.value) / 100,
                   })
                 }
-                className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-sm outline-none"
+                className="w-full px-6 py-4 rounded-2xl bg-background/50 border border-border/40 text-sm font-bold outline-none focus:border-primary transition-all"
               />
             </div>
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+            <div className="space-y-4">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
                 Melhoria de Margem Anual (%)
               </label>
               <input
@@ -205,13 +208,13 @@ export default function FinancialProjections() {
                     marginImprovement: Number(e.target.value) / 100,
                   })
                 }
-                className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-sm outline-none"
+                className="w-full px-6 py-4 rounded-2xl bg-background/50 border border-border/40 text-sm font-bold outline-none focus:border-primary transition-all"
               />
             </div>
           </div>
-          <div className="mt-6 flex gap-4 items-center">
-            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-              Anos de Projeção
+          <div className="mt-10 flex gap-6 items-center bg-background/40 p-6 rounded-2xl border border-border/20">
+            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">
+              Janela de Projeção
             </label>
             <input
               type="range"
@@ -219,36 +222,38 @@ export default function FinancialProjections() {
               max={10}
               value={yearsAhead}
               onChange={(e) => setYearsAhead(Number(e.target.value))}
-              className="accent-primary flex-1"
+              className="accent-primary flex-1 h-1.5 rounded-full bg-muted cursor-pointer"
             />
-            <span className="text-sm font-bold w-8">{yearsAhead}</span>
+            <span className="text-xl font-black w-10 text-primary">
+              {yearsAhead} ANOS
+            </span>
           </div>
         </div>
       )}
 
       {/* Chart Controls */}
-      <div className="flex gap-3 items-center">
-        <div className="flex bg-muted/40 rounded-2xl p-1">
+      <div className="flex gap-4 items-center">
+        <div className="flex bg-muted/30 rounded-2xl p-1.5 border border-border/20">
           {(["all", "pessimistic", "base", "optimistic"] as const).map((s) => (
             <button
               key={s}
               onClick={() => setActiveScenario(s)}
-              className={`px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeScenario === s ? "bg-primary text-primary-foreground shadow-lg" : "text-muted-foreground hover:text-foreground"}`}
+              className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeScenario === s ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}
             >
-              {s === "all" ? "Todos" : scenarioLabels[s]}
+              {s === "all" ? "Visão Geral" : scenarioLabels[s]}
             </button>
           ))}
         </div>
-        <div className="flex bg-muted/40 rounded-2xl p-1 ml-auto">
+        <div className="flex bg-muted/30 rounded-2xl p-1.5 ml-auto border border-border/20">
           <button
             onClick={() => setChartType("bar")}
-            className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${chartType === "bar" ? "bg-foreground/10" : ""}`}
+            className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${chartType === "bar" ? "bg-foreground/10 text-foreground" : "text-muted-foreground"}`}
           >
             Barras
           </button>
           <button
             onClick={() => setChartType("line")}
-            className={`px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${chartType === "line" ? "bg-foreground/10" : ""}`}
+            className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${chartType === "line" ? "bg-foreground/10 text-foreground" : "text-muted-foreground"}`}
           >
             Linhas
           </button>
@@ -256,197 +261,218 @@ export default function FinancialProjections() {
       </div>
 
       {/* Chart */}
-      <div className="glass-card soft-shadow p-10 bg-muted/20 dark:bg-card/40 backdrop-blur-xl rounded-[3rem] border border-border">
-        <div className="flex items-center justify-between mb-8">
+      <div className="glass-card soft-shadow p-12 bg-muted/20 backdrop-blur-3xl rounded-[3rem] border border-border relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+          <ShieldCheck className="w-64 h-64" />
+        </div>
+        <div className="flex items-center justify-between mb-12 relative z-10">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-foreground font-display tracking-tight">
+            <h2 className="text-3xl font-black text-foreground font-display tracking-tight uppercase">
               Receita Projetada
             </h2>
-            <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">
-              Visão comparativa por cenário
+            <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">
+              Visão Multi-Cenário (M-ARR / Y-ARR)
             </p>
           </div>
-          <Presentation className="w-5 h-5 text-primary opacity-40" />
+          <Presentation className="w-8 h-8 text-primary opacity-20" />
         </div>
 
-        <ResponsiveContainer width="100%" height={400}>
-          {chartType === "bar" ? (
-            <BarChart data={chartData} barCategoryGap="20%">
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="rgba(255,255,255,0.05)"
-                vertical={false}
-              />
-              <XAxis
-                dataKey="year"
-                tick={{
-                  fill: "rgba(255,255,255,0.4)",
-                  fontSize: 12,
-                  fontWeight: 700,
-                }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{
-                  fill: "rgba(255,255,255,0.4)",
-                  fontSize: 10,
-                  fontWeight: 700,
-                }}
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={(v) => `R$${(v / 1000000).toFixed(1)}M`}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "rgba(0,0,0,0.85)",
-                  backdropFilter: "blur(20px)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: "16px",
-                  color: "#fff",
-                }}
-                formatter={(v: number) => [formatCurrency(v), ""]}
-              />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                iconType="circle"
-                wrapperStyle={{
-                  paddingBottom: "24px",
-                  fontSize: "10px",
-                  fontWeight: 700,
-                  textTransform: "uppercase" as const,
-                }}
-              />
-              {(activeScenario === "all" ||
-                activeScenario === "pessimistic") && (
-                <Bar
-                  dataKey="pessimisticRevenue"
-                  name="Pessimista"
-                  fill="#ef4444"
-                  radius={[8, 8, 0, 0]}
-                  opacity={0.85}
+        <div className="relative z-10">
+          <ResponsiveContainer width="100%" height={450}>
+            {chartType === "bar" ? (
+              <BarChart data={chartData} barCategoryGap="20%">
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(255,255,255,0.05)"
+                  vertical={false}
                 />
-              )}
-              {(activeScenario === "all" || activeScenario === "base") && (
-                <Bar
-                  dataKey="baseRevenue"
-                  name="Base"
-                  fill="#3b82f6"
-                  radius={[8, 8, 0, 0]}
-                  opacity={0.85}
+                <XAxis
+                  dataKey="year"
+                  tick={{
+                    fill: "rgba(255,255,255,0.4)",
+                    fontSize: 12,
+                    fontWeight: 900,
+                  }}
+                  axisLine={false}
+                  tickLine={false}
                 />
-              )}
-              {(activeScenario === "all" ||
-                activeScenario === "optimistic") && (
-                <Bar
-                  dataKey="optimisticRevenue"
-                  name="Otimista"
-                  fill="#10b981"
-                  radius={[8, 8, 0, 0]}
-                  opacity={0.85}
+                <YAxis
+                  tick={{
+                    fill: "rgba(255,255,255,0.4)",
+                    fontSize: 10,
+                    fontWeight: 900,
+                  }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `R$${(v / 1000000).toFixed(1)}M`}
                 />
-              )}
-            </BarChart>
-          ) : (
-            <LineChart data={chartData}>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="rgba(255,255,255,0.05)"
-                vertical={false}
-              />
-              <XAxis
-                dataKey="year"
-                tick={{
-                  fill: "rgba(255,255,255,0.4)",
-                  fontSize: 12,
-                  fontWeight: 700,
-                }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{
-                  fill: "rgba(255,255,255,0.4)",
-                  fontSize: 10,
-                  fontWeight: 700,
-                }}
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={(v) => `R$${(v / 1000000).toFixed(1)}M`}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "rgba(0,0,0,0.85)",
-                  backdropFilter: "blur(20px)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: "16px",
-                  color: "#fff",
-                }}
-                formatter={(v: number) => [formatCurrency(v), ""]}
-              />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                iconType="circle"
-                wrapperStyle={{
-                  paddingBottom: "24px",
-                  fontSize: "10px",
-                  fontWeight: 700,
-                  textTransform: "uppercase" as const,
-                }}
-              />
-              {(activeScenario === "all" ||
-                activeScenario === "pessimistic") && (
-                <Line
-                  type="monotone"
-                  dataKey="pessimisticRevenue"
-                  name="Pessimista"
-                  stroke="#ef4444"
-                  strokeWidth={3}
-                  dot={false}
+                <Tooltip
+                  cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                  contentStyle={{
+                    backgroundColor: "rgba(0,0,0,0.9)",
+                    backdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "24px",
+                    padding: "16px",
+                    boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)",
+                  }}
+                  itemStyle={{
+                    fontWeight: 800,
+                    textTransform: "uppercase",
+                    fontSize: "10px",
+                  }}
+                  labelStyle={{
+                    fontWeight: 900,
+                    color: "#3b82f6",
+                    marginBottom: "8px",
+                    fontSize: "12px",
+                  }}
+                  formatter={(v: number) => [formatCurrency(v), ""]}
                 />
-              )}
-              {(activeScenario === "all" || activeScenario === "base") && (
-                <Line
-                  type="monotone"
-                  dataKey="baseRevenue"
-                  name="Base"
-                  stroke="#3b82f6"
-                  strokeWidth={3}
-                  dot={false}
+                <Legend
+                  verticalAlign="top"
+                  align="right"
+                  iconType="circle"
+                  wrapperStyle={{
+                    paddingBottom: "40px",
+                    fontSize: "10px",
+                    fontWeight: 900,
+                    textTransform: "uppercase" as const,
+                    letterSpacing: "1px",
+                  }}
                 />
-              )}
-              {(activeScenario === "all" ||
-                activeScenario === "optimistic") && (
-                <Line
-                  type="monotone"
-                  dataKey="optimisticRevenue"
-                  name="Otimista"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  dot={false}
+                {(activeScenario === "all" ||
+                  activeScenario === "pessimistic") && (
+                  <Bar
+                    dataKey="pessimisticRevenue"
+                    name="Pessimista"
+                    fill="#ef4444"
+                    radius={[12, 12, 0, 0]}
+                    opacity={0.8}
+                  />
+                )}
+                {(activeScenario === "all" || activeScenario === "base") && (
+                  <Bar
+                    dataKey="baseRevenue"
+                    name="Base"
+                    fill="#3b82f6"
+                    radius={[12, 12, 0, 0]}
+                    opacity={0.8}
+                  />
+                )}
+                {(activeScenario === "all" ||
+                  activeScenario === "optimistic") && (
+                  <Bar
+                    dataKey="optimisticRevenue"
+                    name="Otimista"
+                    fill="#10b981"
+                    radius={[12, 12, 0, 0]}
+                    opacity={0.8}
+                  />
+                )}
+              </BarChart>
+            ) : (
+              <LineChart data={chartData}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(255,255,255,0.05)"
+                  vertical={false}
                 />
-              )}
-            </LineChart>
-          )}
-        </ResponsiveContainer>
+                <XAxis
+                  dataKey="year"
+                  tick={{
+                    fill: "rgba(255,255,255,0.4)",
+                    fontSize: 12,
+                    fontWeight: 900,
+                  }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{
+                    fill: "rgba(255,255,255,0.4)",
+                    fontSize: 10,
+                    fontWeight: 900,
+                  }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `R$${(v / 1000000).toFixed(1)}M`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgba(0,0,0,0.9)",
+                    backdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "24px",
+                  }}
+                  formatter={(v: number) => [formatCurrency(v), ""]}
+                />
+                <Legend
+                  verticalAlign="top"
+                  align="right"
+                  iconType="circle"
+                  wrapperStyle={{
+                    paddingBottom: "40px",
+                    fontSize: "10px",
+                    fontWeight: 900,
+                    textTransform: "uppercase" as const,
+                  }}
+                />
+                {(activeScenario === "all" ||
+                  activeScenario === "pessimistic") && (
+                  <Line
+                    type="monotone"
+                    dataKey="pessimisticRevenue"
+                    name="Pessimista"
+                    stroke="#ef4444"
+                    strokeWidth={4}
+                    dot={{ fill: "#ef4444", r: 4 }}
+                    activeDot={{ r: 8, strokeWidth: 0 }}
+                  />
+                )}
+                {(activeScenario === "all" || activeScenario === "base") && (
+                  <Line
+                    type="monotone"
+                    dataKey="baseRevenue"
+                    name="Base"
+                    stroke="#3b82f6"
+                    strokeWidth={4}
+                    dot={{ fill: "#3b82f6", r: 4 }}
+                    activeDot={{ r: 8, strokeWidth: 0 }}
+                  />
+                )}
+                {(activeScenario === "all" ||
+                  activeScenario === "optimistic") && (
+                  <Line
+                    type="monotone"
+                    dataKey="optimisticRevenue"
+                    name="Otimista"
+                    stroke="#10b981"
+                    strokeWidth={4}
+                    dot={{ fill: "#10b981", r: 4 }}
+                    activeDot={{ r: 8, strokeWidth: 0 }}
+                  />
+                )}
+              </LineChart>
+            )}
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Profit Chart */}
-      <div className="glass-card soft-shadow p-10 bg-muted/20 dark:bg-card/40 backdrop-blur-xl rounded-[3rem] border border-border">
-        <div className="flex items-center justify-between mb-8">
+      <div className="glass-card soft-shadow p-12 bg-muted/20 backdrop-blur-3xl rounded-[3rem] border border-border">
+        <div className="flex items-center justify-between mb-10">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-foreground font-display tracking-tight">
-              Lucro Projetado
+            <h2 className="text-3xl font-black text-foreground font-display tracking-tight uppercase">
+              Fluxo de Lucro
             </h2>
-            <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">
-              Receita - Despesas por ano
+            <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">
+              Yield & Operational Efficiency
             </p>
           </div>
         </div>
 
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={350}>
           <BarChart data={chartData} barCategoryGap="20%">
             <CartesianGrid
               strokeDasharray="3 3"
@@ -458,7 +484,7 @@ export default function FinancialProjections() {
               tick={{
                 fill: "rgba(255,255,255,0.4)",
                 fontSize: 12,
-                fontWeight: 700,
+                fontWeight: 900,
               }}
               axisLine={false}
               tickLine={false}
@@ -467,7 +493,7 @@ export default function FinancialProjections() {
               tick={{
                 fill: "rgba(255,255,255,0.4)",
                 fontSize: 10,
-                fontWeight: 700,
+                fontWeight: 900,
               }}
               axisLine={false}
               tickLine={false}
@@ -475,11 +501,10 @@ export default function FinancialProjections() {
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "rgba(0,0,0,0.85)",
+                backgroundColor: "rgba(0,0,0,0.9)",
                 backdropFilter: "blur(20px)",
                 border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: "16px",
-                color: "#fff",
+                borderRadius: "24px",
               }}
               formatter={(v: number) => [formatCurrency(v), ""]}
             />
@@ -488,9 +513,9 @@ export default function FinancialProjections() {
               align="right"
               iconType="circle"
               wrapperStyle={{
-                paddingBottom: "24px",
+                paddingBottom: "30px",
                 fontSize: "10px",
-                fontWeight: 700,
+                fontWeight: 900,
                 textTransform: "uppercase" as const,
               }}
             />
@@ -576,25 +601,27 @@ export default function FinancialProjections() {
 
       {/* Saved Projections */}
       {projections.length > 0 && (
-        <div className="glass-card soft-shadow overflow-hidden bg-muted/20 dark:bg-card/40 backdrop-blur-xl rounded-[2.5rem] border border-border">
-          <div className="p-8 border-b border-border/40">
-            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.2em]">
-              Projeções Salvas
+        <div className="glass-card soft-shadow overflow-hidden bg-muted/20 backdrop-blur-3xl rounded-[3rem] border border-border">
+          <div className="p-10 border-b border-border/20">
+            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">
+              Biblioteca de Simulações
             </h3>
           </div>
           <div className="divide-y divide-border/10">
             {projections.map((p) => (
               <div
                 key={p.id}
-                className="flex items-center justify-between px-8 py-6 hover:bg-muted/50 transition-all group"
+                className="flex items-center justify-between px-10 py-8 hover:bg-muted/30 transition-all group"
               >
-                <div className="flex items-center gap-6">
-                  <div className="p-3 rounded-2xl bg-primary/10">
-                    <FileText className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-8">
+                  <div className="w-14 h-14 rounded-[1.25rem] bg-primary/10 flex items-center justify-center border border-primary/20 shadow-inner">
+                    <FileText className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold">{p.name}</h4>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                    <h4 className="text-lg font-black tracking-tight uppercase">
+                      {p.name}
+                    </h4>
+                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-[0.2em] mt-1">
                       {p.start_year} → {p.end_year} •{" "}
                       {new Date(p.created_at).toLocaleDateString("pt-BR")}
                     </p>
@@ -602,9 +629,9 @@ export default function FinancialProjections() {
                 </div>
                 <button
                   onClick={() => deleteProjection(p.id)}
-                  className="p-2 rounded-full hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
+                  className="p-4 rounded-2xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-all border border-transparent hover:border-destructive/20"
                 >
-                  <Trash2 className="w-4 h-4 text-destructive" />
+                  <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             ))}
@@ -614,21 +641,21 @@ export default function FinancialProjections() {
 
       {/* Save Modal */}
       {showSaveModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
           <div
-            className="absolute inset-0 bg-background/80 backdrop-blur-xl"
+            className="absolute inset-0 bg-background/90 backdrop-blur-2xl"
             onClick={() => setShowSaveModal(false)}
           />
-          <div className="relative glass-panel soft-shadow bg-card dark:bg-card/40 p-10 w-full max-w-md z-10 rounded-[3rem] border border-border animate-in zoom-in-95 duration-300">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-2xl font-bold font-display tracking-tight">
+          <div className="relative glass-card soft-shadow bg-card p-12 w-full max-w-md z-10 rounded-[3.5rem] border border-border animate-in zoom-in-95 duration-300">
+            <div className="flex items-center justify-between mb-10">
+              <h3 className="text-3xl font-black font-display tracking-tight uppercase italic">
                 Salvar Projeção
               </h3>
               <button
                 onClick={() => setShowSaveModal(false)}
-                className="p-3 rounded-full bg-foreground/5"
+                className="p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               </button>
             </div>
             <form
@@ -638,17 +665,17 @@ export default function FinancialProjections() {
                 setShowSaveModal(false);
                 setSaveName("");
               }}
-              className="space-y-6"
+              className="space-y-8"
             >
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                  Nome
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
+                  Nome da Simulação
                 </label>
                 <input
                   value={saveName}
                   onChange={(e) => setSaveName(e.target.value)}
-                  className="glass-input w-full px-6 py-4 rounded-2xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
-                  placeholder="Ex: Pitch Series A"
+                  className="w-full px-6 py-5 rounded-2xl bg-background border border-border text-foreground text-base font-bold outline-none focus:border-primary transition-all"
+                  placeholder="Ex: Pitch Series A 2026"
                   required
                 />
               </div>
@@ -657,16 +684,16 @@ export default function FinancialProjections() {
                   type="button"
                   variant="ghost"
                   onClick={() => setShowSaveModal(false)}
-                  className="flex-1 h-14 rounded-2xl font-bold uppercase tracking-widest text-[10px]"
+                  className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-[10px]"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 h-14 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-xl shadow-primary/20"
+                  className="flex-1 h-16 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/20"
                 >
-                  {loading ? "Salvando..." : "Salvar"}
+                  {loading ? "Gravando..." : "Confirmar"}
                 </Button>
               </div>
             </form>
