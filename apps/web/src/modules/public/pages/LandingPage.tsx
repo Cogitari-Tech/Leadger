@@ -1,58 +1,34 @@
-import { useState, useEffect, type FormEvent } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/context/AuthContext";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 import {
   ShieldCheck,
   Database,
-  Activity,
   ArrowRight,
-  Loader2,
-  KeyRound,
   CheckCircle2,
-  Target,
   Zap,
   Lock,
   FileSearch,
+  Activity,
+  BarChart3,
+  GitBranch,
   CheckSquare,
-  Eye,
-  EyeOff,
+  Menu,
+  X,
 } from "lucide-react";
-import { Turnstile } from "@marsidev/react-turnstile";
 
 export function LandingPage() {
-  const { user, signIn, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-
-  // Auth Form State
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState(""); // For register only
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [heroEmail, setHeroEmail] = useState("");
 
-  // Session persistence sync
-  useEffect(() => {
-    if (!rememberMe) {
-      localStorage.setItem("amuri_session_type", "temporal");
-    } else {
-      localStorage.removeItem("amuri_session_type");
-    }
-  }, [rememberMe]);
-
-  // (Password strength logic removed from LandingPage as it is handled in RegisterPage)
-
-  // Scroll Animation Observer
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -72,880 +48,612 @@ export function LandingPage() {
 
     const hiddenElements = document.querySelectorAll(".reveal-on-scroll");
     hiddenElements.forEach((el) => observer.observe(el));
-
     return () => observer.disconnect();
   }, []);
 
-  // If already logged in, redirect to dashboard
   if (user) return <Navigate to="/dashboard" replace />;
 
-  const handleAuthSubmit = async (e: FormEvent) => {
+  const handleStartFree = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSubmitting(true);
-
-    try {
-      // Captcha validation
-      const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
-      const isTestKey = siteKey === "1x00000000000000000000AA";
-      const automationBypass =
-        localStorage.getItem("AMURI_AUTOMATION_BYPASS") === "true";
-
-      if (siteKey && !turnstileToken && !isTestKey && !automationBypass) {
-        setError("Por favor, confirme que você não é um robô.");
-        setSubmitting(false);
-        return;
-      }
-
-      if (authMode === "login") {
-        const { error: authError } = await signIn(
-          email,
-          password,
-          turnstileToken || undefined,
-          rememberMe,
-        );
-        if (authError) {
-          setError(
-            authError.message === "Invalid login credentials"
-              ? "E-mail ou senha incorretos. Verifique suas credenciais (ou use o login com Google/GitHub se sua conta foi criada assim)."
-              : authError.message.includes("captcha")
-                ? "Falha na verificação de segurança (Captcha)."
-                : "Erro ao fazer login. Tente novamente.",
-          );
-        }
-      } else {
-        // Redireciona para a página de registro completa (onde o usuário tem o passo de escolher entrar ou criar empresa)
-        if (password.length > 0) {
-          // Apenas um aviso amigável, já que a senha será digitada na próxima tela
-          console.log("Senha omitida por segurança, redirecionando...");
-        }
-        navigate(
-          `/register?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`,
-        );
-        return;
-      }
-    } catch (err: any) {
-      setError(err.message || "Ocorreu um erro na autenticação.");
-    } finally {
-      setSubmitting(false);
+    if (heroEmail) {
+      navigate(`/register?email=${encodeURIComponent(heroEmail)}`);
+    } else {
+      navigate("/register");
     }
   };
 
-  const { signInWithGoogle, signInWithGitHub } = useAuth();
-
-  const toggleAuthMode = () => {
-    setAuthMode((prev) => (prev === "login" ? "register" : "login"));
-    setError(null);
-    setEmail("");
-    setPassword("");
-    setName("");
-    setTurnstileToken(null);
+  const navTo = (hashOrRoute: string) => {
+    setMobileMenuOpen(false);
+    if (hashOrRoute.startsWith("#")) {
+      const el = document.querySelector(hashOrRoute);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    } else if (hashOrRoute.startsWith("http")) {
+      window.open(hashOrRoute, "_blank");
+    } else {
+      navigate(hashOrRoute);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden text-foreground">
-      {/* SEO Metadata */}
       <div className="hidden" aria-hidden="true">
         <title>Cogitari Governance | Plataforma Corporativa All-in-One</title>
         <meta
           name="description"
-          content="A única fonte da verdade para a sua startup. Gestão integrada, contabilidade e compliance para early-stage e founders."
+          content="A infraestrutura de compliance da sua startup. Controle o fluxo de caixa, valide a contabilidade."
         />
-        <meta property="og:title" content="Cogitari Governance" />
-        <meta
-          property="og:description"
-          content="A fonte da verdade para Auditoria e Compliance."
-        />
-        <meta property="og:image" content="/images/og-image.png" />
       </div>
-      {/* ─── NAV HEADER ────────────────────────────────────────── */}
+
       <header
-        className={`fixed top-0 inset-x-0 z-50 px-6 transition-all duration-300 flex items-center justify-between border-b ${
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b ${
           isScrolled
-            ? "py-3 bg-background/95 backdrop-blur-md shadow-sm border-border/40"
-            : "py-5 bg-background/40 backdrop-blur-sm border-transparent"
+            ? "py-3 bg-background/80 backdrop-blur-md shadow-sm border-border/40"
+            : "py-5 bg-transparent border-transparent"
         }`}
       >
-        <div className="flex items-center gap-3">
-          <img
-            src="/images/logo-cogitari.png"
-            alt="Cogitari Governance"
-            className="h-7 w-auto mix-blend-screen hidden dark:block"
-            aria-hidden="true"
-          />
-          <img
-            src="/images/logo-cogitari-dark.png"
-            alt="Cogitari Governance"
-            className="h-7 w-auto block dark:hidden"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/images/logo-cogitari.png";
-            }}
-            aria-hidden="true"
-          />
-          <span
-            className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-50 px-2 py-0.5 border-l border-border ml-2"
-            aria-label="Governance"
-          >
-            Governance
-          </span>
-        </div>
-        <ThemeToggle />
-      </header>
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <button
+              onClick={() => navTo("/")}
+              className="flex items-center gap-3"
+              aria-label="Cogitari Governance Home"
+            >
+              <img
+                src="/images/logo-cogitari.png"
+                alt="Cogitari Governance"
+                className="h-7 w-auto mix-blend-screen hidden dark:block"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+              />
+              <img
+                src="/images/logo-cogitari-dark.png"
+                alt="Cogitari Governance"
+                className="h-7 w-auto block dark:hidden"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+              />
+              <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-50 px-2 py-0.5 border-l border-border ml-2">
+                Governance
+              </span>
+            </button>
 
-      {/* ─── MAIN CONTENT ─────────────────────────────────────── */}
-      <main>
-        {/* ─── HERO SECTION (Unified Background) ────────────────────── */}
-        <section
-          className="relative min-h-screen flex flex-col md:flex-row pt-16 bg-background overflow-hidden"
-          aria-labelledby="hero-heading"
-        >
-          {/* Unified Background Layer */}
-          <div
-            className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 mix-blend-overlay dark:opacity-10 pointer-events-none"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background pointer-events-none"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-10 pointer-events-none"
-            aria-hidden="true"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-primary via-transparent to-transparent blur-3xl" />
+            <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
+              <button
+                onClick={() => navTo("#produto")}
+                className="hover:text-foreground transition-colors"
+              >
+                Produto
+              </button>
+              <button
+                onClick={() => navTo("#solucoes")}
+                className="hover:text-foreground transition-colors"
+              >
+                Soluções
+              </button>
+              <button
+                onClick={() => navTo("#seguranca")}
+                className="hover:text-foreground transition-colors"
+              >
+                Segurança
+              </button>
+            </nav>
           </div>
 
-          {/* LEFT COMPONENT: Text & Branding */}
-          <article className="hidden md:flex w-[55%] relative items-center justify-center p-12 z-10 text-foreground">
-            <div className="relative z-10 w-full max-w-2xl reveal-on-scroll opacity-0 translate-y-12 transition-all duration-1000 ease-out">
-              <h1
-                id="hero-heading"
-                className="text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tighter leading-[1.1] mb-8"
+          <div className="hidden md:flex items-center gap-4">
+            <ThemeToggle />
+            <button
+              onClick={() => navTo("/login")}
+              className="text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Entrar
+            </button>
+            <button
+              onClick={() => navTo("/register")}
+              className="text-sm font-bold bg-foreground text-background px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+            >
+              Começar Grátis
+            </button>
+          </div>
+
+          <div className="flex md:hidden items-center gap-4">
+            <ThemeToggle />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-foreground p-2 focus:outline-none"
+              aria-label="Menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 w-full bg-background border-b border-border/50 shadow-lg px-6 py-4 flex flex-col gap-4">
+            <button
+              onClick={() => navTo("#produto")}
+              className="text-sm font-medium text-left"
+            >
+              Produto
+            </button>
+            <button
+              onClick={() => navTo("#solucoes")}
+              className="text-sm font-medium text-left"
+            >
+              Soluções
+            </button>
+            <button
+              onClick={() => navTo("#seguranca")}
+              className="text-sm font-medium text-left"
+            >
+              Segurança
+            </button>
+            <hr className="border-border/30" />
+            <button
+              onClick={() => navTo("/login")}
+              className="text-sm font-bold text-center py-3 bg-muted rounded-xl"
+            >
+              Entrar
+            </button>
+            <button
+              onClick={() => navTo("/register")}
+              className="text-sm font-bold text-center py-3 bg-foreground text-background rounded-xl"
+            >
+              Começar Grátis
+            </button>
+          </div>
+        )}
+      </header>
+
+      <main>
+        <section className="relative pt-40 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden flex flex-col items-center text-center">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background rounded-[100%] opacity-50 blur-[100px] pointer-events-none" />
+
+          <div className="max-w-4xl mx-auto relative z-10 reveal-on-scroll opacity-0 translate-y-12 transition-all duration-1000">
+            <button
+              onClick={() => navTo("#seguranca")}
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-background border border-border text-muted-foreground rounded-full text-xs font-semibold hover:bg-muted/50 transition-colors mb-8 shadow-sm"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Auditoria Nível Empresarial (Enterprise-Grade){" "}
+              <ArrowRight className="w-3 h-3" />
+            </button>
+
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tighter leading-[1.05] text-foreground mb-6 font-display">
+              A infraestrutura de compliance <br className="hidden md:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground to-muted-foreground">
+                da sua startup.
+              </span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
+              Substitua planilhas caóticas por uma única fonte da verdade.
+              Controle seu fluxo de caixa, valide a contabilidade e esteja
+              sempre pronto para <strong>due diligence</strong>.
+            </p>
+
+            <form
+              onSubmit={handleStartFree}
+              className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto"
+            >
+              <input
+                type="email"
+                required
+                placeholder="nome@empresa.com"
+                value={heroEmail}
+                onChange={(e) => setHeroEmail(e.target.value)}
+                className="w-full sm:w-auto flex-1 px-5 py-3.5 rounded-xl border border-border bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all shadow-sm"
+              />
+              <button
+                type="submit"
+                className="w-full sm:w-auto px-6 py-3.5 bg-foreground text-background font-bold rounded-xl text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap active:scale-95"
               >
-                A única fonte da verdade{" "}
-                <span className="text-primary block mt-2">
-                  para a sua startup
-                </span>
-              </h1>
-              <p className="text-xl text-muted-foreground font-medium leading-relaxed max-w-prose">
-                Plataforma corporativa all-in-one para controle financeiro,
-                gestão contábil, compliance e governança de startups em
-                early-stage e founders ambiciosos.
-              </p>
+                Começar Grátis
+              </button>
+            </form>
+            <p className="text-xs text-muted-foreground mt-4 font-medium flex items-center justify-center gap-4">
+              <span className="flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" /> 14 dias grátis
+              </span>
+              <span className="flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" /> S/ cartão de crédito
+              </span>
+            </p>
+          </div>
 
-              <div className="mt-16 grid grid-cols-2 gap-10">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-primary">
-                    <ShieldCheck
-                      className="w-5 h-5 group-hover:scale-110 transition-transform"
-                      aria-hidden="true"
-                    />
-                    <span className="font-bold tracking-widest uppercase text-xs">
-                      Gestão Integrada
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground font-medium max-w-xs leading-relaxed">
-                    Centralize seu financeiro, contabilidade e time em um único
-                    ecossistema auditável.
-                  </p>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-primary">
-                    <Database
-                      className="w-5 h-5 group-hover:scale-110 transition-transform"
-                      aria-hidden="true"
-                    />
-                    <span className="font-bold tracking-widest uppercase text-xs">
-                      Pronto para M&A
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground font-medium max-w-xs leading-relaxed">
-                    Dados históricos estruturados e portal de stakeholders para
-                    due diligence fluida.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          {/* RIGHT COMPONENT: SLIDING AUTH CONTAINER */}
-          <aside className="w-full md:w-[45%] flex items-center justify-center p-6 md:p-12 relative z-10 py-12 md:py-0">
-            <div className="w-full max-w-md relative min-h-[620px] bg-background text-foreground rounded-[2rem] shadow-[0_0_60px_-15px_rgba(0,0,0,0.5)] border border-white/10 dark:border-white/5 overflow-hidden reveal-on-scroll opacity-0 translate-y-12 transition-all duration-1000 ease-out delay-200">
-              {/* === LOGIN CARD (Base Layer) === */}
-              <div
-                className="absolute inset-0 w-full h-full bg-background transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1) z-0"
-                style={{
-                  transform:
-                    authMode === "login"
-                      ? "translateX(0) scale(1)"
-                      : "translateX(-10%) scale(0.95)",
-                  opacity: authMode === "login" ? 1 : 0,
-                }}
-                aria-hidden={authMode !== "login"}
-              >
-                <div className="p-8 md:p-10 h-full flex flex-col justify-center overflow-y-auto custom-scrollbar">
-                  <div className="mb-8">
-                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
-                      Acesso
-                    </h2>
-                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-3">
-                      Identificação Exclusiva
-                    </p>
-                  </div>
-
-                  <form
-                    onSubmit={handleAuthSubmit}
-                    className="space-y-6"
-                    noValidate
-                  >
-                    {error && authMode === "login" && (
-                      <div
-                        className="p-4 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-bold rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2"
-                        aria-live="polite"
-                      >
-                        <Activity className="w-5 h-5 shrink-0 mt-0.5" />
-                        <span>{error}</span>
-                      </div>
-                    )}
-                    <div className="space-y-5">
-                      <div className="space-y-1.5 flex flex-col">
-                        <label
-                          htmlFor="login-email"
-                          className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-widest ml-1 cursor-pointer w-fit"
-                        >
-                          E-mail Institucional
-                        </label>
-                        <input
-                          id="login-email"
-                          type="email"
-                          required
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="w-full px-6 py-4 text-base bg-muted/40 border border-border/60 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 shadow-sm rounded-2xl font-medium placeholder:opacity-40"
-                          placeholder="nome@empresa.com"
-                        />
-                      </div>
-                      <div className="space-y-1.5 flex flex-col">
-                        <div className="flex items-center justify-between ml-1">
-                          <label
-                            htmlFor="login-password"
-                            className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-widest cursor-pointer w-fit"
-                          >
-                            Senha de Segurança
-                          </label>
-                          <Link
-                            to="/forgot-password"
-                            className="text-[11px] font-bold text-primary hover:text-primary/80 transition-all uppercase tracking-widest focus:outline-none focus:underline rounded"
-                          >
-                            Esqueci minha senha
-                          </Link>
-                        </div>
-                        <div className="relative">
-                          <input
-                            id="login-password"
-                            type={showPassword ? "text" : "password"}
-                            required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-6 py-4 text-base bg-muted/40 border border-border/60 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 shadow-sm rounded-2xl font-medium tracking-widest placeholder:opacity-40"
-                            placeholder="••••••••"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors p-1"
-                            title={
-                              showPassword ? "Ocultar senha" : "Exibir senha"
-                            }
-                          >
-                            {showPassword ? (
-                              <EyeOff className="w-5 h-5" />
-                            ) : (
-                              <Eye className="w-5 h-5" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between px-1">
-                        <label className="flex items-center gap-2 cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={rememberMe}
-                            onChange={(e) => setRememberMe(e.target.checked)}
-                            className="w-4 h-4 rounded border-border/40 text-primary focus:ring-primary/20 bg-muted/40 transition-all"
-                          />
-                          <span className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest group-hover:text-muted-foreground transition-colors">
-                            Mantenha-me conectado
-                          </span>
-                        </label>
-                      </div>
-
-                      {/* Turnstile */}
-                      {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
-                        <div className="flex justify-center mt-2 h-[65px]">
-                          <Turnstile
-                            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-                            onSuccess={(token) => {
-                              setTurnstileToken(token);
-                              setError(null);
-                            }}
-                            options={{ theme: "auto", size: "normal" }}
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={
-                        submitting ||
-                        authLoading ||
-                        (!!import.meta.env.VITE_TURNSTILE_SITE_KEY &&
-                          !turnstileToken &&
-                          import.meta.env.VITE_TURNSTILE_SITE_KEY !==
-                            "1x00000000000000000000AA" &&
-                          localStorage.getItem("AMURI_AUTOMATION_BYPASS") !==
-                            "true")
-                      }
-                      className="group w-full bg-primary text-primary-foreground py-4 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-xl shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/30 disabled:opacity-50 transition-all duration-300 rounded-2xl active:scale-[0.98] flex items-center justify-center gap-2 mt-4"
-                    >
-                      {submitting || authLoading ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        "Iniciar Sessão"
-                      )}
-                      {!submitting && !authLoading && (
-                        <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                      )}
-                    </button>
-                  </form>
-
-                  <div className="mt-8 pt-6 border-t border-border/30 text-center">
-                    <div className="mb-6 grid grid-cols-2 gap-4">
-                      <button
-                        onClick={signInWithGoogle}
-                        type="button"
-                        className="flex items-center justify-center gap-2 border border-border/60 py-3 rounded-2xl text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-muted/50 transition-all active:scale-95"
-                      >
-                        <svg className="h-4 w-4" viewBox="0 0 24 24">
-                          <path
-                            fill="#4285F4"
-                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32l3.56 2.76c2.07-1.9 3.28-4.74 3.28-8.09z"
-                          />
-                          <path
-                            fill="#34A853"
-                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.76c-.98.66-2.23 1.06-3.72 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                          />
-                          <path
-                            fill="#FBBC05"
-                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                          />
-                          <path
-                            fill="#EA4335"
-                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                          />
-                        </svg>
-                        Google
-                      </button>
-                      <button
-                        onClick={signInWithGitHub}
-                        type="button"
-                        className="flex items-center justify-center gap-2 border border-border/60 py-3 rounded-2xl text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-muted/50 transition-all active:scale-95"
-                      >
-                        <svg
-                          className="h-4 w-4"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        GitHub
-                      </button>
-                    </div>
-                    <p className="text-muted-foreground text-sm font-medium">
-                      Ainda não possui acesso?{" "}
-                      <button
-                        onClick={toggleAuthMode}
-                        type="button"
-                        className="text-foreground font-bold hover:text-primary focus:outline-none focus:underline rounded transition-colors"
-                      >
-                        Cadastre-se
-                      </button>
-                    </p>
-                  </div>
+          <div className="w-full max-w-5xl mx-auto mt-20 relative z-10 reveal-on-scroll opacity-0 translate-y-12 transition-all duration-1000 delay-200">
+            <div className="rounded-2xl border border-border/50 bg-background/50 backdrop-blur-md shadow-2xl overflow-hidden shadow-black/20 dark:shadow-white/5 transition-transform duration-700 ease-out hover:scale-[1.02]">
+              <div className="h-10 bg-muted/40 border-b border-border/50 flex items-center px-4 gap-2">
+                <div className="w-3 h-3 rounded-full bg-destructive/80" />
+                <div className="w-3 h-3 rounded-full bg-amber-500/80" />
+                <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                <div className="mx-auto text-[10px] font-medium text-muted-foreground px-6 py-1 bg-background rounded border border-border/50">
+                  app.cogitari.com.br
                 </div>
               </div>
-
-              {/* === REGISTER CARD (Top Layer, slides over) === */}
-              <div
-                className={`absolute inset-0 w-full h-full bg-background border-l border-border/40 transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1) z-10 ${authMode === "register" ? "shadow-[-20px_0_40px_-10px_rgba(0,0,0,0.3)] shadow-black/30" : "shadow-none"}`}
-                style={{
-                  transform:
-                    authMode === "register"
-                      ? "translateX(0)"
-                      : "translateX(100%)",
-                }}
-                aria-hidden={authMode !== "register"}
-              >
-                <div className="p-8 md:p-10 h-full flex flex-col justify-center overflow-y-auto custom-scrollbar">
-                  <div className="mb-6">
-                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
-                      Criar Conta
-                    </h2>
-                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-3">
-                      Inicie sua jornada
-                    </p>
+              <div className="flex h-[350px] md:h-[550px] bg-background">
+                <div className="w-16 md:w-56 border-r border-border/50 p-4 flex flex-col gap-4">
+                  <div className="h-6 w-full max-w-[120px] bg-muted animate-pulse rounded md:hidden block" />
+                  <div className="h-8 w-3/4 bg-muted animate-pulse rounded hidden md:block mb-6" />
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-muted/50 shrink-0" />
+                      <div className="h-4 bg-muted/40 rounded w-full hidden md:block" />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex-1 p-6 md:p-8 flex flex-col gap-6">
+                  <div className="flex justify-between items-center bg-muted/20 p-4 rounded-xl border border-border/40">
+                    <div className="space-y-2">
+                      <div className="h-5 w-32 md:w-48 bg-foreground/80 rounded" />
+                      <div className="h-3 w-20 md:w-32 bg-muted-foreground/50 rounded" />
+                    </div>
+                    <div className="h-9 w-24 bg-primary rounded-lg shadow-sm shadow-primary/20" />
                   </div>
-
-                  <form
-                    onSubmit={handleAuthSubmit}
-                    className="space-y-5"
-                    noValidate
-                  >
-                    {error && authMode === "register" && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map((i) => (
                       <div
-                        className="p-4 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-bold rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2"
-                        aria-live="polite"
+                        key={i}
+                        className="h-24 bg-background border border-border/50 rounded-xl p-4 flex flex-col justify-between shadow-sm"
                       >
-                        <Activity className="w-5 h-5 shrink-0 mt-0.5" />
-                        <span>{error}</span>
-                      </div>
-                    )}
-                    <div className="space-y-4">
-                      <div className="space-y-1.5 flex flex-col">
-                        <label
-                          htmlFor="register-name"
-                          className="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest ml-1 cursor-pointer w-fit"
-                        >
-                          Nome Completo
-                        </label>
-                        <input
-                          id="register-name"
-                          type="text"
-                          required
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          className="w-full px-5 py-3.5 text-sm bg-muted/40 border border-border/60 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 rounded-2xl font-medium placeholder:opacity-40"
-                          placeholder="Seu nome"
-                        />
-                      </div>
-                      <div className="space-y-1.5 flex flex-col">
-                        <label
-                          htmlFor="register-email"
-                          className="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest ml-1 cursor-pointer w-fit"
-                        >
-                          E-mail Profissional
-                        </label>
-                        <input
-                          id="register-email"
-                          type="email"
-                          required
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="w-full px-5 py-3.5 text-sm bg-muted/40 border border-border/60 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 rounded-2xl font-medium placeholder:opacity-40"
-                          placeholder="nome@empresa.com"
-                        />
-                      </div>
-                      {/* As senhas foram removidas deste step inicial da landing page para simplificar o cadastro,
-                          você as informará na próxima tela de registro completo. */}
-
-                      {/* Turnstile */}
-                      {import.meta.env.VITE_TURNSTILE_SITE_KEY &&
-                        authMode === "register" && (
-                          <div className="flex justify-center h-[65px]">
-                            <Turnstile
-                              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-                              onSuccess={(token) => {
-                                setTurnstileToken(token);
-                                setError(null);
-                              }}
-                              options={{ theme: "auto", size: "normal" }}
-                            />
+                        <div className="flex items-center justify-between">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <span className="w-4 h-4 rounded-sm bg-primary/50" />
                           </div>
-                        )}
+                          <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                            +12%
+                          </span>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="h-2 w-16 bg-muted rounded" />
+                          <div className="h-5 w-24 bg-foreground/80 rounded" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex-1 bg-background border border-border/50 rounded-xl p-6 shadow-sm flex gap-6">
+                    <div className="flex-1 border-b-2 border-l-2 border-border/30 relative flex items-end">
+                      <div className="absolute bottom-0 left-[10%] w-[10%] h-[30%] bg-blue-500/20 rounded-t-sm" />
+                      <div className="absolute bottom-0 left-[30%] w-[10%] h-[60%] bg-blue-500/40 rounded-t-sm" />
+                      <div className="absolute bottom-0 left-[50%] w-[10%] h-[45%] bg-blue-500/60 rounded-t-sm" />
+                      <div className="absolute bottom-0 left-[70%] w-[10%] h-[80%] bg-primary rounded-t-sm" />
                     </div>
-
-                    <div className="flex items-center justify-between px-1">
-                      <label className="flex items-center gap-2 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          checked={rememberMe}
-                          onChange={(e) => setRememberMe(e.target.checked)}
-                          className="w-4 h-4 rounded border-border/40 text-primary focus:ring-primary/20 bg-muted/40 transition-all"
-                        />
-                        <span className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest group-hover:text-muted-foreground transition-colors">
-                          Mantenha-me conectado
-                        </span>
-                      </label>
+                    <div className="w-1/3 flex flex-col gap-4 hidden lg:flex">
+                      <div className="flex-1 bg-muted/20 border border-border/30 rounded-lg" />
+                      <div className="flex-1 bg-muted/20 border border-border/30 rounded-lg" />
                     </div>
-
-                    <button
-                      type="submit"
-                      disabled={
-                        submitting ||
-                        authLoading ||
-                        (!!import.meta.env.VITE_TURNSTILE_SITE_KEY &&
-                          !turnstileToken &&
-                          import.meta.env.VITE_TURNSTILE_SITE_KEY !==
-                            "1x00000000000000000000AA" &&
-                          localStorage.getItem("AMURI_AUTOMATION_BYPASS") !==
-                            "true")
-                      }
-                      className="group w-full bg-foreground text-background py-4 text-xs font-bold tracking-[0.2em] uppercase hover:opacity-90 shadow-xl focus:outline-none focus:ring-4 focus:ring-muted-foreground/30 disabled:opacity-50 transition-all duration-300 rounded-2xl active:scale-[0.98] flex items-center justify-center gap-2 mt-4"
-                    >
-                      {submitting || authLoading ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        "Cadastrar Usuário"
-                      )}
-                      {!submitting && !authLoading && (
-                        <ArrowRight className="w-4 h-4 ml-1 group-hover:scale-110 transition-transform" />
-                      )}
-                    </button>
-                  </form>
-
-                  <div className="mt-6 pt-5 border-t border-border/30 text-center">
-                    <p className="text-muted-foreground text-sm font-medium">
-                      Já possui uma conta?{" "}
-                      <button
-                        onClick={toggleAuthMode}
-                        type="button"
-                        className="text-foreground font-bold hover:text-primary focus:outline-none focus:underline rounded transition-colors"
-                      >
-                        Voltar ao Login
-                      </button>
-                    </p>
                   </div>
                 </div>
               </div>
             </div>
-          </aside>
+            <div className="absolute -bottom-10 inset-x-10 h-20 bg-primary/10 blur-[80px] rounded-full -z-10" />
+          </div>
         </section>
 
-        {/* ─── TRUST BANNER (SOCIAL PROOF) ─────────────────────── */}
-        <section className="bg-background py-10 border-b border-border/40 overflow-hidden reveal-on-scroll translate-y-12 opacity-0 transition-all duration-1000 ease-out">
-          <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+        <section className="py-12 border-y border-border/40 bg-muted/10 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6">
+            <p className="text-center text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-8">
+              Auditado e aprovado por startups em early e growth stage
+            </p>
+            <div className="flex justify-center gap-10 md:gap-20 opacity-40 grayscale flex-wrap">
+              <div className="flex items-center gap-2 font-bold text-xl font-display">
+                <Database className="w-6 h-6" /> DataCorp
+              </div>
+              <div className="flex items-center gap-2 font-bold text-xl font-display">
+                <Activity className="w-6 h-6" /> HealthIn
+              </div>
+              <div className="flex items-center gap-2 font-bold text-xl font-display">
+                <Zap className="w-6 h-6" /> SaaSify
+              </div>
+              <div className="flex items-center gap-2 font-bold text-xl font-display">
+                <Lock className="w-6 h-6" /> SecurEdge
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="produto" className="py-32 px-6 max-w-7xl mx-auto relative">
+          <div className="text-center mb-20 reveal-on-scroll opacity-0 translate-y-12 transition-all duration-700">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground font-display mb-4">
+              Construído para escalar sem caos.
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Sua equipe foca em construir o produto. Nós cuidamos de garantir
+              que sua startup esteja sempre auditável e organizada.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { icon: Database, label: "Gestão Financeira Integrada" },
-              { icon: ShieldCheck, label: "Controle Contábil" },
-              { icon: CheckCircle2, label: "Compliance 360º" },
-              { icon: Lock, label: "Portal de Stakeholders" },
-            ].map((item, idx) => (
+              {
+                title: "Due Diligence em Minutos",
+                desc: "Gere relatórios complexos e painéis de dados organizados instantaneamente para investidores e fundos de VC.",
+                icon: FileSearch,
+              },
+              {
+                title: "Caixa Sob Comando",
+                desc: "Acompanhe seu Burn Rate, Runway e histórico de despesas sem depender de fluxos complexos das contabilidades.",
+                icon: BarChart3,
+              },
+              {
+                title: "Governança Automática",
+                desc: "Trilhas de auditoria imutáveis e mapeamento de riscos atualizado em tempo real sincronizado ao GitHub.",
+                icon: ShieldCheck,
+              },
+            ].map((feature, i) => (
               <div
-                key={idx}
-                className="flex items-center gap-3 font-bold tracking-widest text-xs md:text-sm uppercase text-foreground"
+                key={i}
+                className="group p-8 rounded-3xl bg-background border border-border hover:border-border/80 transition-all hover:shadow-lg reveal-on-scroll opacity-0 translate-y-12"
+                style={{ transitionDelay: `${i * 100}ms` }}
               >
-                <item.icon
-                  className="w-5 h-5 text-primary"
-                  aria-hidden="true"
-                />{" "}
-                {item.label}
+                <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary/10 transition-all">
+                  <feature.icon className="w-6 h-6 text-foreground group-hover:text-primary transition-colors" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-3 tracking-tight">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                  {feature.desc}
+                </p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ─── STORYTELLING SECTIONS ───────────────────────────── */}
-
-        {/* PAIN POINT: O Caos Dói */}
         <section
-          className="py-32 px-6 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16"
-          aria-labelledby="problem-heading"
+          id="solucoes"
+          className="py-24 overflow-hidden bg-muted/20 border-t border-border/40"
         >
-          <article className="w-full md:w-1/2 space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-destructive/10 text-destructive text-xs font-bold tracking-widest uppercase">
-              <Activity className="w-4 h-4" aria-hidden="true" />O Problema
-            </div>
-            <h2
-              id="problem-heading"
-              className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground leading-[1.1]"
-            >
-              O caos custa caro.
-              <br />
-              <span className="text-muted-foreground">
-                Desordem financeira mata o crescimento.
-              </span>
-            </h2>
-            <p className="text-xl text-muted-foreground font-medium leading-relaxed max-w-prose">
-              Muitos fundadores de startups sofrem tentando conciliar finanças,
-              times e documentação em dezenas de ferramentas isoladas e
-              planilhas. A ausência de processos claros prejudica o valuation e
-              afasta investidores sérios.
-            </p>
-            <ul className="space-y-4 pt-4">
-              {[
-                "Riscos escondidos na operação diária descentralizada",
-                "Falta de clareza tecnológica no fechamento contábil mensal",
-                "Perda irreversível do histórico de decisões estratégicas",
-              ].map((item, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-4 text-foreground font-medium text-lg"
-                >
-                  <CheckCircle2
-                    className="w-6 h-6 text-destructive shrink-0 mt-0.5"
-                    aria-hidden="true"
-                  />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </article>
-          <div className="w-full md:w-1/2 relative">
-            <div className="aspect-[4/3] rounded-[2rem] overflow-hidden border border-border/50 bg-slate-900 shadow-2xl relative flex items-center justify-center p-8">
-              <div
-                className="absolute inset-0 bg-[url('/images/chaos-pattern.svg')] opacity-10 bg-center"
-                aria-hidden="true"
-              />
-              <div className="w-full max-w-sm p-8 bg-black/40 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl rotate-[-2deg] transform transition-transform hover:rotate-0 duration-500">
-                <div className="flex items-center gap-3 mb-6 opacity-60 text-white font-medium">
-                  <Database className="w-5 h-5" />
-                  <span className="truncate">
-                    Excel_Financeiro_Final_V4_real.xlsx
-                  </span>
+          <div className="max-w-7xl mx-auto px-6 space-y-32">
+            <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20 reveal-on-scroll opacity-0 translate-y-12 transition-all duration-700">
+              <div className="w-full md:w-1/2 space-y-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-500/10 text-cyan-500 rounded-full text-xs font-bold uppercase tracking-widest">
+                  <Database className="w-4 h-4" /> Finanças Integradas
                 </div>
-                <div className="space-y-3">
-                  <div className="p-3 rounded-xl bg-destructive/20 text-sm font-mono text-red-400 border border-destructive/20 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />{" "}
-                    ERRO: Múltiplas versões detectadas.
-                  </div>
-                  <div className="p-3 rounded-xl bg-orange-500/20 text-sm font-mono text-orange-400 border border-orange-500/20 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-orange-400" />{" "}
-                    AVISO: Trilha de auditoria corrompida.
-                  </div>
-                </div>
+                <h3 className="text-3xl md:text-5xl font-bold font-display tracking-tight text-foreground leading-[1.1]">
+                  Diga adeus ao caos <br className="hidden md:block" /> das
+                  planilhas.
+                </h3>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Conecte suas contas, monitore gastos indiretos e categorize
+                  despesas automaticamente. Tudo o que você precisa para
+                  garantir a saúde financeira da sua operação, sem surpresas no
+                  fim do mês.
+                </p>
+                <ul className="space-y-4 pt-4">
+                  {[
+                    "Acompanhamento inteligente de Burn Rate",
+                    "Conciliação bancária simplificada",
+                    "Exportações flexíveis para a contabilidade",
+                  ].map((item, i) => (
+                    <li
+                      key={i}
+                      className="flex items-center gap-3 text-sm font-semibold text-foreground"
+                    >
+                      <CheckCircle2 className="w-5 h-5 text-cyan-500 shrink-0" />{" "}
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── HOW IT WORKS (WORKFLOW) ────────────────────────── */}
-        <section
-          className="py-32 px-6 md:px-12 bg-muted/20 border-y border-border/40 reveal-on-scroll translate-y-12 opacity-0 transition-all duration-1000 ease-out"
-          aria-labelledby="workflow-heading"
-        >
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center max-w-2xl mx-auto mb-20 space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase">
-                <Zap className="w-4 h-4" aria-hidden="true" />
-                Workflow Otimizado
-              </div>
-              <h2
-                id="workflow-heading"
-                className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground leading-[1.1]"
-              >
-                Do caos à auditoria perfeita em 3 passos.
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-              <div
-                className="hidden md:block absolute top-[40px] left-[15%] right-[15%] h-px bg-gradient-to-r from-border/0 via-border to-border/0"
-                aria-hidden="true"
-              />
-
-              {[
-                {
-                  icon: Database,
-                  title: "1. Organização",
-                  desc: "Conecte seus dados operacionais e financeiros em um único painel inteligente e protegido.",
-                },
-                {
-                  icon: FileSearch,
-                  title: "2. Consistência",
-                  desc: "Mapeie indicadores, acompanhe o burn rate e valide suas métricas contábeis com praticidade.",
-                },
-                {
-                  icon: CheckSquare,
-                  title: "3. Transparência",
-                  desc: "Exporte relatórios precisos formatados nos padrões exigidos para fundos de Venture Capital.",
-                },
-              ].map((step, i) => (
-                <article
-                  key={i}
-                  className="relative p-8 rounded-[2rem] bg-background border border-border/60 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
-                >
-                  <div className="w-20 h-20 mx-auto rounded-[1.5rem] bg-slate-950 border border-white/10 flex items-center justify-center mb-8 shadow-xl relative z-10 group-hover:scale-110 transition-transform">
-                    <step.icon
-                      className="w-8 h-8 text-primary"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold tracking-tight mb-3 text-foreground text-center">
-                    {step.title}
-                  </h3>
-                  <p className="text-base text-muted-foreground font-medium leading-relaxed text-center">
-                    {step.desc}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* SOLUTION: A Fonte da Verdade */}
-        <section
-          className="py-32 px-6 md:px-12 bg-background reveal-on-scroll translate-y-12 opacity-0 transition-all duration-1000 ease-out delay-100"
-          aria-labelledby="solution-heading"
-        >
-          <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-16">
-            <div className="w-full md:w-1/2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {[
-                  {
-                    icon: ShieldCheck,
-                    title: "Histórico Confiável",
-                    desc: "Cada ação estratégica de finanças é registrada numa base centralizada e protegida.",
-                  },
-                  {
-                    icon: Zap,
-                    title: "Gestão Unificada",
-                    desc: "Fluxos de aprovação claros sem depender de dezenas de threads de e-mail.",
-                  },
-                  {
-                    icon: Target,
-                    title: "Foco Estratégico",
-                    desc: "A papelada burocrática fica com a plataforma. A equipe de fundadores foca em crescer.",
-                  },
-                  {
-                    icon: CheckCircle2,
-                    title: "Governança Sólida",
-                    desc: "Processos escaláveis e trilhas de documentação para embasar relatórios gerenciais.",
-                  },
-                ].map((feature, i) => (
-                  <article
-                    key={i}
-                    className="p-8 rounded-[2rem] bg-muted/40 border border-border/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                  >
-                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
-                      <feature.icon
-                        className="w-6 h-6 text-primary"
-                        aria-hidden="true"
-                      />
+              <div className="w-full md:w-1/2 relative">
+                <div className="absolute inset-0 bg-cyan-500/10 blur-[80px] rounded-full" />
+                <div className="relative rounded-2xl border border-border bg-background shadow-xl overflow-hidden aspect-[4/3] flex items-center justify-center">
+                  <div className="absolute inset-0 flex flex-col justify-end">
+                    <div className="h-1/2 border-b border-border/30 bg-muted/5 flex items-end p-6 gap-2">
+                      <div className="w-8 h-1/3 bg-cyan-500/20 rounded-t-sm" />
+                      <div className="w-8 h-2/3 bg-cyan-500/40 rounded-t-sm" />
+                      <div className="w-8 h-full bg-cyan-500/60 rounded-t-sm" />
+                      <div className="w-8 h-[120%] bg-cyan-500 rounded-t-sm" />
                     </div>
-                    <h3 className="text-xl font-bold text-foreground mb-3 tracking-tight">
-                      {feature.title}
-                    </h3>
-                    <p className="text-base text-muted-foreground leading-relaxed font-medium">
-                      {feature.desc}
-                    </p>
-                  </article>
-                ))}
+                    <div className="p-6 flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center shrink-0">
+                        <BarChart3 className="w-5 h-5 opacity-40" />
+                      </div>
+                      <div className="space-y-2 w-full">
+                        <div className="h-4 bg-muted rounded w-1/3" />
+                        <div className="h-2 bg-muted rounded w-full" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <article className="w-full md:w-1/2 space-y-8">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase">
-                <KeyRound className="w-4 h-4" aria-hidden="true" />A Solução
+
+            <div className="flex flex-col md:flex-row-reverse items-center gap-12 md:gap-20 reveal-on-scroll opacity-0 translate-y-12 transition-all duration-700">
+              <div className="w-full md:w-1/2 space-y-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-xs font-bold uppercase tracking-widest hidden">
+                  {/* Banned color removed, using Indigo/Blue instead */}
+                </div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-xs font-bold uppercase tracking-widest">
+                  <GitBranch className="w-4 h-4" /> Conformidade Contínua
+                </div>
+                <h3 className="text-3xl md:text-5xl font-bold font-display tracking-tight text-foreground leading-[1.1]">
+                  Matriz de Riscos <br className="hidden md:block" />{" "}
+                  Autodiagnóstica.
+                </h3>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Identifique gargalos e vulnerabilidades antes que se tornem
+                  problemas operacionais ou jurídicos. A plataforma vincula
+                  achados de auditoria diretamente aos repositórios no GitHub,
+                  fechando a lacuna entre códice e compliance.
+                </p>
+                <ul className="space-y-4 pt-4">
+                  {[
+                    "Integração nativa de Segurança com GitHub",
+                    "Mapeamento de Frameworks (ISO 27001, SOC2)",
+                    "Sistema de issues para resolução guiada",
+                  ].map((item, i) => (
+                    <li
+                      key={i}
+                      className="flex items-center gap-3 text-sm font-semibold text-foreground"
+                    >
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />{" "}
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <h2
-                id="solution-heading"
-                className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground leading-[1.1]"
-              >
-                A base profissional que investidores procuram.
-              </h2>
-              <p className="text-xl text-muted-foreground font-medium leading-relaxed max-w-prose">
-                O Cogitari Governance é o hub arquitetural de que sua empresa
-                precisa para se tornar governável, transparente e atrativa e
-                madura para alavancagem de capital. Construa processos
-                confiáveis desde o Dia 1.
-              </p>
-            </article>
+              <div className="w-full md:w-1/2 relative">
+                <div className="absolute inset-0 bg-emerald-500/5 blur-[80px] rounded-full" />
+                <div className="relative rounded-2xl border border-border bg-background shadow-xl overflow-hidden aspect-[4/3] flex items-center justify-center p-8 flex-col gap-4">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="w-full p-4 border border-border/50 rounded-lg flex items-center justify-between bg-muted/10 opacity-70"
+                    >
+                      <div className="flex items-center gap-3">
+                        <CheckSquare className="w-5 h-5 text-emerald-500/60" />
+                        <div className="h-3 w-32 bg-foreground/20 rounded" />
+                      </div>
+                      <div className="h-6 w-16 bg-muted rounded-full" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* FINAL CTA */}
         <section
-          className="py-40 px-6 text-center max-w-4xl mx-auto space-y-10"
-          aria-label="Call to action"
+          id="seguranca"
+          className="py-32 bg-background border-y border-border/40 relative overflow-hidden"
         >
-          <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-foreground leading-tight">
-            Preparado para organizar a casa?
-          </h2>
-          <p className="text-2xl text-muted-foreground font-medium max-w-2xl mx-auto">
-            Assuma o controle financeiro hoje mesmo e garanta o valuation
-            elevado que a sua startup merece na próxima rodada.
-          </p>
-          <div className="pt-4">
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 w-full max-w-2xl h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+
+          <div className="max-w-5xl mx-auto px-6 text-center space-y-8 reveal-on-scroll opacity-0 translate-y-12 transition-all duration-700">
+            <div className="w-16 h-16 bg-muted border border-border rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+              <Lock className="w-7 h-7 text-foreground" />
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold font-display tracking-tight text-foreground">
+              Segurança nível enterprise <br className="hidden md:block" /> para
+              fundadores sérios.
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+              Nós entendemos que os dados de equity e financeiros da sua empresa
+              são extremamente sensíveis. Nossa infraestrutura foi desenhada
+              priorizando as melhores práticas.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 text-left">
+              {[
+                {
+                  title: "Criptografia Avançada",
+                  desc: "Dados sensíveis criptografados via protocolo AES-256 no trânsito e em repouso.",
+                },
+                {
+                  title: "MFA Nativo (2FA)",
+                  desc: "Autenticação em múltiplas etapas obrigatória e auditada via aplicativos TOTP (Google Authenticator).",
+                },
+                {
+                  title: "Trilhas de Auditoria",
+                  desc: "Eventos chaves do sistema são roteados para um banco de dados imutável protegido contra adulterações (tampering).",
+                },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="p-8 rounded-2xl border border-border bg-muted/10 hover:bg-muted/30 transition-colors"
+                >
+                  <h4 className="text-lg font-bold text-foreground mb-3">
+                    {item.title}
+                  </h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-40 px-6 relative overflow-hidden bg-foreground text-background text-center">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-muted-foreground/10 via-background to-background rounded-[100%] opacity-20 pointer-events-none" />
+
+          <div className="max-w-3xl mx-auto relative z-10 reveal-on-scroll opacity-0 translate-y-12 transition-all duration-700">
+            <h2 className="text-5xl md:text-6xl font-bold font-display tracking-tight mb-8 leading-[1.1]">
+              Pronto para construir a <br className="hidden md:block" />
+              sua governança corporativa?
+            </h2>
+            <p className="text-xl text-background/70 mb-12 font-medium max-w-xl mx-auto leading-relaxed">
+              Comece sem cartão de crédito. Estruture os setores primários da
+              sua empresa de ponta a ponta em menos de 5 minutos.
+            </p>
             <button
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                setAuthMode("register");
-              }}
-              className="group inline-flex items-center justify-center gap-3 bg-primary text-primary-foreground px-10 py-5 rounded-[2rem] text-sm font-bold tracking-[0.2em] uppercase shadow-2xl hover:shadow-primary/30 focus:outline-none focus:ring-4 focus:ring-primary/40 transition-all duration-300 active:scale-95"
+              onClick={() => navTo("/register")}
+              className="inline-flex items-center justify-center gap-3 bg-background text-foreground px-12 py-5 rounded-xl text-sm font-bold tracking-widest uppercase shadow-lg hover:scale-[1.02] active:scale-95 transition-all outline-none focus:ring-4 focus:ring-background/30"
             >
-              Estruturar A Minha Empresa Agora
-              <ArrowRight
-                className="w-5 h-5 group-hover:translate-x-1 transition-transform"
-                aria-hidden="true"
-              />
+              Começar Grátis Agora
+              <ArrowRight className="w-5 h-5" />
             </button>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mt-10 opacity-60 text-sm font-bold tracking-wide">
+              <span className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4" /> Sem cartão required
+              </span>
+              <span className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4" /> Configuração rápida
+              </span>
+            </div>
           </div>
         </section>
       </main>
 
-      {/* FOOTER */}
-      <footer className="py-10 text-center text-sm font-medium text-muted-foreground border-t border-border/30 flex flex-col items-center gap-6">
-        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
-          {/* Legal Links */}
-          <div className="flex flex-wrap justify-center items-center gap-6">
-            <Link
-              to="/termos"
+      <footer className="py-12 px-6 bg-background border-t border-border/30">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+          <div className="flex flex-col items-center md:items-start gap-4">
+            <button
+              onClick={() => navTo("/")}
+              aria-label="Cogitari Governance Home"
+            >
+              <img
+                src="/images/logo-cogitari.png"
+                alt="Cogitari"
+                className="h-6 opacity-60 dark:block hidden hover:opacity-100 transition-opacity"
+              />
+              <img
+                src="/images/logo-cogitari-dark.png"
+                alt="Cogitari"
+                className="h-6 opacity-60 dark:hidden block hover:opacity-100 transition-opacity"
+              />
+            </button>
+            <span className="text-muted-foreground text-[11px] uppercase tracking-widest font-bold">
+              © {new Date().getFullYear()} Cogitari Governance. CNPJ
+              64.460.886/0001-39.
+            </span>
+          </div>
+
+          <div className="flex flex-wrap justify-center items-center gap-6 text-sm font-semibold text-muted-foreground">
+            <button
+              onClick={() => navTo("/termos")}
               className="hover:text-foreground transition-colors"
             >
               Termos de Uso
-            </Link>
-            <Link
-              to="/privacidade"
+            </button>
+            <button
+              onClick={() => navTo("/privacidade")}
               className="hover:text-foreground transition-colors"
             >
-              Política de Privacidade
-            </Link>
-            <Link
-              to="/disclaimer"
+              Privacidade
+            </button>
+            <button
+              onClick={() => navTo("/disclaimer")}
               className="hover:text-foreground transition-colors"
             >
-              Isenção de Responsabilidade
-            </Link>
-          </div>
-
-          {/* Social / External Links */}
-          <div className="flex flex-wrap justify-center items-center gap-6 border-l-0 md:border-l border-border/30 pl-0 md:pl-12">
-            <a
-              href="https://cogitari.com.br/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              Blog
-            </a>
-            <a
-              href="https://www.linkedin.com/company/cogitari-tech/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              LinkedIn
-            </a>
-            <a
-              href="https://github.com/Cogitari-Tech"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
+              Disclaimer
+            </button>
+            <button
+              onClick={() => navTo("https://github.com/Cogitari-Tech")}
+              className="hover:text-foreground transition-colors flex items-center gap-1"
             >
               GitHub
-            </a>
+            </button>
           </div>
         </div>
-
-        <p className="mt-4">
-          &copy; {new Date().getFullYear()} Cogitari Governance. CNPJ:
-          64.460.886/0001-39. Todos os direitos reservados.
-        </p>
       </footer>
     </div>
   );

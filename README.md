@@ -558,7 +558,7 @@ on:
 | Papel  | Responsável    | Email                |
 | ------ | -------------- | -------------------- |
 | CTO    | @xXYoungMoreXx | morekaik27@gmail.com |
-| DevOps | @Wesbonf       | devops@amuri.app     |
+| DevOps | @Wesbonf       | devops@leadgers.com  |
 
 ---
 
@@ -570,7 +570,7 @@ on:
 
 ### Emergências
 
-📧 Email: devops@amuri.app
+📧 Email: devops@leadgers.com
 
 ---
 
