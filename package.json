@@ -53,7 +53,7 @@
     "type": "git",
     "url": "https://github.com/Cogitari-Tech/Audit-Tool.git"
   },
-  "author": "Cogitari Tech <devops@amuri.app>",
+  "author": "Cogitari Tech <devops@leadgers.com>",
   "license": "UNLICENSED",
   "dependencies": {
     "@prisma/client": "^6.19.2",
