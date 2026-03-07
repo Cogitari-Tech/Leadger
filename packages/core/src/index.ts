@@ -13,6 +13,10 @@ export * from "./entities/AuditActionPlan";
 export * from "./entities/value-objects/RiskLevel";
 export * from "./entities/value-objects/ComplianceScore";
 export * from "./repositories/IAuditRepository";
+export * from "./repositories/audit/IAuditProgramRepository";
+export * from "./repositories/audit/IAuditFindingRepository";
+export * from "./repositories/audit/IAuditActionPlanRepository";
+export * from "./repositories/audit/IAuditWorkflowService";
 export * from "./usecases/audit/CreateAuditProgram";
 export * from "./usecases/audit/CreateAuditFinding";
 export * from "./usecases/audit/CreateActionPlan";
@@ -26,3 +30,6 @@ export * from "./repositories/IGitHubRepository";
 
 // ─── Projects Domain ─────────────────────────────────────
 export * from "./repositories/IProjectRepository";
+
+// ─── Compliance Domain ───────────────────────────────────
+export * from "./repositories/IComplianceRepository";

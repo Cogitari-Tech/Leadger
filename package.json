@@ -1,7 +1,7 @@
 {
-  "name": "cogitari-platform",
-  "version": "1.0.0",
-  "description": "Sistema de Auditoria, Compliance e Gestão Financeira - Cogitari Tech",
+  "name": "leadgers-platform",
+  "version": "1.1.0",
+  "description": "Sistema de Auditoria, Compliance e Gestão Financeira - Leadgers Governance",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -51,9 +51,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Cogitari-Tech/Audit-Tool.git"
+    "url": "https://github.com/leadgers-tech/Audit-Tool.git"
   },
-  "author": "Cogitari Tech <devops@leadgers.com>",
+  "author": "Leadgers Tech <devops@leadgers.com>",
   "license": "UNLICENSED",
   "dependencies": {
     "@prisma/client": "^6.19.2",

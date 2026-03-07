@@ -116,7 +116,7 @@ export default function AuditApprovalView() {
       const reportData: AuditReport = {
         program_id: program.id,
         doc_id: docId,
-        client_name: "Cogitari Governance",
+        client_name: "Leadgers Governance",
         project_name: program.name,
         environment: "Produção",
         start_date:

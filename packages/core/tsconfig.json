@@ -16,7 +16,7 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@cogitari-platform/core/*": ["./src/*"]
+      "@leadgers/core/*": ["./src/*"]
     }
   },
   "include": ["src"]

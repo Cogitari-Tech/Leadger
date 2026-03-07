@@ -1,41 +1,43 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../modules/auth/context/AuthContext";
-import { ArrowLeft, AlertTriangle } from "lucide-react";
+import { ArrowLeft, AlertTriangle, ShieldCheck } from "lucide-react";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
 
 export function Disclaimer() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans transition-colors duration-300">
       {/* SEO Metadata */}
       <div className="hidden" aria-hidden="true">
-        <title>Disclaimer Legal | Cogitari Governance</title>
+        <title>Disclaimer Legal | Leadgers Governance</title>
         <meta
           name="description"
-          content="Avisos legais e limitações de responsabilidade da plataforma Cogitari Governance."
+          content="Avisos legais e limitações de responsabilidade da plataforma Leadgers Governance."
         />
-        <meta property="og:title" content="Disclaimer - Cogitari Governance" />
+        <meta property="og:title" content="Disclaimer - Leadgers Governance" />
         <meta
           property="og:description"
           content="Avisos legais importantes sobre o uso da plataforma."
         />
       </div>
       {/* Header */}
-      <header className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+      <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border transition-colors">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link
             to={user ? "/dashboard" : "/"}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium text-sm">Voltar para a Home</span>
+            <span className="font-medium text-sm">Voltar</span>
           </Link>
           <div className="flex items-center gap-4">
-            <span className="font-bold text-lg tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-amber-500" /> Cogitari{" "}
-              <span className="font-light opacity-70">Governance</span>
-            </span>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-6 h-6 text-primary" />
+              <span className="font-black text-lg tracking-tighter uppercase">
+                Leadgers
+              </span>
+            </div>
             <ThemeToggle />
           </div>
         </div>
@@ -44,78 +46,75 @@ export function Disclaimer() {
       {/* Content */}
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-32">
         <div className="prose prose-slate dark:prose-invert max-w-none">
-          <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-6">
-            Isenção de Responsabilidade
+          <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-foreground mb-6 uppercase italic">
+            Avisos Legais
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-12">
-            Última atualização: 28 de Fevereiro de 2026
+          <p className="text-sm text-muted-foreground mb-12 font-medium">
+            Última atualização: 07 de Março de 2026
           </p>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mt-8 mb-4">
+            <h2 className="text-2xl font-black tracking-tight mt-8 mb-4 uppercase">
               1. Informações "No Estado em que se Encontram"
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
-              A Cogitari Governance fornece painéis com métricas, "matrizes de
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              A Leadgers Governance fornece painéis com métricas, "matrizes de
               risco" e "alertas de compliance" gerados a partir da integração
-              com seus sistemas (ex. GitHub, Vercel) e avaliações algorítmicas
+              com seus sistemas (ex. GitHub, Stripe) e avaliações algorítmicas
               próprias. Contudo, esses dados são informativos e refletem "o
-              estado em que se encontram", sendo as "Triagens Automáticas por
-              IA" passíveis de falso-positivos ou "alucinações algorítmicas".
+              estado em que se encontram", sendo as "Triagens Automáticas"
+              passíveis de falso-positivos.
             </p>
           </section>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mt-8 mb-4">
+            <h2 className="text-2xl font-black tracking-tight mt-8 mb-4 uppercase">
               2. Ausência de Orientação Financeira e/ou Legal
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <p className="text-muted-foreground leading-relaxed mb-4">
               Os relatórios e dashboards contábeis, preditivos ou de governança
               expostos em nosso software são arquitetados para maximizar a
-              assertividade das decisões dos CTOs, CFOs e gestores da sua
-              organização. Todavia,{" "}
+              assertividade das decisões dos gestores da sua organização.
+              Todavia,{" "}
               <strong>
                 a plataforma não substitui consultorias especializadas
               </strong>{" "}
-              (escritórios de advocacia, auditores contábeis com representação
-              em órgãos fiscais, ou médicos especialistas para compliance de
-              saúde).
+              (escritórios de advocacia, auditores contábeis ou especialistas
+              regulatórios).
             </p>
-            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <p className="text-muted-foreground leading-relaxed mb-4 font-medium">
               As decisões estratégicas originadas das percepções do software
               continuam sendo estritamente de caráter organizacional; nos
               isentamos da assunção do risco e impacto direto de escolhas de
-              negócios mal sucedidas lastreadas em interpretação do usuário
-              sobre o sistema.
+              negócios.
             </p>
           </section>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mt-8 mb-4">
+            <h2 className="text-2xl font-black tracking-tight mt-8 mb-4 uppercase">
               3. Links para Terceiros
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <p className="text-muted-foreground leading-relaxed mb-4">
               Links a plataformas terceiras integradoras indicadas na nossa
               aplicação servem apenas de via orgânica produtiva; nós não
-              endossamos e nos eximimos de garantir que aqueles prestadores de
-              serviços aturem conduta moral e sem acidentes perante os seus
-              dados por eles tratados. Reveja as políticas deles
-              independentemente.
+              endossamos e nos eximimos de garantir a conduta daqueles
+              prestadores. Recomendamos revisar as políticas de cada integrador
+              individualmente.
             </p>
           </section>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mt-8 mb-4">
+            <h2 className="text-2xl font-black tracking-tight mt-8 mb-4 uppercase">
               4. Informações Corporativas
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
-              A Cogitari Governance é operada sob o{" "}
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              A Leadgers Governance é operada sob o{" "}
               <strong>CNPJ: 64.460.886/0001-39</strong>. Diante de qualquer
               dúvida sobre o escopo da plataforma ou necessidade de revisão
               técnica, entre em contato via{" "}
               <a
                 href="mailto:support@leadgers.com"
-                className="text-brand-600 hover:underline"
+                className="text-primary hover:underline font-bold"
               >
                 support@leadgers.com
               </a>
@@ -123,20 +122,20 @@ export function Disclaimer() {
             </p>
           </section>
 
-          <section className="mt-16 p-6 rounded-2xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30">
-            <p className="text-sm font-semibold text-amber-800 dark:text-amber-400 text-center">
-              AO PROCEDER O USO REGULAR DE NOSSA APLICAÇÃO B2B (E O NOSSO PAINEL
-              DE CONTROLE), VOCÊ E SUA COMPANHIA RECONHECEM A ADESÃO INTEGRAL
-              (BEM COMO AS LIMITAÇÕES DESCRITAS) NESTE AVISO LEGAL.
+          <div className="mt-16 p-8 rounded-2xl bg-primary/5 border border-primary/10 flex items-center gap-6">
+            <AlertTriangle className="w-12 h-12 text-primary shrink-0 animate-pulse" />
+            <p className="text-sm font-black text-primary uppercase leading-tight italic">
+              AO UTILIZAR NOSSA APLICAÇÃO B2B, VOCÊ E SUA COMPANHIA RECONHECEM A
+              ADESÃO INTEGRAL ÀS LIMITAÇÕES DESCRITAS NESTE AVISO LEGAL.
             </p>
-          </section>
+          </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-slate-200 dark:border-slate-800 text-center">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          © {new Date().getFullYear()} Cogitari Governance. Todos os direitos
+      <footer className="py-8 border-t border-border text-center">
+        <p className="text-sm text-muted-foreground font-bold">
+          © {new Date().getFullYear()} Leadgers Governance. Todos os direitos
           reservados.
         </p>
       </footer>

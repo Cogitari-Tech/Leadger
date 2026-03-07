@@ -86,12 +86,25 @@ export function AuthGuard({ children }: AuthGuardProps) {
   // Handle loading states
   if (!initialized || authLoading || checkingMfa) {
     return (
-      <div className="flex h-screen items-center justify-center bg-transparent">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Autenticando...
-          </p>
+      <div className="flex h-screen items-center justify-center bg-background relative overflow-hidden">
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[150px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
+
+        <div className="flex flex-col items-center gap-6 relative z-10 glass-panel p-10 rounded-[2.5rem] border border-border/40 shadow-2xl">
+          <div className="relative">
+            <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary/20 border-t-primary shadow-[0_0_20px_rgba(var(--primary),0.2)]" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-2 w-2 rounded-full bg-primary animate-ping" />
+            </div>
+          </div>
+          <div className="space-y-1 text-center">
+            <p className="text-sm font-black text-foreground uppercase tracking-[0.2em]">
+              Autenticando
+            </p>
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest opacity-60">
+              Leadgers Security Protocol
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -103,7 +116,6 @@ export function AuthGuard({ children }: AuthGuardProps) {
   }
 
   // Email not confirmed -> verify-email screen
-  // The Supabase session user object contains email_confirmed_at
   const supabaseUser = session?.user;
   if (
     supabaseUser &&
@@ -160,46 +172,28 @@ export function AuthGuard({ children }: AuthGuardProps) {
       }
 
       // Tenant is set up. Now check user onboarding.
-      // E.g. /user-onboarding is the route for individual user setup
       if (
         !user.user_onboarding_completed &&
         location.pathname !== "/user-onboarding"
       ) {
-        // Owner/Admin doesn't need to do user-onboarding, as their wizard serves both purposes
-        // However, if we want them to do it as well, remove the isOwnerOrAdmin check
         if (!isOwnerOrAdmin) {
           return <Navigate to="/user-onboarding" replace />;
         }
       }
     }
   } else if (user && !tenant) {
-    // Edge case: User is authenticated but has no tenant associated (trigger failed or orphaned account)
-    // We should not let them into the dashboard directly as it will crash.
-    return (
-      <div className="flex flex-col h-screen items-center justify-center bg-background text-center px-4">
-        <div className="max-w-md space-y-4">
-          <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
-            <span className="text-destructive font-bold text-xl">!</span>
-          </div>
-          <h2 className="text-xl font-bold text-foreground">
-            Sua conta não possui uma empresa vinculada
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Ocorreu um problema durante a criação ou associação da sua conta.
-            Por favor, entre em contato com o suporte ou solicite um novo
-            convite.
-          </p>
-          <button
-            onClick={() =>
-              supabase.auth.signOut().then(() => (window.location.href = "/"))
-            }
-            className="mt-4 px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:brightness-110"
-          >
-            Sair e Voltar
-          </button>
-        </div>
-      </div>
-    );
+    // Edge case: User is authenticated but has no tenant associated.
+    // Likely a first-time Google/GitHub sign-up.
+    // Redirect to the register page but force the organization choice step.
+    if (location.pathname !== "/register") {
+      return (
+        <Navigate
+          to="/register?step=choice"
+          state={{ from: location }}
+          replace
+        />
+      );
+    }
   }
 
   return <>{children}</>;

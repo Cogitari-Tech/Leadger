@@ -64,7 +64,7 @@ export function UserOnboardingPage() {
         <div className="glass-card shadow-2xl rounded-[2rem] p-10 border border-white/5 space-y-8">
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              Bem-vindo ao Cogitari
+              Bem-vindo ao Leadgers
             </h1>
             <p className="text-sm text-muted-foreground font-medium">
               Vamos preparar seu ambiente de trabalho.
@@ -130,8 +130,17 @@ export function UserOnboardingPage() {
 
           {step === 2 && (
             <div className="space-y-6 text-center animate-in fade-in slide-in-from-right-4">
-              <div className="mx-auto w-20 h-20 bg-primary/10 rounded-[1.5rem] flex items-center justify-center mb-6">
-                <ShieldCheck className="w-10 h-10 text-primary" />
+              <div className="mx-auto flex items-center justify-center mb-6">
+                <img
+                  src="/images/logo-light.webp"
+                  alt="Leadgers"
+                  className="h-10 w-auto hidden dark:block"
+                />
+                <img
+                  src="/images/logo-dark.webp"
+                  alt="Leadgers"
+                  className="h-10 w-auto block dark:hidden"
+                />
               </div>
 
               <h2 className="text-2xl font-bold tracking-tight">
