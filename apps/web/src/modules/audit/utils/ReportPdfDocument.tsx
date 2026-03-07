@@ -284,7 +284,7 @@ function getRiskLabel(risk: string) {
 }
 
 // Logo URL (using public folder relative path)
-const LOGO_URL = "/images/logo-cogitari-dark.png";
+const LOGO_URL = "/images/logo-dark.webp";
 
 function ReportPdfDocument({ report }: { report: AuditReport }) {
   return (
@@ -335,7 +335,7 @@ function ReportPdfDocument({ report }: { report: AuditReport }) {
         </View>
 
         <Text style={styles.coverFooter}>
-          CONFIDENCIAL — COGITARI TECH © {new Date().getFullYear()}
+          CONFIDENCIAL — LEADGERS TECH © {new Date().getFullYear()}
         </Text>
       </Page>
 
@@ -486,7 +486,7 @@ function ReportPdfDocument({ report }: { report: AuditReport }) {
         {/* Repeating Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
-            Gerado por Cogitari Governance - Todos os direitos reservados
+            Gerado por Leadgers Governance - Todos os direitos reservados
           </Text>
           <Text
             style={styles.pageNumber}

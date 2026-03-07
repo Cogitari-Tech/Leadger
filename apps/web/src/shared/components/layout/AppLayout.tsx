@@ -89,19 +89,11 @@ export const AppLayout: React.FC = () => {
           className={`relative z-10 flex ${isCollapsed ? "flex-col gap-4 py-4 px-2 justify-center" : "p-4 justify-between"} items-center border-b border-border/20`}
         >
           {isCollapsed ? (
-            <Link
-              to="/dashboard"
-              className="flex justify-center w-8 h-8 flex-shrink-0"
-            >
+            <Link to="/dashboard" className="flex justify-center flex-shrink-0">
               <img
-                src="/images/logo-cogitari.png"
-                alt="C"
-                className="h-8 w-8 object-contain mix-blend-screen hidden dark:block"
-              />
-              <img
-                src="/images/logo-cogitari-dark.png"
-                alt="C"
-                className="h-8 w-8 object-contain block dark:hidden"
+                src="/images/favicon.webp"
+                alt="Leadgers"
+                className="w-8 h-8 rounded-lg"
               />
             </Link>
           ) : (
@@ -110,19 +102,15 @@ export const AppLayout: React.FC = () => {
               className="flex items-center gap-2.5 group w-full mr-2"
             >
               <img
-                src="/images/logo-cogitari.png"
-                alt="Logo"
-                className="h-7 w-7 mix-blend-screen hidden dark:block"
+                src="/images/logo-light.webp"
+                alt="Leadgers"
+                className="h-6 w-auto hidden dark:block"
               />
               <img
-                src="/images/logo-cogitari-dark.png"
-                alt="Logo"
-                className="h-7 w-7 block dark:hidden"
+                src="/images/logo-dark.webp"
+                alt="Leadgers"
+                className="h-6 w-auto block dark:hidden"
               />
-              <span className="font-bold text-base tracking-tight text-foreground">
-                Cogitari{" "}
-                <span className="font-light opacity-70">Governance</span>
-              </span>
             </Link>
           )}
           <button
@@ -321,7 +309,7 @@ export const AppLayout: React.FC = () => {
             className={`flex items-center justify-between px-2 mt-1 ${isCollapsed ? "hidden" : ""}`}
           >
             <span className="text-[10px] font-bold text-muted-foreground/30">
-              Cogitari © 2026
+              Leadgers © 2026
             </span>
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
@@ -347,7 +335,18 @@ export const AppLayout: React.FC = () => {
           <button onClick={() => setIsMobileMenuOpen(true)} className="p-1">
             <Menu className="w-6 h-6" />
           </button>
-          <span className="font-bold text-lg">Cogitari</span>
+          <div className="flex items-center gap-2">
+            <img
+              src="/images/logo-light.webp"
+              alt="Leadgers"
+              className="h-5 w-auto hidden dark:block"
+            />
+            <img
+              src="/images/logo-dark.webp"
+              alt="Leadgers"
+              className="h-5 w-auto block dark:hidden"
+            />
+          </div>
           <div className="w-6" />
         </div>
 

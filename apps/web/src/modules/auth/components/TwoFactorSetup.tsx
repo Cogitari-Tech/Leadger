@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "../../../config/supabase";
-import { Button } from "../../../shared/components/ui/Button";
 import { Input } from "../../../shared/components/ui/Input";
-import { CheckCircle2, ShieldAlert, Loader2 } from "lucide-react";
+import { CheckCircle2, ShieldAlert, Loader2, Smartphone } from "lucide-react";
 
 export function TwoFactorSetup() {
   const [factorId, setFactorId] = useState<string | null>(null);
@@ -124,28 +123,34 @@ export function TwoFactorSetup() {
 
   if (isEnrolled) {
     return (
-      <div className="rounded-2xl border border-border/40 bg-background/50 backdrop-blur-sm p-6 shadow-sm">
-        <div className="flex items-start gap-4">
-          <div className="rounded-full bg-emerald-500/10 p-3 text-emerald-500">
-            <CheckCircle2 size={24} />
+      <div className="rounded-[1.5rem] border border-border/40 bg-background/30 backdrop-blur-md p-8 shadow-xl animate-in fade-in duration-500">
+        <div className="flex flex-col items-center text-center gap-6">
+          <div className="rounded-2xl bg-emerald-500/10 p-4 text-emerald-500 ring-4 ring-emerald-500/5">
+            <CheckCircle2 size={32} />
           </div>
-          <div>
-            <h3 className="text-lg font-medium text-foreground">
-              Autenticação de Dois Fatores (2FA) Ativa
+          <div className="space-y-2">
+            <h3 className="text-xl font-bold text-foreground">
+              Proteção Máxima Ativada
             </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Sua conta está mais segura. Um código será solicitado sempre que
-              você fizer login.
+            <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
+              Sua conta está protegida com a Autenticação de Dois Fatores (2FA).
+              Um código será solicitado em novos logins.
             </p>
-            <div className="mt-4">
-              <Button variant="danger" onClick={unenroll} disabled={loading}>
-                {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                <span>Desativar 2FA</span>
-              </Button>
-            </div>
-            {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+          </div>
+          <div className="pt-4 w-full">
+            <button
+              onClick={unenroll}
+              disabled={loading}
+              className="w-full py-3 rounded-xl border border-destructive/20 text-destructive text-xs font-bold uppercase tracking-widest hover:bg-destructive/5 transition-all flex items-center justify-center gap-2"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              <span>Desativar Camada de Segurança</span>
+            </button>
+            {error && (
+              <p className="mt-4 text-xs text-destructive font-medium bg-destructive/10 p-3 rounded-lg border border-destructive/20">
+                {error}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -153,116 +158,119 @@ export function TwoFactorSetup() {
   }
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-background/50 backdrop-blur-sm p-6 shadow-sm">
-      <div className="flex items-start gap-4">
-        <div className="rounded-full bg-amber-500/10 p-3 text-amber-500">
-          <ShieldAlert size={24} />
+    <div className="rounded-[1.5rem] border border-border/40 bg-background/30 backdrop-blur-md p-8 shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col items-center text-center gap-6">
+        <div className="rounded-2xl bg-primary/10 p-4 text-primary ring-4 ring-primary/5">
+          <ShieldAlert size={32} />
         </div>
-        <div className="flex-1">
-          <h3 className="text-lg font-medium text-foreground">
-            Proteger Conta com 2FA
-          </h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Adicione uma camada extra de segurança à sua conta exigindo um
-            código do Google Authenticator ou Authy no login.
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold text-foreground">
+            {qrCode ? "Escaneie o QR Code" : "Proteja sua conta"}
+          </h2>
+          <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
+            {qrCode
+              ? "Use o Google Authenticator ou Authy para escanear o código abaixo e ativar a segurança."
+              : "Adicione uma camada extra de segurança exigindo um código temporário no seu celular para entrar na plataforma."}
           </p>
+        </div>
 
-          {!qrCode ? (
-            <div className="mt-6">
-              <button
-                onClick={startEnrollment}
-                disabled={loading}
-                className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl text-sm font-bold uppercase tracking-widest hover:brightness-110 disabled:opacity-50 transition-all active:scale-95"
-              >
-                {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                <span>Configurar 2FA (TOTP)</span>
-              </button>
+        {!qrCode ? (
+          <div className="w-full pt-4">
+            <button
+              onClick={startEnrollment}
+              disabled={loading}
+              className="w-full py-4 bg-primary text-primary-foreground rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:brightness-110 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Smartphone className="w-4 h-4" />
+              )}
+              <span>Iniciar Configuração</span>
+            </button>
+            {error && (
+              <div className="mt-6 text-left p-4 rounded-xl border border-destructive/20 bg-destructive/5">
+                <p className="text-xs text-destructive font-bold uppercase tracking-widest mb-1 flex items-center gap-2">
+                  <ShieldAlert className="w-3 h-3" /> Erro de Configuração
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium italic">
+                  {error}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="w-full flex flex-col gap-8 animate-in zoom-in-95 duration-500">
+            <div className="flex flex-col items-center gap-4 p-6 rounded-2xl border border-border/40 bg-white/5 shadow-inner">
+              <div className="bg-white p-3 rounded-xl shadow-2xl">
+                <QRCodeSVG value={uri || ""} size={180} />
+              </div>
+              <div className="text-center space-y-2">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                  Código de Configuração Manual
+                </p>
+                <code className="px-4 py-2 bg-background border border-border/60 rounded-lg text-sm font-mono font-bold text-foreground block tracking-wider">
+                  {secret}
+                </code>
+              </div>
+            </div>
+
+            <form onSubmit={verifyEnrollment} className="space-y-6">
+              <div className="space-y-3">
+                <label
+                  htmlFor="code"
+                  className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1"
+                >
+                  Digite o código de 6 dígitos
+                </label>
+                <Input
+                  id="code"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  placeholder="000 000"
+                  value={verifyCode}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setVerifyCode(e.target.value.replace(/\D/g, ""))
+                  }
+                  className="text-center text-3xl tracking-[0.6em] font-mono h-20 rounded-2xl bg-background/50 border-2 border-border/40 focus:border-primary/50 focus:ring-0"
+                  required
+                  autoFocus
+                />
+              </div>
+
               {error && (
-                <p className="mt-4 text-sm text-destructive font-medium border border-destructive/20 bg-destructive/10 p-3 rounded-lg">
+                <p className="text-xs text-destructive font-bold text-center">
                   {error}
                 </p>
               )}
-            </div>
-          ) : (
-            <div className="mt-6 flex flex-col gap-6 md:flex-row">
-              <div className="flex shrink-0 flex-col items-center gap-4 rounded-xl border border-border/40 bg-muted/30 p-4">
-                <div className="bg-white p-2 rounded-lg">
-                  <QRCodeSVG value={uri || ""} size={160} />
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-muted-foreground">
-                    Ou use o código manual:
-                  </p>
-                  <code className="mt-1 block rounded bg-background border border-border/40 px-2 py-1 text-xs font-medium text-foreground">
-                    {secret}
-                  </code>
-                </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQrCode(null);
+                    setFactorId(null);
+                  }}
+                  className="py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 bg-muted/20 rounded-2xl hover:bg-muted/40 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={verifyCode.length !== 6 || loading}
+                  className="py-4 bg-primary text-primary-foreground rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : null}
+                  <span>Verificar e Ativar</span>
+                </button>
               </div>
-
-              <div className="flex-1">
-                <form onSubmit={verifyEnrollment} className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="code"
-                      className="block text-sm font-medium text-foreground"
-                    >
-                      Código de Verificação
-                    </label>
-                    <p className="mb-3 mt-1 text-xs text-muted-foreground">
-                      Escaneie o QR Code com o aplicativo Authy ou Google
-                      Authenticator e digite o código de 6 dígitos gerado.
-                    </p>
-                    <Input
-                      id="code"
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={6}
-                      placeholder="000 000"
-                      value={verifyCode}
-                      onChange={(e) =>
-                        setVerifyCode(e.target.value.replace(/\D/g, ""))
-                      }
-                      className="text-center text-xl tracking-[0.5em] font-mono h-14"
-                      required
-                    />
-                  </div>
-
-                  {error && (
-                    <p className="text-sm text-destructive font-medium">
-                      {error}
-                    </p>
-                  )}
-
-                  <div className="flex justify-end gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setQrCode(null);
-                        setFactorId(null);
-                      }}
-                      className="px-4 py-2.5 text-sm font-medium text-muted-foreground bg-muted/50 rounded-xl hover:bg-muted transition-colors"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={verifyCode.length !== 6 || loading}
-                      className="flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-bold uppercase tracking-widest hover:brightness-110 disabled:opacity-50 transition-all active:scale-95"
-                    >
-                      {loading ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : null}
-                      <span>Ativar</span>
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-        </div>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );

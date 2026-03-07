@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useFinanceStore } from "../../../store/financeStore";
-import { RecordTransaction } from "@cogitari-platform/core/usecases/finance/RecordTransaction";
+import { RecordTransaction } from "@leadgers/core/usecases/finance/RecordTransaction";
 
 import { SupabaseFinanceRepository } from "../repositories/SupabaseFinanceRepository";
 import { supabase } from "../../../config/supabase";
