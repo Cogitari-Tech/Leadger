@@ -9,7 +9,7 @@ import type {
   FindingStatus,
 } from "../types/audit.types";
 
-const STORAGE_KEY = "cogitari_audit_report";
+const STORAGE_KEY = "leadgers_audit_report";
 const SAVE_DEBOUNCE_MS = 800;
 
 function createEmptyFinding(findingId: string = ""): ReportFinding {
@@ -100,7 +100,7 @@ function validateReport(report: AuditReport): ValidationResult {
 // ─── Export: TXT ──────────────────────────────────────────
 
 function generateTxt(report: AuditReport): string {
-  let txt = `RELATÓRIO DE AUDITORIA - COGITARI TECH\n\n`;
+  let txt = `RELATÓRIO DE AUDITORIA - LEADGERS TECH\n\n`;
   txt += `DOCUMENTO: ${report.doc_id}\n`;
   txt += `CLIENTE: ${report.client_name}\n`;
   txt += `PROJETO: ${report.project_name}\n`;

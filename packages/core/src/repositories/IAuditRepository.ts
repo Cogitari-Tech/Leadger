@@ -1,56 +1,29 @@
 // packages/core/src/repositories/IAuditRepository.ts
 
-import { AuditProgram } from "../entities/AuditProgram";
-import { AuditFinding } from "../entities/AuditFinding";
-import { AuditActionPlan } from "../entities/AuditActionPlan";
+import { IAuditProgramRepository } from "./audit/IAuditProgramRepository";
+import { IAuditFindingRepository } from "./audit/IAuditFindingRepository";
+import { IAuditActionPlanRepository } from "./audit/IAuditActionPlanRepository";
+import { IAuditWorkflowService } from "./audit/IAuditWorkflowService";
 
 /**
- * Port: Audit Repository Interface
+ * Port: Unified Audit Repository Interface
  *
- * Defines the contract for audit data persistence.
- * Concrete implementations (Adapters) can use Supabase,
- * REST APIs, or any other storage mechanism.
+ * Composes all audit sub-interfaces into one contract.
+ * Existing consumers can keep using this.
+ * New consumers should prefer the specific sub-interfaces.
+ *
+ * Migration path:
+ *   import { IAuditRepository } from ".../IAuditRepository";             // ← legacy (still works)
+ *   import { IAuditProgramRepository } from ".../audit/IAuditProgramRepository"; // ← new (preferred)
  */
-export interface IAuditRepository {
-  // === PROGRAMS ===
+export interface IAuditRepository
+  extends
+    IAuditProgramRepository,
+    IAuditFindingRepository,
+    IAuditActionPlanRepository,
+    IAuditWorkflowService {}
 
-  saveProgram(program: AuditProgram): Promise<void>;
-  getProgramById(id: string): Promise<AuditProgram | null>;
-  listPrograms(tenantId: string): Promise<AuditProgram[]>;
-  updateProgram(program: AuditProgram): Promise<void>;
-  deleteProgram(id: string): Promise<void>;
-
-  // === FINDINGS ===
-
-  saveFinding(finding: AuditFinding): Promise<void>;
-  getFindingById(id: string): Promise<AuditFinding | null>;
-  listFindingsByProgram(programId: string): Promise<AuditFinding[]>;
-  listFindings(tenantId: string): Promise<AuditFinding[]>;
-  updateFinding(finding: AuditFinding): Promise<void>;
-
-  // === ACTION PLANS ===
-
-  saveActionPlan(plan: AuditActionPlan): Promise<void>;
-  getActionPlanById(id: string): Promise<AuditActionPlan | null>;
-  listActionPlansByFinding(findingId: string): Promise<AuditActionPlan[]>;
-  listActionPlans(tenantId: string): Promise<AuditActionPlan[]>;
-  updateActionPlan(plan: AuditActionPlan): Promise<void>;
-
-  // === WORKFLOW ===
-
-  submitForReview(programId: string): Promise<void>;
-  approveAudit(
-    programId: string,
-    versionData: AuditVersionInput,
-  ): Promise<void>;
-  rejectAudit(programId: string, feedback: string): Promise<void>;
-
-  // === STATS ===
-
-  countFindingsByStatus(tenantId: string): Promise<FindingStatusCount>;
-}
-
-// ─── DTOs ─────────────────────────────────────────────────
+// ─── DTOs (kept here for backward compatibility) ──────────
 
 export interface AuditVersionInput {
   docHash: string;

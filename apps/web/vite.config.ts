@@ -7,10 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@cogitari-platform/core": path.resolve(
-        __dirname,
-        "../../packages/core/src",
-      ),
+      "@leadgers/core": path.resolve(__dirname, "../../packages/core/src"),
     },
   },
   build: {

@@ -97,9 +97,14 @@ export function TwoFactorChallenge() {
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
           <img
-            src="/images/logo-cogitari.png"
-            alt="Cogitari"
-            className="h-12 w-auto drop-shadow-lg"
+            src="/images/logo-light.webp"
+            alt="Leadgers"
+            className="h-10 w-auto drop-shadow-lg hidden dark:block"
+          />
+          <img
+            src="/images/logo-dark.webp"
+            alt="Leadgers"
+            className="h-10 w-auto drop-shadow-lg block dark:hidden"
           />
         </div>
 

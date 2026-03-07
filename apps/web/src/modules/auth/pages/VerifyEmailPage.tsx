@@ -78,14 +78,14 @@ export function VerifyEmailPage() {
 
       <div className="absolute top-8 left-1/2 -translate-x-1/2 z-50">
         <img
-          src="/images/logo-cogitari.png"
-          alt="Cogitari"
-          className="h-6 w-auto block dark:hidden opacity-80"
+          src="/images/logo-light.webp"
+          alt="Leadgers"
+          className="h-6 w-auto hidden dark:block opacity-80"
         />
         <img
-          src="/images/logo-cogitari-dark.png"
-          alt="Cogitari"
-          className="h-6 w-auto hidden dark:block opacity-80"
+          src="/images/logo-dark.webp"
+          alt="Leadgers"
+          className="h-6 w-auto block dark:hidden opacity-80"
         />
       </div>
 
