@@ -15,7 +15,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 async function runTest() {
-  const email = "teste@cogitari.com";
+  const email = "teste@leadgers.com";
   const password = "Cogitari@2026!Dev";
 
   console.log(`Testing Login for ${email}...`);

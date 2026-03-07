@@ -23,10 +23,10 @@ async function run() {
     await client.connect();
     console.log("Connected to database...");
     const res = await client.query(
-      "SELECT id, email, encrypted_password FROM auth.users WHERE email = 'teste@cogitari.com'",
+      "SELECT id, email, encrypted_password FROM auth.users WHERE email = 'teste@leadgers.com'",
     );
     if (res.rows.length === 0) {
-      console.log("User 'teste@cogitari.com' not found.");
+      console.log("User 'teste@leadgers.com' not found.");
     } else {
       console.log("User found:", res.rows[0]);
     }
