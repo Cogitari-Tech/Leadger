@@ -5,10 +5,10 @@ import type {
   IAuditRepository,
   AuditVersionInput,
   FindingStatusCount,
-} from "@cogitari-platform/core/repositories/IAuditRepository";
-import { AuditProgram } from "@cogitari-platform/core/entities/AuditProgram";
-import { AuditFinding } from "@cogitari-platform/core/entities/AuditFinding";
-import { AuditActionPlan } from "@cogitari-platform/core/entities/AuditActionPlan";
+} from "@leadgers/core/repositories/IAuditRepository";
+import { AuditProgram } from "@leadgers/core/entities/AuditProgram";
+import { AuditFinding } from "@leadgers/core/entities/AuditFinding";
+import { AuditActionPlan } from "@leadgers/core/entities/AuditActionPlan";
 
 /**
  * Adapter: Supabase implementation of IAuditRepository

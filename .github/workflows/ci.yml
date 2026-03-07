@@ -5,23 +5,38 @@ on:
     types: [opened, synchronize, reopened]
     branches:
       - develop
-      - beta # Hotfixes
+      - beta
+      - main
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-test:
+  security:
+    name: 🔒 Security Scan
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x]
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20
+
+      - name: Run Security Scan
+        run: node scripts/security-scan.js
+
+  lint-and-typecheck:
+    name: 🧹 Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
           cache: "npm"
 
       - name: Install Dependencies
@@ -33,8 +48,48 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Test
+  test:
+    name: 🧪 Tests
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
         run: npm run test
+
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
 
       - name: Build
         run: npm run build
+
+      - name: Upload Build Artifacts
+        if: github.base_ref == 'main' || github.base_ref == 'beta'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ github.sha }}
+          path: apps/web/dist/
+          retention-days: 7

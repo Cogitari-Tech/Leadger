@@ -1,9 +1,6 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+echo "🛡️  Running Pre-Push Verification..."
 
-echo "🛡️  Running Pre-Push Security & Test Checks..."
-
-echo "Analyzing bundle and types..."
+echo "Analyzing types..."
 npm run typecheck
 if [ $? -ne 0 ]; then
   echo "🚨 Push rejected due to failing type checks."
@@ -11,7 +8,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Running security scan..."
-npm run security-check
+node scripts/security-scan.js
 if [ $? -ne 0 ]; then
   echo "🚨 Push rejected due to failing security scan."
   exit 1

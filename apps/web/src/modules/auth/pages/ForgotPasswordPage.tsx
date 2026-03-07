@@ -45,17 +45,14 @@ export function ForgotPasswordPage() {
       <div className="hidden md:flex flex-col justify-between w-[60%] p-16 lg:p-24 relative z-10 overflow-hidden">
         <div className="flex items-center justify-between">
           <img
-            src="/images/logo-cogitari.png"
-            alt="Cogitari"
-            className="h-9 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
+            src="/images/logo-light.webp"
+            alt="Leadgers"
+            className="h-8 w-auto hidden dark:block transition-all opacity-90 hover:opacity-100"
           />
           <img
-            src="/images/logo-cogitari-dark.png"
-            alt="Cogitari"
-            className="h-9 w-auto hidden dark:block transition-all opacity-90 hover:opacity-100"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/images/logo-cogitari.png";
-            }}
+            src="/images/logo-dark.webp"
+            alt="Leadgers"
+            className="h-8 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
           />
           <span className="text-[10px] font-semibold tracking-[0.3em] uppercase opacity-40 px-3 py-1 bg-foreground/5 rounded-full">
             Enterprise Security
@@ -107,7 +104,7 @@ export function ForgotPasswordPage() {
         </div>
 
         <div className="text-[10px] font-semibold text-muted-foreground/30 uppercase tracking-[0.4em]">
-          © 2026 Cogitari Governance · Cogitari Tech
+          © 2026 Leadgers Governance · Leadgers Tech
         </div>
       </div>
 
@@ -117,18 +114,14 @@ export function ForgotPasswordPage() {
           {/* Mobile Logo */}
           <div className="md:hidden flex justify-center mb-8">
             <img
-              src="/images/logo-cogitari.png"
-              alt="Cogitari"
-              className="h-8 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
+              src="/images/logo-light.webp"
+              alt="Leadgers"
+              className="h-8 w-auto hidden dark:block transition-all opacity-90 hover:opacity-100"
             />
             <img
-              src="/images/logo-cogitari-dark.png"
-              alt="Cogitari"
-              className="h-8 w-auto hidden dark:block transition-all opacity-90 hover:opacity-100"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src =
-                  "/images/logo-cogitari.png";
-              }}
+              src="/images/logo-dark.webp"
+              alt="Leadgers"
+              className="h-8 w-auto block dark:hidden transition-all opacity-90 hover:opacity-100"
             />
           </div>
 
