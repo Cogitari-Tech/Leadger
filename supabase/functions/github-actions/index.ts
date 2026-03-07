@@ -91,7 +91,7 @@ async function getInstallationToken(installationId: string) {
       headers: {
         Authorization: `Bearer ${jwt}`,
         Accept: "application/vnd.github.v3+json",
-        "User-Agent": "Amuri-Audit",
+        "User-Agent": "Leadgers-Audit",
       },
     },
   );
@@ -175,13 +175,13 @@ Deno.serve(async (req) => {
           headers: {
             Authorization: `Bearer ${ghToken}`,
             Accept: "application/vnd.github.v3+json",
-            "User-Agent": "Amuri-Audit",
+            "User-Agent": "Leadgers-Audit",
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             title: `[Auditoria] ${title}`,
             body: issueBody,
-            labels: ["amuri-audit"],
+            labels: ["leadgers-audit"],
           }),
         },
       );
@@ -238,7 +238,7 @@ Deno.serve(async (req) => {
           headers: {
             Authorization: `Bearer ${ghToken}`,
             Accept: "application/vnd.github.v3+json",
-            "User-Agent": "Amuri-Audit",
+            "User-Agent": "Leadgers-Audit",
             "Content-Type": "application/json",
           },
           body: JSON.stringify({

@@ -16,20 +16,16 @@ export function PendingApprovalPage() {
       </div>
 
       <div className="glass-panel p-10 sm:p-12 rounded-[2rem] soft-shadow w-full max-w-md mx-6 space-y-8 border border-white/10 dark:border-white/5 text-center relative z-10">
-        {/* Logo */}
-        <div className="flex justify-center">
+        <div className="flex justify-center mb-4">
           <img
-            src="/images/logo-cogitari.png"
-            alt="Cogitari"
-            className="h-8 w-auto block dark:hidden opacity-90"
+            src="/images/logo-light.webp"
+            alt="Leadgers"
+            className="h-8 w-auto hidden dark:block opacity-90"
           />
           <img
-            src="/images/logo-cogitari-dark.png"
-            alt="Cogitari"
-            className="h-8 w-auto hidden dark:block opacity-90"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/images/logo-cogitari.png";
-            }}
+            src="/images/logo-dark.webp"
+            alt="Leadgers"
+            className="h-8 w-auto block dark:hidden opacity-90"
           />
         </div>
 

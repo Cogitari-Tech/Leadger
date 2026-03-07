@@ -26,35 +26,31 @@ serve(async (req) => {
     }
 
     const { data, error } = await resend.emails.send({
-      from: "Cogitari Governance <noreply@m.cogitari.com.br>",
+      from: "Leadgers Governance <noreply@m.leadgers.com>",
       to: email,
-      subject: `Convite de acesso para Cogitari Governance de ${inviter_name || "um membro da equipe"}`,
+      subject: `Convite de acesso para Leadgers Governance de ${inviter_name || "um membro da equipe"}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0f172a; color: #f8fafc; padding: 40px; border-radius: 8px; border: 1px solid #1e293b;">
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #000000; color: #f8fafc; padding: 40px; border-radius: 8px; border: 1px solid #1e293b;">
           <div style="text-align: center; margin-bottom: 30px;">
-            <img
-              src="https://amuri.app/images/logo-cogitari-dark.png"
-              alt="Cogitari Governance"
-              style="height: 48px;"
-            />
+            <h1 style="color: #ffffff; font-weight: 900; letter-spacing: -2px; margin: 0;">LEADGERS</h1>
           </div>
           <h2 style="color: #ffffff; text-align: center; letter-spacing: -0.5px;">
             Convite Estratégico
           </h2>
           <p style="color: #cbd5e1; font-size: 16px; line-height: 1.5; text-align: center;">
             Você foi convidado por <strong>${inviter_name}</strong> para colaborar em um ambiente seguro na
-            <strong>Cogitari Governance</strong>.
+            <strong>Leadgers Governance</strong>.
           </p>
           <div style="text-align: center; margin: 40px 0;">
             <a
               href="${link}"
-              style="background-color: #f97316; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;"
+              style="background-color: #ffffff; color: #000000; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;"
             >
               Aceitar Convite
             </a>
           </div>
           <p style="color: #64748b; font-size: 11px; text-align: center; margin-top: 40px; border-top: 1px solid #1e293b; padding-top: 20px; text-transform: uppercase;">
-            &copy; ${new Date().getFullYear()} Cogitari Governance
+            &copy; ${new Date().getFullYear()} Leadgers Governance
           </p>
         </div>
       `,

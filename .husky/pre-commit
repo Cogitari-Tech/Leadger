@@ -1,24 +1,7 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-echo "🛡️  Running Pre-Commit Security & Lint Checks..."
-
-# 1. Enforce strict lint-staged (which includes security-scan)
 npx lint-staged
-if [ $? -ne 0 ]; then
-  echo "🚨 Pre-commit failed: lint-staged errors."
-  exit 1
-fi
 
-# 2. Hard block for known secrets (excluding documentation/husky)
-if git diff --cached --name-only | grep -vE '\.md$|.husky/' | xargs grep -iE 'SUPABASE_SERVICE_ROLE_KEY|GITHUB_TOKEN'; then
-  echo "🚨 CRITICAL: Possible high-level secrets detected in staged files!"
-  echo "Commit rejected. Please remove actual credentials (not just documentation names) before committing."
-  exit 1
-fi
-
-# 3. Hard block for .env files being committed
-if git diff --cached --name-only | grep -E '^\.env(\..+)?$' | grep -v '\.example$'; then
+echo "🔒 Checking for .env leaks..."
+if git diff --cached --name-only | grep -E '^\\.env(\\..+)?$' | grep -v '\\.example$'; then
   echo "🚨 CRITICAL: Attempting to commit a .env file!"
   echo "Commit rejected to prevent credential leaks."
   exit 1

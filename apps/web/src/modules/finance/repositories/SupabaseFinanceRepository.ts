@@ -6,9 +6,9 @@ import {
   TrialBalanceEntry,
   IncomeStatementData,
   AccountBalanceDTO,
-} from "@cogitari-platform/core/repositories/IFinanceRepository";
-import { Transaction } from "@cogitari-platform/core/entities/Transaction";
-import { Account } from "@cogitari-platform/core/entities/Account";
+} from "@leadgers/core/repositories/IFinanceRepository";
+import { Transaction } from "@leadgers/core/entities/Transaction";
+import { Account } from "@leadgers/core/entities/Account";
 
 /**
  * Implementação concreta do repositório usando Supabase
