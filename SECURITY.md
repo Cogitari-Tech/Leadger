@@ -32,7 +32,7 @@ Se descobrir uma falha de segurança, **NÃO** abra uma Issue pública.
 
 Envie um e-mail para nossa equipe de segurança:
 
-- **E-mail:** devops@amuri.app
+- **E-mail:** devops@leadgers.com
 - **Assunto:** [SECURITY] Audit Tool Vulnerability
 
 Tentaremos responder em até 24 horas úteis.

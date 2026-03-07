@@ -55,7 +55,7 @@ export function LoginPage() {
     if (authError) {
       setError(
         authError.message === "Invalid login credentials"
-          ? "E-mail ou senha incorretos."
+          ? "E-mail ou senha incorretos. Verifique suas credenciais (ou use o login com Google/GitHub se sua conta foi criada assim)."
           : authError.message.includes("captcha")
             ? "Falha na verificação de segurança (Captcha)."
             : "Erro ao fazer login. Tente novamente.",
