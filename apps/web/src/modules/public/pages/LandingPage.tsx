@@ -613,7 +613,7 @@ export function LandingPage() {
               governança?
             </h2>
             <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-              Configure seu ambiente grátis agora mesmo. Sem amarras e sem
+              Estruture sua governança agora mesmo. Sem amarras e sem
               necessidade de equipe de integrações.
             </p>
 
@@ -621,10 +621,10 @@ export function LandingPage() {
               onClick={() => navTo("/register")}
               className="px-10 py-5 bg-primary text-primary-foreground font-bold rounded-xl text-base hover:brightness-110 shadow-2xl shadow-primary/20 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3 mx-auto"
             >
-              Criar Conta Gratuita <ArrowRight className="w-5 h-5" />
+              Criar Conta <ArrowRight className="w-5 h-5" />
             </button>
             <p className="text-sm text-muted-foreground mt-6 font-medium">
-              Não exige cartão de crédito.
+              Acesso exclusivo para convidados corporativos.
             </p>
           </motion.div>
         </section>
@@ -657,24 +657,24 @@ export function LandingPage() {
               <span className="font-bold text-foreground font-display">
                 Produto
               </span>
-              <Link
-                to="/features"
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+              <button
+                onClick={() => navTo("#produto")}
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium text-left"
               >
                 Features
-              </Link>
-              <Link
-                to="/security"
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+              </button>
+              <button
+                onClick={() => navTo("#compliance")}
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium text-left"
               >
                 Segurança
-              </Link>
-              <Link
-                to="/pricing"
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+              </button>
+              <button
+                onClick={() => navTo("/register")}
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium text-left"
               >
-                Preços
-              </Link>
+                Acesso Antecipado
+              </button>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -690,16 +690,17 @@ export function LandingPage() {
               <a
                 href="https://github.com/leadgers-tech"
                 target="_blank"
+                rel="noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors font-medium"
               >
                 GitHub
               </a>
-              <Link
-                to="/blog"
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+              <button
+                onClick={() => navTo("#")}
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium text-left"
               >
-                Blog
-              </Link>
+                Blog (Em Breve)
+              </button>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -730,8 +731,8 @@ export function LandingPage() {
           <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-6">
               <span className="text-xs text-muted-foreground font-medium">
-                © {new Date().getFullYear()} Leadgers Governance. CNPJ
-                64.460.886/0001-39.
+                © {new Date().getFullYear()} Leadgers Governance. Um produto{" "}
+                <strong>Cogitari Tech</strong>. CNPJ 64.460.886/0001-39.
               </span>
             </div>
             <div className="flex gap-4 text-xs font-medium text-muted-foreground">
