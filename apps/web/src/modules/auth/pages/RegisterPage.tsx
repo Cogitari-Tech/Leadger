@@ -667,7 +667,7 @@ export function RegisterPage() {
   const stepConfig: Record<WizardStep, { title: string; subtitle: string }> = {
     personal: {
       title: "Criar Conta",
-      subtitle: "Inicie seu período de testes",
+      subtitle: "Estruture hoje sua governança legal.",
     },
     choice: { title: "Sua Empresa", subtitle: "Como deseja começar?" },
     create: { title: "Nova Empresa", subtitle: "Configure sua organização" },
