@@ -179,37 +179,37 @@ export function TermsOfUse() {
               <li>
                 <strong>Suporte Técnico / DevOps:</strong>{" "}
                 <a
-                  href="mailto:devops@cogitari.com.br"
+                  href="mailto:devops@leadgers.com"
                   className="text-brand-600 hover:underline"
                 >
-                  devops@cogitari.com.br
+                  devops@leadgers.com
                 </a>
               </li>
               <li>
                 <strong>Suporte ao Cliente:</strong>{" "}
                 <a
-                  href="mailto:support@cogitari.com.br"
+                  href="mailto:support@leadgers.com"
                   className="text-brand-600 hover:underline"
                 >
-                  support@cogitari.com.br
+                  support@leadgers.com
                 </a>
               </li>
               <li>
                 <strong>Documentação e Tutoriais:</strong>{" "}
                 <a
-                  href="mailto:docs@cogitari.com.br"
+                  href="mailto:docs@leadgers.com"
                   className="text-brand-600 hover:underline"
                 >
-                  docs@cogitari.com.br
+                  docs@leadgers.com
                 </a>
               </li>
               <li>
                 <strong>Usuário de Teste / Dúvidas:</strong>{" "}
                 <a
-                  href="mailto:teste@cogitari.com.br"
+                  href="mailto:teste@leadgers.com"
                   className="text-brand-600 hover:underline"
                 >
-                  teste@cogitari.com.br
+                  teste@leadgers.com
                 </a>
               </li>
             </ul>

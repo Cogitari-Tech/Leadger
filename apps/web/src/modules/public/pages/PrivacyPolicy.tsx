@@ -149,10 +149,10 @@ export function PrivacyPolicy() {
               abrangentes a este documento, por favor contacte o nosso
               Encarregado pelo Tratamento de Dados (DPO) pelo e-mail:{" "}
               <a
-                href="mailto:privacy@cogitari.com.br"
+                href="mailto:privacy@leadgers.com"
                 className="text-brand-600 hover:underline"
               >
-                privacy@cogitari.com.br
+                privacy@leadgers.com
               </a>
               .
             </p>

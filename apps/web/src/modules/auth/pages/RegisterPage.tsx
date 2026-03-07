@@ -34,13 +34,15 @@ export function RegisterPage() {
   const [searchParams] = useSearchParams();
   const inviteToken = searchParams.get("invite_token");
   const inviteMode = searchParams.get("mode") as SignupMode | null;
+  const initialEmail = searchParams.get("email");
+  const initialName = searchParams.get("name");
 
   // Wizard state
   const [step, setStep] = useState<WizardStep>("personal");
 
   // Personal info
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState(initialName || "");
+  const [email, setEmail] = useState(initialEmail || "");
   const [password, setPassword] = useState("");
 
   // Create company
