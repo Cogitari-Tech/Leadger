@@ -148,7 +148,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
       }
     } else {
       // --- Special case for Test User: always see onboarding once per session ---
-      const isTestUser = user.email === "teste@cogitari.com";
+      const isTestUser = user.email === "teste@leadgers.com";
       const hasSeenTour = sessionStorage.getItem("has_seen_tour");
 
       if (
@@ -172,6 +172,34 @@ export function AuthGuard({ children }: AuthGuardProps) {
         }
       }
     }
+  } else if (user && !tenant) {
+    // Edge case: User is authenticated but has no tenant associated (trigger failed or orphaned account)
+    // We should not let them into the dashboard directly as it will crash.
+    return (
+      <div className="flex flex-col h-screen items-center justify-center bg-background text-center px-4">
+        <div className="max-w-md space-y-4">
+          <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
+            <span className="text-destructive font-bold text-xl">!</span>
+          </div>
+          <h2 className="text-xl font-bold text-foreground">
+            Sua conta não possui uma empresa vinculada
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Ocorreu um problema durante a criação ou associação da sua conta.
+            Por favor, entre em contato com o suporte ou solicite um novo
+            convite.
+          </p>
+          <button
+            onClick={() =>
+              supabase.auth.signOut().then(() => (window.location.href = "/"))
+            }
+            className="mt-4 px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:brightness-110"
+          >
+            Sair e Voltar
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return <>{children}</>;

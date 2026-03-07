@@ -20,7 +20,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 });
 
 async function findAndResetUser() {
-  const email = "teste@cogitari.com";
+  const email = "teste@leadgers.com";
   const newPassword = "Cogitari@2026!Dev";
 
   console.log(`Checking for user: ${email}...`);
