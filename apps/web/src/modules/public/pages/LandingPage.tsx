@@ -35,9 +35,38 @@ export function LandingPage() {
   const yHero = useTransform(scrollY, [0, 500], [0, 150]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+    document.title =
+      "Leadgers Governance | A infraestrutura de compliance da sua startup";
+
+    // SEO Meta Tags update logic for SPA
+    const updateMeta = (name: string, content: string, isProperty = false) => {
+      let el = document.querySelector(
+        isProperty ? `meta[property="${name}"]` : `meta[name="${name}"]`,
+      );
+      if (!el) {
+        el = document.createElement("meta");
+        if (isProperty) el.setAttribute("property", name);
+        else el.setAttribute("name", name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
     };
+
+    updateMeta(
+      "description",
+      "Controle fluxos de caixa, valide a contabilidade e crie trilhas de auditoria automáticas com a plataforma SaaS all-in-one para governança empresarial.",
+    );
+    updateMeta("og:title", "Leadgers Governance", true);
+    updateMeta(
+      "og:description",
+      "A infraestrutura de compliance da sua startup. Controle fluxos, valide contabilidade e esteja pronto para due diligence.",
+      true,
+    );
+    updateMeta("og:image", "https://leadgers.com/images/og-main.webp", true);
+    updateMeta("og:type", "website", true);
+    updateMeta("twitter:card", "summary_large_image");
+
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -57,17 +86,7 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden text-foreground">
-      <div className="hidden" aria-hidden="true">
-        <title>
-          Leadgers Governance | A infraestrutura de compliance da sua startup
-        </title>
-        <meta
-          name="description"
-          content="Controle fluxos de caixa, valide a contabilidade e crie trilhas de auditoria automáticas com a plataforma SaaS all-in-one para governança empresarial."
-        />
-      </div>
-
+    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden text-foreground page-transition">
       {/* ─── 1. NAVBAR ────────────────────────────────────────── */}
       <header
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b ${

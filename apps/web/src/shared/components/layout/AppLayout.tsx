@@ -368,7 +368,7 @@ export const AppLayout: React.FC = () => {
               </div>
             }
           >
-            <div className="p-6 md:p-10 lg:p-12 h-full">
+            <div className="p-6 md:p-10 lg:p-12 h-full page-transition">
               <ErrorBoundary>
                 <Outlet />
               </ErrorBoundary>
