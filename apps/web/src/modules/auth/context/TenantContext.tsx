@@ -27,6 +27,7 @@ export interface TenantActions {
     tenantId: string,
     message?: string,
   ) => Promise<{ error: Error | null }>;
+  refreshProfile: () => Promise<void>;
 }
 
 export type TenantContextType = TenantState & TenantActions;
@@ -216,6 +217,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
         ...state,
         searchTenants,
         requestAccess,
+        refreshProfile: loadUserProfile,
       }}
     >
       {children}

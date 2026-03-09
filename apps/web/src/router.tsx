@@ -14,6 +14,7 @@ import { VerifyEmailPage } from "./modules/auth/pages/VerifyEmailPage";
 import { PendingApprovalPage } from "./modules/auth/pages/PendingApprovalPage";
 import { PendingSetupPage } from "./modules/auth/pages/PendingSetupPage";
 import { UserOnboardingPage } from "./modules/auth/pages/UserOnboardingPage";
+import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 
 // The new Landing Page
 import { LandingPage } from "./modules/public/pages/LandingPage";
@@ -153,7 +154,9 @@ export const createAppRouter = () =>
       path: "/dashboard",
       element: (
         <AuthGuard>
-          <AppLayout />
+          <ErrorBoundary>
+            <AppLayout />
+          </ErrorBoundary>
         </AuthGuard>
       ),
       children: [
