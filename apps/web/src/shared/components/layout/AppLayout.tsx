@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { moduleRegistry } from "../../../modules/registry";
@@ -21,14 +21,31 @@ import {
 import * as LucideIcons from "lucide-react";
 
 export const AppLayout: React.FC = () => {
-  const { permissions, user, signOut } = useAuth();
+  const { permissions, user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const isAdmin = user?.role?.name === "admin" || user?.role?.name === "owner";
-  const navigation = isAdmin
-    ? moduleRegistry.getAllNavigation()
-    : moduleRegistry
-        .getAccessibleModules(permissions)
-        .map((m) => ({ module: m.name, icon: m.icon, items: m.navigation }));
+
+  // Memoize navigation to avoid recalculating on every render
+  const navigation = useMemo(() => {
+    return isAdmin
+      ? moduleRegistry.getAllNavigation()
+      : moduleRegistry
+          .getAccessibleModules(permissions)
+          .map((m) => ({ module: m.name, icon: m.icon, items: m.navigation }));
+  }, [isAdmin, permissions]);
+
+  // Keep track of last valid navigation to prevent menu flickering/disappearing during context reloads
+  const lastValidNavigation = useRef(navigation);
+  useEffect(() => {
+    if (navigation.length > 0) {
+      lastValidNavigation.current = navigation;
+    }
+  }, [navigation]);
+
+  const displayNavigation =
+    loading && navigation.length === 0
+      ? lastValidNavigation.current
+      : navigation;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
@@ -141,7 +158,7 @@ export const AppLayout: React.FC = () => {
             </Link>
           </div>
 
-          {navigation.map((section) => {
+          {displayNavigation.map((section) => {
             const isExpanded = expandedModules[section.module];
             const checkIsActive = (path: string) =>
               location.pathname.includes(path);

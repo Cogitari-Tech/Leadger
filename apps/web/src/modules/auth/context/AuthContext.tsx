@@ -49,6 +49,7 @@ interface AuthContextType extends AuthState {
     message?: string,
   ) => Promise<{ error: Error | null }>;
   updateMetadata: (data: any) => Promise<{ error: Error | null }>;
+  refreshProfile?: () => Promise<void>;
 }
 
 // ─── Composed Provider ──────────────────────────────────
@@ -107,6 +108,7 @@ export function useAuth(): AuthContextType {
     // Tenant operations
     searchTenants: tenant.searchTenants,
     requestAccess: tenant.requestAccess,
+    refreshProfile: tenant.refreshProfile,
   };
 }
 

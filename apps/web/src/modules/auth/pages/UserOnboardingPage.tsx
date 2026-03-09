@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../context/AuthContext";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
@@ -13,7 +14,8 @@ import {
 } from "lucide-react";
 
 export function UserOnboardingPage() {
-  const { user, tenant, signOut } = useAuth();
+  const { user, tenant, signOut, refreshProfile } = useAuth();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
@@ -37,8 +39,12 @@ export function UserOnboardingPage() {
       // Set session flag for the tour
       sessionStorage.setItem("has_seen_tour", "true");
 
-      // Force a reload so AuthContext picks up the new user_onboarding_completed state
-      window.location.href = "/dashboard";
+      // 2. Clear state and navigate
+      if (refreshProfile) {
+        await refreshProfile();
+      }
+
+      navigate("/dashboard");
     } catch (err: any) {
       console.error(err);
       setError("Erro ao finalizar configuração. Tente novamente.");

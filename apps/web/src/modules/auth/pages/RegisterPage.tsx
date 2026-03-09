@@ -29,6 +29,7 @@ export function RegisterPage() {
     loading,
     searchTenants,
     requestAccess,
+    refreshProfile,
   } = useAuth();
 
   const [searchParams] = useSearchParams();
@@ -109,9 +110,16 @@ export function RegisterPage() {
   if (success) {
     if (successMode === "join")
       return <Navigate to="/pending-approval" replace />;
-    // If SSO user, they already have a session, just go to dashboard (which redirects to onboarding)
-    if (user) return <Navigate to="/dashboard" replace />;
-    return <Navigate to="/verify-email" replace />;
+
+    // If user has tenant, go to dashboard.
+    // Dashboard (AuthGuard) will handle onboarding redirect.
+    if (user?.tenant_id) return <Navigate to="/dashboard" replace />;
+
+    // If no user yet (email confirmation pending), go to verify-email
+    if (!user) return <Navigate to="/verify-email" replace />;
+
+    // If user exists but no tenant, they should stay here to pick one
+    // But if they are in 'create' mode and success is true, success handled it
   }
 
   useEffect(() => {
@@ -198,6 +206,9 @@ export function RegisterPage() {
           captchaToken: turnstileToken || undefined,
         });
         if (authError) throw authError;
+      }
+      if (refreshProfile) {
+        await refreshProfile();
       }
       setSuccessMode("create");
       setSuccess(true);
