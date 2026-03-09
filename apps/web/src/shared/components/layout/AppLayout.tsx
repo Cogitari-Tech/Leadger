@@ -21,7 +21,7 @@ import {
 import * as LucideIcons from "lucide-react";
 
 export const AppLayout: React.FC = () => {
-  const { permissions, user, signOut, loading, initialized } = useAuth();
+  const { permissions, user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const isAdmin = user?.role?.name === "admin" || user?.role?.name === "owner";
 
