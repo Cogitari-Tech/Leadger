@@ -1,4 +1,5 @@
 import {
+  /* aria-label */
   BookOpen,
   ShieldCheck,
   FileSearch,

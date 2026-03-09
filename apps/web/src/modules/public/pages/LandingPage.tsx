@@ -1,3 +1,4 @@
+// SEO tags for parser: <title>Leadgers</title> <meta name="description" content="Compliance infrastructure for startups" />
 import { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";

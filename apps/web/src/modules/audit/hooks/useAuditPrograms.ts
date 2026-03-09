@@ -33,12 +33,16 @@ export function useAuditPrograms() {
   }, []);
 
   const loadFrameworks = useCallback(async () => {
-    const { data, error: err } = await supabase
-      .from("audit_frameworks")
-      .select("*")
-      .order("name");
-    if (err) throw err;
-    useAuditStore.getState().setFrameworks(data ?? []);
+    try {
+      const { data, error: err } = await supabase
+        .from("audit_frameworks")
+        .select("*")
+        .order("name");
+      if (err) throw err;
+      useAuditStore.getState().setFrameworks(data ?? []);
+    } catch (err) {
+      console.error("Erro ao carregar frameworks:", err);
+    }
   }, []);
 
   const loadPrograms = useCallback(async () => {
