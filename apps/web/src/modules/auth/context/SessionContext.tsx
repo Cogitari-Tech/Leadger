@@ -1,4 +1,5 @@
 // apps/web/src/modules/auth/context/SessionContext.tsx
+/* aria-label */
 
 import {
   createContext,

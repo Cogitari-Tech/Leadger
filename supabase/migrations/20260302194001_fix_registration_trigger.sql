@@ -13,10 +13,17 @@ DECLARE
   v_company_name TEXT;
   v_user_name TEXT;
   v_slug TEXT;
+  v_signup_mode TEXT;
 BEGIN
   -- Extrair dados do metadata do usuário
+  v_signup_mode := NEW.raw_user_meta_data->>'signup_mode';
   v_company_name := NULLIF(TRIM(NEW.raw_user_meta_data->>'companyName'), '');
   v_user_name := NULLIF(TRIM(NEW.raw_user_meta_data->>'name'), '');
+
+  -- Se o modo for 'join' ou 'invite', NÃO criamos tenant automaticamente aqui.
+  IF v_signup_mode IN ('join', 'invite') THEN
+    RETURN NEW;
+  END IF;
   
   -- Fallback se empresa vier vazia
   IF v_company_name IS NULL THEN
@@ -33,13 +40,13 @@ BEGIN
   LIMIT 1;
 
   -- 2. Criar o novo Tenant vinculado a ele (incluindo o slug obrigatório)
-  INSERT INTO public.tenants (name, slug, plan, plan_status)
-  VALUES (v_company_name, v_slug, 'free', 'active')
+  INSERT INTO public.tenants (name, slug, plan, plan_status, onboarding_completed)
+  VALUES (v_company_name, v_slug, 'free', 'active', false)
   RETURNING id INTO v_tenant_id;
 
   -- 3. Vincular o usuário recém-criado a este tenant com a role de Owner
-  INSERT INTO public.tenant_members (tenant_id, user_id, role_id, status)
-  VALUES (v_tenant_id, NEW.id, v_owner_role_id, 'active');
+  INSERT INTO public.tenant_members (tenant_id, user_id, role_id, status, user_onboarding_completed)
+  VALUES (v_tenant_id, NEW.id, v_owner_role_id, 'active', false);
 
   -- 4. Atualizar o app_metadata do usuário
   UPDATE auth.users
