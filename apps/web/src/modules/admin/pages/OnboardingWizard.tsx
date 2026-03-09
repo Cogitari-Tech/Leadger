@@ -61,7 +61,7 @@ const STEPS: StepConfig[] = [
 
 export default function OnboardingWizard() {
   const navigate = useNavigate();
-  const { tenant, user, signOut } = useAuth();
+  const { tenant, user, signOut, refreshProfile } = useAuth();
 
   useEffect(() => {
     if (user && user.role) {
@@ -166,7 +166,12 @@ export default function OnboardingWizard() {
 
       if (memberErr) throw memberErr;
 
-      window.location.href = "/dashboard";
+      // Ensure profile is reloaded before navigating to avoid AuthGuard loop
+      if (refreshProfile) {
+        await refreshProfile();
+      }
+
+      navigate("/dashboard");
     } catch (err) {
       console.error("Failed to finish onboarding", err);
       alert("Ocorreu um erro ao finalizar as configurações. Tente novamente.");
