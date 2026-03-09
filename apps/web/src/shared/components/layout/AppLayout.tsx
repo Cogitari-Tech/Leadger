@@ -5,6 +5,7 @@ import { moduleRegistry } from "../../../modules/registry";
 import { useAuth } from "../../../modules/auth/context/AuthContext";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { NotificationBell } from "../../../modules/notifications/components/NotificationBell";
+import { ErrorBoundary } from "../ErrorBoundary";
 import {
   Menu,
   X,
@@ -368,7 +369,9 @@ export const AppLayout: React.FC = () => {
             }
           >
             <div className="p-6 md:p-10 lg:p-12 h-full">
-              <Outlet />
+              <ErrorBoundary>
+                <Outlet />
+              </ErrorBoundary>
             </div>
           </React.Suspense>
         </div>

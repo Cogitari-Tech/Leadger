@@ -148,20 +148,30 @@ export default function OnboardingWizard() {
   const handleFinish = async () => {
     if (!tenant) return;
     setSaving(true);
-    await supabase
-      .from("tenants")
-      .update({ onboarding_completed: true })
-      .eq("id", tenant.id);
 
-    // Also mark the owner's individual onboarding as completed
-    await supabase
-      .from("tenant_members")
-      .update({ user_onboarding_completed: true })
-      .eq("user_id", user?.id)
-      .eq("tenant_id", tenant.id);
+    try {
+      const { error: tenantErr } = await supabase
+        .from("tenants")
+        .update({ onboarding_completed: true })
+        .eq("id", tenant.id);
 
-    setSaving(false);
-    window.location.href = "/dashboard";
+      if (tenantErr) throw tenantErr;
+
+      // Also mark the owner's individual onboarding as completed
+      const { error: memberErr } = await supabase
+        .from("tenant_members")
+        .update({ user_onboarding_completed: true })
+        .eq("user_id", user?.id)
+        .eq("tenant_id", tenant.id);
+
+      if (memberErr) throw memberErr;
+
+      window.location.href = "/dashboard";
+    } catch (err) {
+      console.error("Failed to finish onboarding", err);
+      alert("Ocorreu um erro ao finalizar as configurações. Tente novamente.");
+      setSaving(false);
+    }
   };
 
   const canGoNext = () => {
