@@ -40,8 +40,8 @@
     --radius: 0.75rem;
 
     /* Glass Effect Tokens - more opaque for light mode to avoid blending */
-    --glass-bg: 0 0% 100% / 0.95;
-    --glass-border: 0 0% 0% / 0.15;
+    --glass-bg: 0 0% 100% / 0.75;
+    --glass-border: 0 0% 0% / 0.1;
   }
 
   .dark {
@@ -76,8 +76,19 @@
     --ring: 24.6 95% 53.1%;
 
     /* Glass Effect Tokens - Dark */
-    --glass-bg: 222 47% 7% / 0.7;
-    --glass-border: 215 27.9% 16.9% / 0.5;
+    --glass-bg: 222 47% 7% / 0.45;
+    --glass-border: 215 27.9% 16.9% / 0.3;
+  }
+}
+
+@layer utilities {
+  .page-transition {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }
 
