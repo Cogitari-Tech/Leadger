@@ -101,7 +101,7 @@ export const AppLayout: React.FC = () => {
       <aside
         className={`fixed md:relative z-50 h-full flex-shrink-0 border-r border-border/40 bg-background/80 backdrop-blur-2xl flex flex-col overflow-hidden transition-all duration-300 ${
           isCollapsed ? "w-16" : "w-72"
-        } ${isMobileMenuOpen ? "translate-x-0 w-72" : "-translate-x-full md:translate-x-0"}`}
+        } ${isMobileMenuOpen ? "translate-x-0 w-72 shadow-2xl" : "-translate-x-full md:translate-x-0"}`}
       >
         <div
           className={`relative z-10 flex ${isCollapsed ? "flex-col gap-4 py-4 px-2 justify-center" : "p-4 justify-between"} items-center border-b border-border/20`}
@@ -111,7 +111,7 @@ export const AppLayout: React.FC = () => {
               <img
                 src="/images/favicon.webp"
                 alt="Leadgers"
-                className="w-8 h-8 rounded-lg"
+                className="w-10 h-10"
               />
             </Link>
           ) : (
@@ -122,17 +122,17 @@ export const AppLayout: React.FC = () => {
               <img
                 src="/images/logo-light.webp"
                 alt="Leadgers"
-                className="h-6 w-auto hidden dark:block"
+                className="h-8 w-auto hidden dark:block"
               />
               <img
                 src="/images/logo-dark.webp"
                 alt="Leadgers"
-                className="h-6 w-auto block dark:hidden"
+                className="h-8 w-auto block dark:hidden"
               />
             </Link>
           )}
           <button
-            className="md:hidden p-2 text-muted-foreground"
+            className="md:hidden p-4 -mr-2 text-muted-foreground hover:text-primary transition-colors"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <X className="w-5 h-5" />
@@ -350,22 +350,25 @@ export const AppLayout: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col relative overflow-hidden z-10">
         <div className="md:hidden flex items-center justify-between p-4 border-b border-border/40 bg-background/80 backdrop-blur-xl">
-          <button onClick={() => setIsMobileMenuOpen(true)} className="p-1">
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 -ml-2 hover:bg-muted/50 rounded-xl transition-colors"
+          >
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex items-center gap-2">
             <img
               src="/images/logo-light.webp"
               alt="Leadgers"
-              className="h-5 w-auto hidden dark:block"
+              className="h-6 w-auto hidden dark:block"
             />
             <img
               src="/images/logo-dark.webp"
               alt="Leadgers"
-              className="h-5 w-auto block dark:hidden"
+              className="h-6 w-auto block dark:hidden"
             />
           </div>
-          <div className="w-6" />
+          <div className="w-8" />
         </div>
 
         <div className="hidden md:flex flex-shrink-0 items-center justify-end px-6 py-3 border-b border-border/20 bg-background/50 backdrop-blur-xl">

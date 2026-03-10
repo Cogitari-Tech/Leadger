@@ -105,12 +105,12 @@ export function LoginPage() {
             <img
               src="/images/logo-light.webp"
               alt="Leadgers Governance"
-              className="h-7 w-auto mix-blend-screen hidden dark:block"
+              className="h-10 w-auto mix-blend-screen hidden dark:block"
             />
             <img
               src="/images/logo-dark.webp"
               alt="Leadgers Governance"
-              className="h-7 w-auto block dark:hidden"
+              className="h-10 w-auto block dark:hidden"
             />
           </Link>
           <span
@@ -129,7 +129,7 @@ export function LoginPage() {
       </div>
 
       {/* Login Card */}
-      <main className="w-full max-w-md relative z-10 px-6 py-24 sm:py-32">
+      <main className="w-full max-w-md relative z-10 px-6 py-12 md:py-24 my-auto mt-20 md:mt-auto">
         <div className="w-full bg-background/40 backdrop-blur-3xl text-foreground rounded-[2rem] shadow-2xl border border-border/20 overflow-hidden p-8 md:p-10">
           <div className="mb-8 text-center sm:text-left">
             <h1 className="text-3xl md:text-3xl font-bold tracking-tight text-foreground">
