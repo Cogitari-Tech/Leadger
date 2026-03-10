@@ -106,12 +106,12 @@ export function LandingPage() {
               <img
                 src="/images/logo-light.webp"
                 alt="Leadgers"
-                className="h-6 w-auto hidden dark:block"
+                className="h-10 w-auto hidden dark:block"
               />
               <img
                 src="/images/logo-dark.webp"
                 alt="Leadgers"
-                className="h-6 w-auto block dark:hidden"
+                className="h-10 w-auto block dark:hidden"
               />
               <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-50 px-2 py-0.5 border-l border-border ml-2 hidden sm:block">
                 Governance
