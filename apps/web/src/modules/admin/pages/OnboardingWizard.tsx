@@ -15,7 +15,38 @@ import {
   ArrowLeft,
   Loader2,
   SkipForward,
+  AlertCircle,
 } from "lucide-react";
+
+const isValidCNPJ = (value: string) => {
+  if (!value) return false;
+  const cnpj = value.replace(/[^\d]+/g, "");
+  if (cnpj.length !== 14) return false;
+  if (/^(\d)\1+$/.test(cnpj)) return false;
+
+  let size = cnpj.length - 2;
+  let numbers = cnpj.substring(0, size);
+  const digits = cnpj.substring(size);
+  let sum = 0;
+  let pos = size - 7;
+  for (let i = size; i >= 1; i--) {
+    sum += parseInt(numbers.charAt(size - i)) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  let result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+  if (result !== parseInt(digits.charAt(0))) return false;
+
+  size = size + 1;
+  numbers = cnpj.substring(0, size);
+  sum = 0;
+  pos = size - 7;
+  for (let i = size; i >= 1; i--) {
+    sum += parseInt(numbers.charAt(size - i)) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+  return result === parseInt(digits.charAt(1));
+};
 
 type OnboardingStep = "company" | "invite" | "bank" | "integrations" | "done";
 
@@ -75,6 +106,7 @@ export default function OnboardingWizard() {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   // Company data
   const [name, setName] = useState(tenant?.name || "");
@@ -123,12 +155,35 @@ export default function OnboardingWizard() {
   const handleSaveCompany = async () => {
     if (!tenant) return;
     setSaving(true);
+    setValidationError(null);
+
+    // Validate CNPJ
+    if (!cnpj || cnpj.trim() === "") {
+      setValidationError("O CNPJ é obrigatório.");
+      setSaving(false);
+      return;
+    }
+
+    if (!isValidCNPJ(cnpj)) {
+      setValidationError("Por favor, insira um CNPJ válido.");
+      setSaving(false);
+      return;
+    }
+
+    // Validate Slug
+    const finalSlug = slug || tenant.slug;
+    if (!finalSlug || finalSlug.trim() === "" || finalSlug === "-") {
+      setValidationError("A URL (Slug) não pode ficar vazia.");
+      setSaving(false);
+      return;
+    }
+
     try {
-      await supabase
+      const { error } = await supabase
         .from("tenants")
         .update({
           name: name || tenant.name,
-          slug: slug || tenant.slug,
+          slug: finalSlug,
           industry: industry || null,
           phone: phone || null,
           email: companyEmail || null,
@@ -136,10 +191,20 @@ export default function OnboardingWizard() {
         })
         .eq("id", tenant.id);
 
+      if (error) {
+        if (error.code === "23505") {
+          throw new Error("Esta URL (Slug) já está em uso. Tente outra vez.");
+        }
+        throw error;
+      }
+
       // Refresh local state if needed or just proceed
       setCurrentStep((s) => s + 1);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error saving company:", err);
+      setValidationError(
+        err.message || "Erro ao salvar os dados da empresa. Tente novamente.",
+      );
     } finally {
       setSaving(false);
     }
@@ -252,6 +317,12 @@ export default function OnboardingWizard() {
           {/* ── Company ────────────────────── */}
           {step.key === "company" && (
             <div className="space-y-5">
+              {validationError && (
+                <div className="flex bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl p-4 text-sm animate-in fade-in zoom-in-95 duration-200 shadow-sm shadow-red-500/5 items-center gap-3">
+                  <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                  <p className="flex-1 font-medium">{validationError}</p>
+                </div>
+              )}
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/10 rounded-xl">
                   <Building2 className="w-5 h-5 text-primary flex-shrink-0" />
@@ -337,11 +408,32 @@ export default function OnboardingWizard() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className={labelClass}>CNPJ (opcional)</label>
+                    <label className={labelClass}>CNPJ (obrigatório)</label>
                     <input
                       type="text"
                       value={cnpj}
-                      onChange={(e) => setCnpj(e.target.value)}
+                      onChange={(e) => {
+                        let val = e.target.value.replace(/\D/g, "");
+                        if (val.length > 14) val = val.substring(0, 14);
+                        if (val.length > 2)
+                          val = val.replace(/^(\d{2})(\d)/, "$1.$2");
+                        if (val.length > 6)
+                          val = val.replace(
+                            /^(\d{2})\.(\d{3})(\d)/,
+                            "$1.$2.$3",
+                          );
+                        if (val.length > 10)
+                          val = val.replace(
+                            /^(\d{2})\.(\d{3})\.(\d{3})(\d)/,
+                            "$1.$2.$3/$4",
+                          );
+                        if (val.length > 15)
+                          val = val.replace(
+                            /^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/,
+                            "$1.$2.$3/$4-$5",
+                          );
+                        setCnpj(val);
+                      }}
                       placeholder="00.000.000/0001-00"
                       className={inputClass}
                     />
