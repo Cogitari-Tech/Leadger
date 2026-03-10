@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../../auth/context/AuthContext";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
@@ -254,7 +254,7 @@ export default function OnboardingWizard() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans">
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>
@@ -268,18 +268,18 @@ export default function OnboardingWizard() {
       <div className="w-full max-w-2xl relative z-10 space-y-8">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="flex items-center justify-center mb-2">
+          <Link to="/" className="flex items-center justify-center mb-2">
             <img
               src="/images/logo-light.webp"
               alt="Leadgers"
-              className="h-6 w-auto hidden dark:block"
+              className="h-9 w-auto hidden dark:block"
             />
             <img
               src="/images/logo-dark.webp"
               alt="Leadgers"
-              className="h-6 w-auto block dark:hidden"
+              className="h-9 w-auto block dark:hidden"
             />
-          </div>
+          </Link>
           <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">
             Configuração da Empresa
           </p>
@@ -313,7 +313,7 @@ export default function OnboardingWizard() {
         </div>
 
         {/* Step Content */}
-        <div className="glass-panel p-8 rounded-2xl soft-shadow border border-white/10 dark:border-white/5 min-h-[300px]">
+        <div className="glass-panel p-6 sm:p-8 rounded-2xl soft-shadow border border-white/10 dark:border-white/5 min-h-[300px]">
           {/* ── Company ────────────────────── */}
           {step.key === "company" && (
             <div className="space-y-5">
@@ -376,8 +376,11 @@ export default function OnboardingWizard() {
                     URL do Workspace (Slug)
                   </label>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground bg-muted/30 px-3 py-2.5 rounded-l-xl border border-r-0 border-border/40 font-mono">
+                    <span className="hidden xs:block text-xs text-muted-foreground bg-muted/30 px-3 py-2.5 rounded-l-xl border border-r-0 border-border/40 font-mono">
                       app.leadgers.com/
+                    </span>
+                    <span className="xs:hidden text-[10px] text-muted-foreground bg-muted/30 px-2 py-2.5 rounded-l-xl border border-r-0 border-border/40 font-mono">
+                      /
                     </span>
                     <input
                       id="workspaceSlug"
@@ -396,7 +399,7 @@ export default function OnboardingWizard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                   <div className="space-y-1.5">
                     <label className={labelClass}>Setor / Indústria</label>
                     <input
@@ -581,7 +584,7 @@ export default function OnboardingWizard() {
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <button
             onClick={async () => {
               if (currentStep === 0) {
@@ -597,7 +600,7 @@ export default function OnboardingWizard() {
             {currentStep === 0 ? "Sair / Voltar para Início" : "Anterior"}
           </button>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
             {step.key !== "done" && step.key !== "company" && (
               <button
                 onClick={() => setCurrentStep((s) => s + 1)}
