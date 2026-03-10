@@ -97,30 +97,12 @@ export function RegisterPage() {
     "Muito forte",
   ];
 
-  // If already logged in and has a tenant, redirect home.
-  // If no tenant, let them stay to finish organization choice.
-  if (user && user.tenant_id) return <Navigate to="/" replace />;
-
+  // ── All hooks MUST be called before any early return ──
   useEffect(() => {
     if (user && !user.tenant_id && step === "personal") {
       setStep("choice");
     }
   }, [user, step]);
-
-  if (success) {
-    if (successMode === "join")
-      return <Navigate to="/pending-approval" replace />;
-
-    // If user has tenant, go to dashboard.
-    // Dashboard (AuthGuard) will handle onboarding redirect.
-    if (user?.tenant_id) return <Navigate to="/dashboard" replace />;
-
-    // If no user yet (email confirmation pending), go to verify-email
-    if (!user) return <Navigate to="/verify-email" replace />;
-
-    // If user exists but no tenant, they should stay here to pick one
-    // But if they are in 'create' mode and success is true, success handled it
-  }
 
   useEffect(() => {
     if (searchQuery.length < 2) {
@@ -140,6 +122,21 @@ export function RegisterPage() {
     }, 400);
     return () => clearTimeout(timer);
   }, [searchQuery, searchTenants]);
+
+  // ── Early returns (AFTER all hooks) ──
+  // If already logged in and has a tenant, redirect home.
+  if (user && user.tenant_id) return <Navigate to="/" replace />;
+
+  if (success) {
+    if (successMode === "join")
+      return <Navigate to="/pending-approval" replace />;
+
+    // If user has tenant, go to dashboard.
+    if (user?.tenant_id) return <Navigate to="/dashboard" replace />;
+
+    // If no user yet (email confirmation pending), go to verify-email
+    if (!user) return <Navigate to="/verify-email" replace />;
+  }
 
   const handlePersonalNext = (e: FormEvent) => {
     e.preventDefault();
