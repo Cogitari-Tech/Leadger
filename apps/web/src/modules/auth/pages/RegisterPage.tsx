@@ -702,12 +702,12 @@ export function RegisterPage() {
             <img
               src="/images/logo-light.webp"
               alt="Leadgers"
-              className="h-8 w-auto hidden dark:block"
+              className="h-11 w-auto hidden dark:block"
             />
             <img
               src="/images/logo-dark.webp"
               alt="Leadgers"
-              className="h-8 w-auto block dark:hidden"
+              className="h-11 w-auto block dark:hidden"
             />
           </div>
           <span className="text-[10px] font-semibold tracking-[0.3em] uppercase opacity-40 px-3 py-1 bg-foreground/5 rounded-full inline-block mt-4">
@@ -761,8 +761,8 @@ export function RegisterPage() {
         </div>
       </div>
 
-      <div className="flex-1 relative z-20 flex items-center justify-center p-6 md:p-12 lg:p-20 bg-background/40 backdrop-blur-3xl border-l border-border/20 shadow-2xl">
-        <div className="w-full max-w-md space-y-10">
+      <div className="flex-1 relative z-20 flex items-center justify-center p-4 md:p-12 lg:p-20 bg-background/40 backdrop-blur-3xl border-l border-border/20 shadow-2xl my-auto">
+        <div className="w-full max-w-md space-y-6 md:space-y-10">
           <div className="space-y-4 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest mx-auto md:mx-0">
               <Globe className="w-3 h-3" /> Step{" "}
