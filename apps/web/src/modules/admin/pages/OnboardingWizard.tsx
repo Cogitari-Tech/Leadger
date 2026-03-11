@@ -573,8 +573,8 @@ export default function OnboardingWizard() {
           {/* ── Done ───────────────────────── */}
           {step.key === "done" && (
             <div className="flex flex-col items-center justify-center py-8 space-y-6">
-              <div className="p-5 bg-emerald-500/10 rounded-2xl">
-                <CheckCircle2 className="w-12 h-12 text-emerald-500" />
+              <div className="p-6 bg-primary/10 rounded-[2rem] ring-8 ring-primary/5 shadow-[0_0_30px_rgba(var(--primary),0.1)]">
+                <CheckCircle2 className="w-16 h-16 text-primary" />
               </div>
               <div className="text-center space-y-2">
                 <h3 className="text-xl font-bold">Tudo pronto!</h3>
