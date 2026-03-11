@@ -159,6 +159,14 @@ export function AuthGuard({ children }: AuthGuardProps) {
         }
       }
     } else {
+      // Eject from tenant onboarding routes if already completed
+      if (
+        location.pathname === "/onboarding" ||
+        location.pathname === "/pending-setup"
+      ) {
+        return <Navigate to="/dashboard" replace />;
+      }
+
       // --- Special case for Test User: always see onboarding once per session ---
       const isTestUser = user.email === "teste@leadgers.com";
       const hasSeenTour = sessionStorage.getItem("has_seen_tour");
@@ -179,6 +187,13 @@ export function AuthGuard({ children }: AuthGuardProps) {
         if (!isOwnerOrAdmin) {
           return <Navigate to="/user-onboarding" replace />;
         }
+      } else if (
+        (user.user_onboarding_completed || isOwnerOrAdmin) &&
+        location.pathname === "/user-onboarding" &&
+        !(isTestUser && !hasSeenTour)
+      ) {
+        // Eject if already completed user onboarding, or not required
+        return <Navigate to="/dashboard" replace />;
       }
     }
   } else if (user && !tenant) {
