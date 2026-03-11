@@ -110,17 +110,15 @@ Arquivo usado pelo Frontend (`npm run dev`). Deve conter APENAS as chaves públi
 
 ---
 
-## 5. Model Context Protocol (MCP)
+## 5. Model Context Protocol (MCP) e Agentes de IA
 
-Variáveis gerais para servidores MCP.
+Para manter a consistência entre todos os desenvolvedores e evitar a poluição de variáveis de ambiente no `.env`, todas as configurações, comandos e credenciais para os servidores MCPs foram unificadas.
 
-```ini
-MCP_LOG_LEVEL=info
-# Exemplo para servidor Postgres direto
-MCP_SERVER_POSTGRES_DSN=postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres
-```
+**Atenção:** As chaves de acesso paras as IAs não devem ser postas no arquivo `.env` raiz do projeto.
 
----
+1. Consulte o arquivo `mcp_config.example.json` na raiz do repositório.
+2. Siga as instruções no **"Guia de Onboarding IA"** presente no `README.md`.
+3. Projete as API Keys (Supabase Token, Github PAT, Google X-Goog-Api-Key) exclusivamente na UI/Settings da sua própria IDE ou cliente MCP (Cursor, Gemini CLI, Claude Desktop).
 
 ## 6. Onde configurar cada variável? (Resumo Didático)
 
@@ -134,8 +132,8 @@ Para manter a segurança e a arquitetura limpa, é vital saber o destino correto
 | **OAuth Client IDs e Secrets** (Google/GitHub para Sign-in)         | **Apenas no Supabase** (Dashboard > Auth)       | 🔴 Secrets Protegidos | **Separado** (Dev e Prod independentes)      | Obrigatórios para permitir Login via Social. Quem lida com os provedores é a Supabase, **portanto NÃO adicione eles na Vercel**.            |
 | **Chaves de APIs de Terceiros** (Ex: Google Drive p/ salvar laudos) | **Apenas no Supabase** (Edge Functions Secrets) | 🔴 Secrets Protegidos | **Separado** (Cofre isolado em cada projeto) | Segredos usados pelos scripts de Edge Functions. Elas devem viver nos cofres do backend, longe do frontend da Vercel.                       |
 | **`SUPABASE_SERVICE_ROLE_KEY`**                                     | Apenas no `.env` corporativo                    | 🔴 Máxima (Sensitive) | **Separado** (Não misture chaves)            | Chave-Mestre de Administração que ignora barreiras de segurança (RLS). **Não adicione na Vercel** (a menos que crie um micro-backend lá).   |
-| **`GITHUB_TOKEN`** (Automação MCP)                                  | Apenas no `.env` local                          | 🔴 Sensitive          | **Global** (Da sua conta pessoal)            | Token concedido para assistentes IA rodarem scripts no código e fazerem commits em seu nome.                                                |
-| **`MCP_SERVER_POSTGRES_DSN`**                                       | Apenas no `.env` local                          | 🔴 Máxima (Sensitive) | **Separado** (URL direta de Prod vs Beta)    | URL direta do superusuário no DB Postgres. Usada exclusivamente por IAs ou DBAs para rodar migrations/SQL brutos.                           |
+| **`GITHUB_TOKEN`** (Para Scripts Locais Genuínos)| Apenas no `.env` local                          | 🔴 Sensitive          | **Global** (Da sua conta pessoal)            | Token para rodar scripts locais criados em node (se necessário, fora da IA). O Token usado pela IA é setado nas configs da IDE.             |
+| **`MCP_SERVER_POSTGRES_DSN`**                                       | (Obsoleto)                                      | 🔴 Máxima             | N/A                                          | *(Obsoleto)* O Agente fará isso conectando-se pelo app `npx supabase` local e MCP Server Supabase Oficial nativo injetado da nuvem.         |
 | **`VITE_TURNSTILE_SITE_KEY`**                                       | Vercel e `.env` local/apps                      | 🟢 Pública            | **Separado** (Desenvolvimento e Prod)        | Chave do site do Cloudflare Turnstile. Usada no Frontend para instanciar o widget contra bots. Deve ser distinta para testes locais e Prod. |
 
 ### Passo a Passo

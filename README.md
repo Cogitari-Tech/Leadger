@@ -71,26 +71,41 @@ Este repositório contém toda a especificação técnica para evolução da pla
 
 ---
 
-## 🔌 MCPs (Model Context Protocols) Necessários
+## 🔌 Integração de Agentes IA e MCPs (Model Context Protocol)
 
-```bash
-# 1. Filesystem - Manipulação de arquivos
-npm install @modelcontextprotocol/server-filesystem
+**🚨 ATENÇÃO: NUNCA instale servidores MCP (`@modelcontextprotocol/...`) como dependências do projeto através do `npm install`.**
+Os MCPs são ferramentas usadas pelo seu Agente de IA Local (Cursor, Gemini CLI, Claude Desktop, etc) e rodam nativamente via `npx` em ambientes isolados pela própria IDE/Agente. O `package.json` do projeto deve permanecer limpo.
 
-# 2. GitHub - Versionamento e CI/CD
-npm install @modelcontextprotocol/server-github
+### Visão Geral dos MCPs Utilizados
+Para permitir que o seu Agente contribua eficientemente ("Vibe Coding") neste repositório mantendo o alto padrão da arquitetura e das interfaces, utilizamos as seguintes capacidades estendidas (MCP Servers):
 
-# 3. Supabase - Backend (Free Tier)
-npm install @supabase/supabase-js
+1. **`filesystem`**: Concede ao Agente a capacidade de ler, criar e alterar o código deste repositório com precisão.
+2. **`github`**: Permite ao Agente interagir com PRs, ler issues, reviews e versionar as mudanças implementadas.
+3. **`supabase-mcp-server`**: Permite ao Agente inspecionar a modelagem do banco em tempo real, gerenciar migrations de DDL (como criar tabelas RLS) e rodar Edge Functions de forma acoplada.
+4. **`prisma-mcp-server`**: Fornece análise profunda no Schema, visualização de dados e gerenciamento das tabelas.
+5. **`vercel`**: Garante deploy automatizado e inspeção de deployments sob demanda pela IA.
+6. **`StitchMCP` (Google Stitch)**: Agiliza a criação de protótipos UI baseados nos Guidelines nativos do projeto e gerencimento de componentes interativos.
+7. **`context7` (Upstash)**: Consulta instantânea da documentação atualizada de bibliotecas externas (React, Shadcn, Tailwind, Supabase) mitigando o risco de alucinações.
+8. **`memory`**: Persiste as memórias, regras de projetos arquiteturais e preferências de código na "cabeça" do Agente (Knowledge Graph).
+9. **`redis`**: Integração de operações de cache e persistência (Upstash Redis) quando necessário.
 
-# 4. PostgreSQL - Queries diretas
-npm install @modelcontextprotocol/server-postgres
+### 🛠 Como Configurar o "Onboarding IA"
 
-# 5. Playwright - Testes E2E
-npm install -D @playwright/test
+A configuração é projetada para ser "Plug and Play". Siga uma das duas opções:
 
-# Nota: Todas as dependências são gratuitas!
-```
+#### Opção A: Configuração Automática (Recomendada)
+Forneça o seguinte prompt de início (Vibe Coding) para o seu Agente/IDE:
+> *"Agente, verifique o arquivo `mcp_config.example.json` na raiz do projeto e configure seus servidores MCP internos (sua IDE) usando essas definições. Avise-me quando concluir."*
+Após ele carregar as configurações, basta você acessar as propriedades do seu Agente e colar as `API keys`.
+
+#### Opção B: Configuração Manual
+1. Copie o conteúdo de `mcp_config.example.json` (localizado na raiz).
+2. Cole no arquivo de configurações de MCP do seu cliente (ex: `~/AppData/Roaming/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json` se estiver no VSCode/Cline, ou na UI de configurações do Cursor/Claude Desktop).
+
+### 🔑 Política de Chaves (API Keys)
+O arquivo de template requer múltiplas chaves (Supabase Token, GitHub PAT, Vercel Auth, Google X-Goog-Api-Key e Upstash Redis).
+- **Consulte a equipe ("Ask your team"):** Verifique no canal oficial da engenharia se existe um conjunto de API Keys compartilhadas para ambiente de `Desenvolvimento` ou de `Homologação`.
+- Se as chaves compartilhadas não estiverem disponíveis, você deverá **criar contas gratuitas pessoais** nas plataformas correspondentes (Supabase, Vercel, Upstash, Google Cloud) para injetar as credenciais no seu agente de IA local.
 
 ---
 
