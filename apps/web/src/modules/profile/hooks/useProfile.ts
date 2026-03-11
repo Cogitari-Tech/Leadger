@@ -72,8 +72,8 @@ export function useProfile() {
       // Check MFA status
       const { data: factors } = await supabase.auth.mfa.listFactors();
       const mfaEnabled =
-        (factors?.totp?.length ?? 0) > 0 &&
-        factors?.totp?.some((f: { status: string }) => f.status === "verified");
+        (factors?.all?.length ?? 0) > 0 &&
+        factors?.all?.some((f: any) => f.status === "verified");
 
       const tenantInfo = memberData?.tenants as unknown as {
         name: string;

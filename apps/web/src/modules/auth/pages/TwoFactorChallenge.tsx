@@ -108,22 +108,28 @@ export function TwoFactorChallenge() {
           />
         </div>
 
-        <div className="glass-card border border-white/20 p-8 shadow-xl backdrop-blur-md">
-          <div className="mb-6 flex flex-col items-center text-center">
-            <div className="mb-4 rounded-full bg-brand-500/20 p-3 text-brand-400 border border-brand-500/30">
+        <div className="glass-panel border border-border/40 p-10 rounded-[2.5rem] shadow-2xl backdrop-blur-md">
+          <div className="mb-8 flex flex-col items-center text-center">
+            <div className="mb-6 rounded-2xl bg-primary/10 p-4 text-primary border border-primary/20 shadow-[0_0_20px_rgba(var(--primary),0.1)]">
               <ShieldCheck size={32} />
             </div>
-            <h1 className="text-2xl font-bold text-white">
-              Verificação em Duas Etapas
+            <h1 className="text-3xl font-black text-foreground tracking-tighter uppercase italic">
+              Acesso Restrito
             </h1>
-            <p className="mt-2 text-sm text-slate-400">
-              Abra seu aplicativo autenticador e digite o código de 6 dígitos
-              gerado.
+            <p className="mt-3 text-sm text-muted-foreground font-medium leading-relaxed max-w-[280px]">
+              Digite o código dinâmico do seu autenticador para validar sua
+              identidade.
             </p>
           </div>
 
-          <form onSubmit={handleVerify} className="space-y-6">
-            <div>
+          <form onSubmit={handleVerify} className="space-y-8">
+            <div className="space-y-3">
+              <label
+                htmlFor="code"
+                className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1 opacity-60"
+              >
+                Código de 6 dígitos
+              </label>
               <Input
                 id="code"
                 type="text"
@@ -135,50 +141,52 @@ export function TwoFactorChallenge() {
                 onChange={(e) =>
                   setVerifyCode(e.target.value.replace(/\D/g, ""))
                 }
-                className="h-14 bg-white/5 border-white/10 text-white placeholder-slate-500 text-center text-2xl tracking-[0.5em] focus:border-brand-500 focus:ring-brand-500/20"
+                className="h-20 bg-background/50 border-2 border-border/40 text-foreground placeholder-muted-foreground/30 text-center text-3xl font-mono tracking-[0.6em] focus:border-primary/50 focus:ring-4 focus:ring-primary/5 rounded-2xl transition-all"
                 autoFocus
                 required
               />
             </div>
 
-            <div className="flex items-center justify-center">
-              <label className="flex items-center gap-2 cursor-pointer group">
+            <div className="flex items-center justify-center pt-2">
+              <label className="flex items-center gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={rememberDevice}
                   onChange={(e) => setRememberDevice(e.target.checked)}
-                  className="w-4 h-4 rounded border-white/10 text-brand-500 focus:ring-brand-500/20 bg-white/5 transition-all"
+                  className="w-5 h-5 rounded-lg border-border/60 text-primary focus:ring-primary/20 bg-background/50 transition-all cursor-pointer"
                 />
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest group-hover:text-slate-300 transition-colors">
-                  Lembrar deste dispositivo por 30 dias
+                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest group-hover:text-primary transition-colors italic">
+                  Lembrar deste dispositivo (30 dias)
                 </span>
               </label>
             </div>
 
             {error && (
-              <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400 text-center">
+              <div className="rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-[11px] font-bold text-destructive text-center uppercase tracking-wider animate-in shake-1 duration-300">
                 {error}
               </div>
             )}
 
             <Button
               type="submit"
-              className="w-full h-12 text-sm font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 focus:ring-brand-500/50"
+              className="w-full h-16 text-xs font-black uppercase tracking-[0.2em] rounded-2xl bg-primary text-primary-foreground shadow-2xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all ring-4 ring-primary/5"
               disabled={verifyCode.length !== 6 || loading || !factorId}
             >
               {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : null}
-              {loading ? "Verificando..." : "Verificar Código"}
+                <Loader2 className="mr-3 h-4 w-4 animate-spin" />
+              ) : (
+                <ShieldCheck className="mr-3 h-4 w-4" />
+              )}
+              {loading ? "Sincronizando..." : "Validar Credencial"}
             </Button>
 
-            <div className="text-center">
+            <div className="text-center pt-4 border-t border-border/40 mt-4">
               <button
                 type="button"
                 onClick={() => signOut()}
-                className="text-xs text-slate-500 hover:text-white transition-colors"
+                className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 hover:text-destructive transition-colors"
               >
-                Cancelar e sair
+                Suspender Sessão Atual
               </button>
             </div>
           </form>

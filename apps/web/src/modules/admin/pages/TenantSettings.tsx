@@ -140,7 +140,7 @@ export function TenantSettings() {
                 className="hidden"
               />
               <div className="absolute -bottom-2 -right-2 bg-background border border-border/40 rounded-full p-2 shadow-xl ring-4 ring-background">
-                <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                <div className="w-3 h-3 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
               </div>
             </div>
             <div className="text-center md:text-left space-y-2">
@@ -239,7 +239,7 @@ export function TenantSettings() {
 
             <div className="flex items-center gap-6 w-full md:w-auto">
               {saved && (
-                <span className="text-xs text-emerald-500 font-black animate-in fade-in slide-in-from-right-4">
+                <span className="text-[10px] text-primary font-black uppercase tracking-widest animate-in fade-in slide-in-from-right-4">
                   ✓ Sincronizado com Sucesso
                 </span>
               )}

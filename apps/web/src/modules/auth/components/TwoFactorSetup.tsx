@@ -125,7 +125,7 @@ export function TwoFactorSetup() {
     return (
       <div className="rounded-[1.5rem] border border-border/40 bg-background/30 backdrop-blur-md p-8 shadow-xl animate-in fade-in duration-500">
         <div className="flex flex-col items-center text-center gap-6">
-          <div className="rounded-2xl bg-emerald-500/10 p-4 text-emerald-500 ring-4 ring-emerald-500/5">
+          <div className="rounded-2xl bg-primary/10 p-4 text-primary ring-4 ring-primary/5 shadow-[0_0_20px_rgba(var(--primary),0.1)]">
             <CheckCircle2 size={32} />
           </div>
           <div className="space-y-2">
