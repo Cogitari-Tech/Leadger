@@ -612,6 +612,20 @@ Uso interno restrito. Distribuição não autorizada é proibida.
 
 ---
 
+## 🧪 Ambiente de Teste (Live Q.A.)
+
+Para testes rápidos em ambiente de produção ou homologação:
+
+| Usuário                              | Senha               | Função             | Comportamento             |
+| ------------------------------------ | ------------------- | ------------------ | ------------------------- |
+| `teste@leadgers.com`                 | `Cogitari@2026!Dev` | Admin (Auditoria)  | Estático (Persistente)    |
+| `qa_vibe_test@leadgers.com`          | `Cogitari@2026!Dev` | Novo Registro      | **Auto-Removível** (LImpa ao Sair) |
+| `test_removivel@leadgers.com`        | `Cogitari@2026!Dev` | Teste de Cadastro  | **Auto-Removível** (Limpa ao Sair) |
+
+> 💡 **Dica:** Use o e-mail `qa_vibe_test@leadgers.com` se quiser testar o fluxo de registro e onboarding do zero repetidas vezes. O sistema apagará os dados deste usuário e de sua organização assim que você clicar em "Sair" do dashboard.
+
+---
+
 **Cogitari Tech** - Construindo o futuro da auditoria e gestão empresarial. 🚀
 
-_Última atualização: 03 de Março de 2026_
+_Última atualização: 11 de Março de 2026_
