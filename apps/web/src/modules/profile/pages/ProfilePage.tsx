@@ -102,20 +102,24 @@ export default function ProfilePage() {
   );
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Meu Perfil</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Gerencie suas informações pessoais e segurança
+    <div className="max-w-4xl mx-auto space-y-12 p-6 animate-in fade-in duration-700">
+      <div className="space-y-1">
+        <h1 className="text-4xl font-black text-foreground tracking-tighter uppercase italic">
+          Perfil do Agente
+        </h1>
+        <p className="text-sm text-muted-foreground font-black uppercase tracking-[0.2em] opacity-60">
+          Gerenciamento de credenciais e integridade de acesso
         </p>
       </div>
 
       {/* Avatar & Name Card */}
-      <div className="glass-card soft-shadow rounded-2xl p-6">
-        <div className="flex items-start gap-6">
+      <div className="glass-panel rounded-[2.5rem] p-10 border border-border/40 shadow-2xl relative overflow-hidden group/card shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20 opacity-40" />
+
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
           {/* Avatar */}
-          <div className="relative group">
-            <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center overflow-hidden">
+          <div className="relative group/avatar">
+            <div className="w-32 h-32 rounded-[2.5rem] bg-background/50 border border-border/60 flex items-center justify-center shadow-inner overflow-hidden relative ring-8 ring-primary/5 group-hover/avatar:scale-105 transition-all duration-500">
               {profile.avatarUrl ? (
                 <img
                   src={profile.avatarUrl}
@@ -123,14 +127,14 @@ export default function ProfilePage() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <User className="w-10 h-10 text-primary/40" />
+                <User className="w-12 h-12 text-primary/40" />
               )}
             </div>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute inset-0 bg-black/60 rounded-[2.5rem] flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-all duration-300 disabled:cursor-not-allowed backdrop-blur-sm"
             >
-              <Camera className="w-5 h-5 text-white" />
+              <Camera className="w-8 h-8 text-white" />
             </button>
             <input
               ref={fileInputRef}
@@ -142,47 +146,50 @@ export default function ProfilePage() {
           </div>
 
           {/* Name & Email */}
-          <div className="flex-1">
-            {nameEditing ? (
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={nameInput}
-                  onChange={(e) => setNameInput(e.target.value)}
-                  className="flex-1 px-3 py-1.5 text-sm bg-muted/50 border border-border/50 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSaveName();
-                    if (e.key === "Escape") setNameEditing(false);
-                  }}
-                />
+          <div className="flex-1 text-center md:text-left space-y-4">
+            <div className="space-y-1">
+              {nameEditing ? (
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    className="flex-1 px-5 py-3 text-sm bg-background/50 border border-primary/40 rounded-xl text-foreground focus:outline-none focus:ring-4 focus:ring-primary/5 font-bold"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveName();
+                      if (e.key === "Escape") setNameEditing(false);
+                    }}
+                  />
+                  <button
+                    onClick={handleSaveName}
+                    disabled={saving}
+                    className="p-3 rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all"
+                  >
+                    <Save className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
                 <button
-                  onClick={handleSaveName}
-                  disabled={saving}
-                  className="p-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                  onClick={() => {
+                    setNameInput(profile.fullName);
+                    setNameEditing(true);
+                  }}
+                  className="text-4xl font-black text-foreground hover:text-primary transition-colors pr-8 tracking-tighter"
                 >
-                  <Save className="w-4 h-4" />
+                  {profile.fullName || "Agente sem Identidade"}
                 </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => {
-                  setNameInput(profile.fullName);
-                  setNameEditing(true);
-                }}
-                className="text-lg font-bold text-foreground hover:text-primary transition-colors text-left"
-              >
-                {profile.fullName || "Sem nome definido"}
-              </button>
-            )}
-            <div className="mt-1">
+              )}
+            </div>
+
+            <div className="flex flex-col md:flex-row items-center gap-6">
               {emailEditing ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 w-full md:w-auto">
                   <input
                     type="email"
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
-                    className="flex-1 px-3 py-1.5 text-sm bg-muted/50 border border-border/50 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="flex-1 px-5 py-3 text-sm bg-background/50 border border-primary/40 rounded-xl text-foreground focus:outline-none focus:ring-4 focus:ring-primary/5 font-bold"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleSaveEmail();
@@ -192,45 +199,43 @@ export default function ProfilePage() {
                   <button
                     onClick={handleSaveEmail}
                     disabled={saving}
-                    className="p-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                    className="p-3 rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all"
                   >
                     <Save className="w-4 h-4" />
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 group/email">
-                  <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5" />
-                    {profile.email}
-                  </p>
-                  <button
-                    onClick={() => {
-                      setEmailInput(profile.email);
-                      setEmailEditing(true);
-                    }}
-                    className="text-[10px] text-primary opacity-0 group-hover/email:opacity-100 transition-opacity font-bold uppercase tracking-widest"
-                  >
+                <button
+                  onClick={() => {
+                    setEmailInput(profile.email);
+                    setEmailEditing(true);
+                  }}
+                  className="group/email flex items-center gap-2 text-sm text-muted-foreground font-medium hover:text-primary transition-colors"
+                >
+                  <Mail className="w-4 h-4 opacity-40" />
+                  {profile.email}
+                  <span className="text-[10px] text-primary opacity-0 group-hover/email:opacity-100 transition-all font-black uppercase tracking-widest ml-2 px-2 py-0.5 bg-primary/5 rounded-md border border-primary/10">
                     Alterar
-                  </button>
-                </div>
+                  </span>
+                </button>
               )}
             </div>
 
             {emailChangeRequested && (
-              <p className="text-[10px] text-amber-500 font-medium mt-1 animate-pulse">
-                Confirmação enviada para o novo e-mail.
+              <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em] mt-1 animate-pulse bg-primary/5 px-4 py-2 rounded-xl border border-primary/10 inline-block">
+                Sincronizando: Confirme o novo e-mail
               </p>
             )}
 
-            <div className="flex items-center gap-3 mt-2">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
-                <Shield className="w-3 h-3" />
+            <div className="flex items-center justify-center md:justify-start gap-4 pt-2">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary/10 text-primary border border-primary/20 shadow-sm">
+                <Shield className="w-3.5 h-3.5" />
                 {profile.roleName}
               </span>
               {profile.emailConfirmedAt && !emailChangeRequested && (
-                <span className="inline-flex items-center gap-1 text-[10px] text-emerald-500">
-                  <CheckCircle2 className="w-3 h-3" />
-                  E-mail verificado
+                <span className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary opacity-60">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Verificado
                 </span>
               )}
             </div>
@@ -239,49 +244,53 @@ export default function ProfilePage() {
       </div>
 
       {/* Tenant Info */}
-      <div className="glass-card soft-shadow rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Building2 className="w-4 h-4 text-primary" />
-          <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
-            Organização
+      <div className="glass-panel rounded-[2.5rem] p-10 border border-border/40 shadow-xl space-y-6">
+        <div className="flex items-center gap-3">
+          <Building2 className="w-5 h-5 text-primary" />
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
+            Organização Designada
           </h2>
         </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-foreground">{profile.tenantName}</span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-            Tenant ativo
+        <div className="flex items-center justify-between border-t border-border/40 pt-6">
+          <span className="text-2xl font-black text-foreground tracking-tighter italic">
+            {profile.tenantName}
+          </span>
+          <span className="px-4 py-1.5 rounded-xl bg-background border border-border/60 text-[10px] text-muted-foreground font-black uppercase tracking-widest shadow-inner">
+            Agente Ativo
           </span>
         </div>
       </div>
 
       {/* Connected Projects */}
-      <div className="glass-card soft-shadow rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <FolderOpen className="w-4 h-4 text-primary" />
-          <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
-            Projetos Conectados
+      <div className="glass-panel rounded-[2.5rem] p-10 border border-border/40 shadow-xl space-y-8">
+        <div className="flex items-center gap-3">
+          <FolderOpen className="w-5 h-5 text-primary" />
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
+            Atribuições de Campo
           </h2>
         </div>
 
         {profile.projects.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Nenhum projeto conectado.
+          <p className="text-sm text-muted-foreground italic opacity-50 text-center py-6">
+            Nenhuma atribuição de campo registrada no radar.
           </p>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {activeProjects.length > 0 && (
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">
-                  Ativos
+              <div className="space-y-4">
+                <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em] ml-2">
+                  Operações Ativas
                 </p>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {activeProjects.map((p) => (
                     <div
                       key={p.id}
-                      className="flex items-center justify-between p-2 rounded-lg bg-muted/30"
+                      className="flex items-center justify-between p-4 rounded-2xl bg-background/50 border border-border/40 shadow-sm"
                     >
-                      <span className="text-sm text-foreground">{p.name}</span>
-                      <span className="text-[10px] text-emerald-500 font-medium capitalize">
+                      <span className="text-xs font-bold text-foreground">
+                        {p.name}
+                      </span>
+                      <span className="px-3 py-1 rounded-lg bg-primary/5 text-[9px] font-black text-primary uppercase tracking-widest border border-primary/10">
                         {p.role}
                       </span>
                     </div>
@@ -290,18 +299,20 @@ export default function ProfilePage() {
               </div>
             )}
             {inactiveProjects.length > 0 && (
-              <div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">
-                  Inativos
+              <div className="space-y-4">
+                <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em] ml-2">
+                  Ciclos Concluídos
                 </p>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {inactiveProjects.map((p) => (
                     <div
                       key={p.id}
-                      className="flex items-center justify-between p-2 rounded-lg bg-muted/20 opacity-60"
+                      className="flex items-center justify-between p-4 rounded-2xl bg-muted/10 border border-border/20 opacity-60"
                     >
-                      <span className="text-sm text-foreground">{p.name}</span>
-                      <span className="text-[10px] text-muted-foreground capitalize">
+                      <span className="text-xs font-bold text-foreground">
+                        {p.name}
+                      </span>
+                      <span className="text-[9px] text-muted-foreground font-black uppercase tracking-widest">
                         {p.status}
                       </span>
                     </div>
@@ -314,60 +325,67 @@ export default function ProfilePage() {
       </div>
 
       {/* Security Section */}
-      <div className="glass-card soft-shadow rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <KeyRound className="w-4 h-4 text-primary" />
-          <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
-            Segurança
+      <div className="glass-panel rounded-[2.5rem] p-10 border border-border/40 shadow-2xl space-y-10 mb-12">
+        <div className="flex items-center gap-3">
+          <KeyRound className="w-5 h-5 text-primary" />
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
+            Protocolos de Segurança
           </h2>
         </div>
-        <div className="space-y-4">
+
+        <div className="space-y-8">
           {/* Password */}
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-foreground">Alterar Senha</p>
-              <p className="text-[10px] text-muted-foreground">
-                Enviar link de redefinição por e-mail
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 rounded-3xl bg-background/30 border border-border/40 group/item">
+            <div className="space-y-1">
+              <p className="text-sm font-black text-foreground uppercase tracking-tighter italic">
+                Criptografia de Acesso
+              </p>
+              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">
+                Redefinir chave mestra de autenticação
               </p>
             </div>
             <button
               onClick={handlePasswordReset}
               disabled={passwordResetSent}
-              className={`px-4 py-2 text-xs font-medium rounded-xl transition-all ${
+              className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ring-4 ring-primary/5 ${
                 passwordResetSent
-                  ? "bg-emerald-500/10 text-emerald-500"
-                  : "bg-muted/50 text-foreground hover:bg-muted"
+                  ? "bg-primary/10 text-primary border border-primary/20"
+                  : "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105"
               }`}
             >
-              {passwordResetSent ? "Link enviado ✓" : "Enviar link"}
+              {passwordResetSent ? "Link Enviado ✓" : "Solicitar Reset"}
             </button>
           </div>
 
           {/* MFA */}
-          <div className="flex items-center justify-between border-t border-border/20 pt-4">
-            <div className="flex items-center gap-3">
-              <Smartphone className="w-4 h-4 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-foreground">
-                  Autenticação em Duas Etapas
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 rounded-3xl bg-background/30 border border-border/40 group/item">
+            <div className="flex items-center gap-4">
+              <div
+                className={`p-4 rounded-2xl ${profile.mfaEnabled ? "bg-primary/10 text-primary" : "bg-muted/20 text-muted-foreground"} border border-current/10`}
+              >
+                <Smartphone className="w-5 h-5 shadow-sm" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-black text-foreground uppercase tracking-tighter italic">
+                  Multi-fator (MFA/2FA)
                 </p>
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">
                   {profile.mfaEnabled
-                    ? "Ativo — protegido com autenticador"
-                    : "Inativo — recomendado ativar"}
+                    ? "Status: Blindagem Ativa"
+                    : "Status: Vulnerável — Requer Ativação"}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {profile.mfaEnabled ? (
-                <span className="inline-flex items-center gap-1 text-[10px] text-emerald-500 font-medium">
-                  <CheckCircle2 className="w-3 h-3" />
-                  Ativado
+                <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary px-4 py-2 bg-primary/5 rounded-xl border border-primary/20">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Blindado
                 </span>
               ) : (
                 <button
                   onClick={() => navigate("/auth/mfa-setup")}
-                  className="px-4 py-2 text-xs font-medium rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                  className="px-8 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105 transition-all ring-4 ring-primary/5"
                 >
                   Configurar
                 </button>
@@ -376,28 +394,29 @@ export default function ProfilePage() {
           </div>
 
           {/* Secondary Recovery Email */}
-          <div className="flex items-center justify-between border-t border-border/20 pt-4">
-            <div className="flex items-center gap-3">
-              <MailPlus className="w-4 h-4 text-muted-foreground" />
-              <div className="flex-1">
-                <p className="text-sm text-foreground">
-                  E-mail de Recuperação Secundário
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 rounded-3xl bg-background/30 border border-border/40 group/item">
+            <div className="flex items-center gap-4">
+              <div className="p-4 rounded-2xl bg-muted/20 text-muted-foreground border border-current/10">
+                <MailPlus className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-black text-foreground uppercase tracking-tighter italic">
+                  Canal de Recuperação
                 </p>
-                <p className="text-[10px] text-muted-foreground">
-                  {profile.secondaryEmail || "Não configurado"} — Para uso
-                  administrativo
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">
+                  {profile.secondaryEmail || "Nenhum canal secundário"}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {secondaryEmailEditing ? (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-3">
                   <input
                     type="email"
                     value={secondaryEmailInput}
                     onChange={(e) => setSecondaryEmailInput(e.target.value)}
                     placeholder="backup@email.com"
-                    className="w-48 px-2 py-1.5 text-xs bg-muted/50 border border-border/50 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-56 px-4 py-2.5 text-xs bg-background/50 border border-primary/40 rounded-xl text-foreground focus:outline-none focus:ring-4 focus:ring-primary/5 font-bold"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleSaveSecondaryEmail();
@@ -407,14 +426,14 @@ export default function ProfilePage() {
                   <button
                     onClick={handleSaveSecondaryEmail}
                     disabled={saving}
-                    className="p-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                    className="p-2.5 rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:brightness-110 transition-all"
                   >
-                    <Save className="w-3.5 h-3.5" />
+                    <Save className="w-4 h-4" />
                   </button>
                 </div>
               ) : secondaryEmailSaved ? (
-                <span className="text-[10px] text-emerald-500 font-medium">
-                  Salvo ✓
+                <span className="text-[10px] text-primary font-black uppercase tracking-widest px-4 py-2 bg-primary/5 rounded-xl border border-primary/20">
+                  Sincronizado ✓
                 </span>
               ) : (
                 <button
@@ -422,9 +441,9 @@ export default function ProfilePage() {
                     setSecondaryEmailInput(profile.secondaryEmail || "");
                     setSecondaryEmailEditing(true);
                   }}
-                  className="px-4 py-2 text-xs font-medium rounded-xl bg-muted/50 text-foreground hover:bg-muted transition-colors"
+                  className="px-8 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl bg-muted border border-border/60 text-foreground hover:bg-background transition-all"
                 >
-                  {profile.secondaryEmail ? "Alterar" : "Adicionar"}
+                  {profile.secondaryEmail ? "Atualizar" : "Vincular"}
                 </button>
               )}
             </div>

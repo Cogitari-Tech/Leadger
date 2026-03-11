@@ -50,6 +50,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
 
   // Load user profile + tenant + permissions
   const loadUserProfile = useCallback(async () => {
+    setState((prev) => ({ ...prev, tenantLoading: true }));
     if (!supabaseUser || !session) {
       setState({
         user: null,
