@@ -22,7 +22,9 @@ export function UserOnboardingPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user?.user_onboarding_completed) {
+    const hasSeenTour = sessionStorage.getItem("has_seen_tour");
+    // Only auto-navigate if onboarding is completed AND (it's not a forced tour or tour was already seen)
+    if (user?.user_onboarding_completed && hasSeenTour) {
       navigate("/dashboard", { replace: true });
     }
   }, [user, navigate]);
