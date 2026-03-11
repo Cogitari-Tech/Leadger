@@ -201,8 +201,19 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    const userEmail = state.supabaseUser?.email;
+    if (
+      userEmail === "qa_vibe_test@leadgers.com" ||
+      userEmail === "test_removivel@leadgers.com"
+    ) {
+      try {
+        await supabase.rpc("cleanup_test_user", { p_email: userEmail });
+      } catch (err) {
+        console.error("Failed to cleanup test user", err);
+      }
+    }
     await supabase.auth.signOut();
-  }, []);
+  }, [state.supabaseUser]);
 
   const updateMetadata = useCallback(async (data: any) => {
     const { error } = await supabase.auth.updateUser({ data });
