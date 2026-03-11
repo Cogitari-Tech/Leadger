@@ -75,11 +75,11 @@ export function ProjectsListPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+        return "bg-primary/10 text-primary border-primary/20";
       case "completed":
         return "bg-primary/10 text-primary border-primary/20";
       case "on_hold":
-        return "bg-amber-500/10 text-amber-500 border-amber-500/20";
+        return "bg-muted/40 text-muted-foreground border-border/40 shadow-inner";
       case "cancelled":
         return "bg-destructive/10 text-destructive border-destructive/20";
       default:
