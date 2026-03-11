@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../context/AuthContext";
@@ -20,6 +20,12 @@ export function UserOnboardingPage() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.user_onboarding_completed) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleFinish = async () => {
     if (!user) return;

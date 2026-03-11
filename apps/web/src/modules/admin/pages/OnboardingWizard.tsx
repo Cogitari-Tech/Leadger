@@ -95,6 +95,11 @@ export default function OnboardingWizard() {
   const { tenant, user, signOut, refreshProfile } = useAuth();
 
   useEffect(() => {
+    if (tenant?.onboarding_completed) {
+      navigate("/dashboard", { replace: true });
+      return;
+    }
+
     if (user && user.role) {
       const isOwnerOrAdmin =
         user.role.name === "owner" || user.role.name === "admin";
@@ -102,7 +107,7 @@ export default function OnboardingWizard() {
         navigate("/dashboard", { replace: true });
       }
     }
-  }, [user, navigate]);
+  }, [user, tenant, navigate]);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [saving, setSaving] = useState(false);
