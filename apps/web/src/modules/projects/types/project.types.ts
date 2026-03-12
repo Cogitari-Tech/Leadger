@@ -1,14 +1,14 @@
 export interface Project {
   id: string;
-  tenant_id: string;
+  tenantId: string;
   name: string;
   description: string | null;
   status: "active" | "completed" | "on_hold" | "cancelled";
-  start_date: string | null;
-  end_date: string | null;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
+  startDate: string | null;
+  endDate: string | null;
+  createdBy: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ProjectWithResources extends Project {
@@ -18,10 +18,10 @@ export interface ProjectWithResources extends Project {
 
 export interface ProjectMember {
   id: string;
-  project_id: string;
-  member_id: string;
-  project_role: string;
-  assigned_at: string;
+  projectId: string;
+  memberId: string;
+  projectRole: string;
+  assignedAt: string;
 }
 
 // Extends ProjectMember with details from tenant_members and auth.users
@@ -45,6 +45,6 @@ export interface ProjectFormData {
   name: string;
   description: string;
   status: "active" | "completed" | "on_hold" | "cancelled";
-  start_date: string;
-  end_date: string;
+  startDate: string;
+  endDate: string;
 }

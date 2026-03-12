@@ -271,8 +271,8 @@ export function ProjectsListPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 text-muted-foreground font-black text-[10px] uppercase tracking-widest">
                       <Calendar className="w-4 h-4 text-primary/40" />
-                      {project.end_date
-                        ? new Date(project.end_date).toLocaleDateString(
+                      {project.endDate
+                        ? new Date(project.endDate).toLocaleDateString(
                             "pt-BR",
                             { month: "short", day: "numeric", year: "numeric" },
                           )
