@@ -123,8 +123,8 @@ git --version
 
 ```bash
 # 1. Clonar repositório
-git clone https://github.com/Cogitari-Tech/Audit-Tool.git
-cd Audit-Tool
+git clone https://github.com/Cogitari-Tech/Leadgers-Platform.git
+cd Leadgers-Platform
 
 # 2. Instalar dependências
 npm install
@@ -170,7 +170,7 @@ npm run build
 ## 📁 Estrutura do Projeto
 
 ```
-Audit-Tool/                     # ⚠️ Repositório: https://github.com/Cogitari-Tech/Audit-Tool
+Leadgers-Platform/              # ⚠️ Repositório: https://github.com/Cogitari-Tech/Leadgers-Platform
 │
 ├── apps/
 │   └── web/                    # Frontend React
@@ -581,7 +581,7 @@ on:
 
 ### Bugs e Issues
 
-🐛 GitHub Issues: https://github.com/Cogitari-Tech/Audit-Tool/issues
+🐛 GitHub Issues: https://github.com/Cogitari-Tech/Leadgers-Platform/issues
 
 ### Emergências
 
@@ -628,4 +628,4 @@ Para testes rápidos em ambiente de produção ou homologação:
 
 **Cogitari Tech** - Construindo o futuro da auditoria e gestão empresarial. 🚀
 
-_Última atualização: 11 de Março de 2026_
+_Última atualização: 12 de Março de 2026_
