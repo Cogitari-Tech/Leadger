@@ -22,8 +22,7 @@ describe("useRisks hook", () => {
   });
 
   it("should fetch and load risks on mount", async () => {
-    const fromMock = vi.mocked(supabase.from);
-    fromMock.mockReturnValue({
+    (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: mockRisks, error: null }),
@@ -43,7 +42,7 @@ describe("useRisks hook", () => {
   });
 
   it("should handle error when fetching risks", async () => {
-    vi.mocked(supabase.from).mockReturnValue({
+    (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       order: vi
@@ -74,7 +73,7 @@ describe("useRisks hook", () => {
       owner: "me",
     };
 
-    vi.mocked(supabase.from).mockReturnValue({
+    (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: [], error: null }),
@@ -105,7 +104,7 @@ describe("useRisks hook", () => {
   });
 
   it("should remove a risk via repository", async () => {
-    vi.mocked(supabase.from).mockReturnValue({
+    (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: mockRisks, error: null }),
