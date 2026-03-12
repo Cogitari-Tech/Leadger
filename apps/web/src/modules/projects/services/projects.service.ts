@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { supabase } from "../../../config/supabase";
 import {
   Project,
@@ -6,6 +6,7 @@ import {
   ProjectMemberDetails,
 } from "../types/project.types";
 import { useAuth } from "../../auth/context/AuthContext";
+import { SupabaseProjectRepository } from "../repositories/SupabaseProjectRepository";
 
 export function useProjects() {
   const { tenant } = useAuth();
@@ -13,38 +14,29 @@ export function useProjects() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const repository = useMemo(() => new SupabaseProjectRepository(supabase), []);
+
   const fetchProjects = useCallback(async () => {
     if (!tenant) return;
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setProjects(data || []);
+      const data = await repository.listProjects(tenant.id);
+      setProjects(data as unknown as Project[]);
     } catch (err: any) {
       setError(err.message || "Erro ao carregar projetos.");
     } finally {
       setLoading(false);
     }
-  }, [tenant]);
+  }, [tenant, repository]);
 
   const createProject = async (data: ProjectFormData) => {
     if (!tenant) return null;
     setLoading(true);
     setError(null);
     try {
-      const { data: newProject, error } = await supabase
-        .from("projects")
-        .insert([{ ...data, tenant_id: tenant.id }])
-        .select()
-        .single();
-
-      if (error) throw error;
-      setProjects((prev) => [newProject, ...prev]);
+      const newProject = await repository.createProject(tenant.id, data as any);
+      setProjects((prev) => [newProject as unknown as Project, ...prev]);
       return newProject;
     } catch (err: any) {
       setError(err.message || "Erro ao criar projeto.");
@@ -58,16 +50,11 @@ export function useProjects() {
     setLoading(true);
     setError(null);
     try {
-      const { data: updatedProject, error } = await supabase
-        .from("projects")
-        .update(data)
-        .eq("id", id)
-        .select()
-        .single();
-
-      if (error) throw error;
+      const updatedProject = await repository.updateProject(id, data as any);
       setProjects((prev) =>
-        prev.map((p) => (p.id === id ? updatedProject : p)),
+        prev.map((p) =>
+          p.id === id ? (updatedProject as unknown as Project) : p,
+        ),
       );
       return updatedProject;
     } catch (err: any) {
@@ -82,8 +69,7 @@ export function useProjects() {
     setLoading(true);
     setError(null);
     try {
-      const { error } = await supabase.from("projects").delete().eq("id", id);
-      if (error) throw error;
+      await repository.deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
       return true;
     } catch (err: any) {
@@ -110,54 +96,27 @@ export function useProjectMembers(projectId: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const repository = useMemo(() => new SupabaseProjectRepository(supabase), []);
+
   const fetchMembers = useCallback(async () => {
     if (!projectId) return;
     setLoading(true);
     setError(null);
     try {
-      // Note: member details comes from tenant_members and auth.users.
-      // Relying on RLS for access control.
-      const { data, error } = await supabase
-        .from("project_members")
-        .select(
-          `
-          id,
-          project_id,
-          member_id,
-          project_role,
-          assigned_at,
-          member:tenant_members!inner(
-            id,
-            role:roles(name, display_name),
-            user:users!tenant_members_user_id_fkey(
-              email,
-              raw_user_meta_data
-            )
-          )
-        `,
-        )
-        .eq("project_id", projectId);
-
-      if (error) throw error;
+      const data = await repository.listProjectMembersWithDetails(projectId);
       setMembers((data as unknown as ProjectMemberDetails[]) || []);
     } catch (err: any) {
       setError(err.message || "Erro ao carregar membros do projeto.");
     } finally {
       setLoading(false);
     }
-  }, [projectId]);
+  }, [projectId, repository]);
 
   const assignMember = async (memberId: string, role: string = "member") => {
     setLoading(true);
     setError(null);
     try {
-      const { error } = await supabase
-        .from("project_members")
-        .insert([
-          { project_id: projectId, member_id: memberId, project_role: role },
-        ]);
-
-      if (error) throw error;
+      await repository.assignMember(projectId, memberId, role);
       await fetchMembers(); // Refresh to get relations
       return true;
     } catch (err: any) {
@@ -172,14 +131,8 @@ export function useProjectMembers(projectId: string) {
     setLoading(true);
     setError(null);
     try {
-      const { error } = await supabase
-        .from("project_members")
-        .delete()
-        .eq("project_id", projectId)
-        .eq("member_id", memberId);
-
-      if (error) throw error;
-      setMembers((prev) => prev.filter((m) => m.member_id !== memberId));
+      await repository.removeMember(projectId, memberId);
+      setMembers((prev) => prev.filter((m) => m.memberId !== memberId));
       return true;
     } catch (err: any) {
       setError(err.message || "Erro ao remover membro.");

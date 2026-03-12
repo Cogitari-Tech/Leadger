@@ -11,6 +11,16 @@
 
 export interface IFrameworkRepository {
   listFrameworks(tenantId: string): Promise<FrameworkDTO[]>;
+  listControls(frameworkIds: string[]): Promise<ControlDTO[]>;
+}
+
+export interface ControlDTO {
+  id: string;
+  framework_id: string;
+  code: string;
+  title: string;
+  description: string;
+  // We don't include status here because status is computed in the hook/service based on checklists
 }
 
 export interface FrameworkDTO {
