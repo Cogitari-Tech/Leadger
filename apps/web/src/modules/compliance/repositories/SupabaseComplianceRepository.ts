@@ -29,21 +29,30 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
     const { data: programsData } = await this.supabase
       .from("audit_programs")
       .select("id, framework_id")
-      .eq("tenant_id", tenantId);
+      .eq("tenant_id", tenantId)
+      .in(
+        "framework_id",
+        fwData.map((f) => f.id),
+      );
 
-    const { data: checklistData } = await this.supabase
-      .from("audit_program_checklists")
-      .select("status, audit_program_id")
-      .eq("tenant_id", tenantId);
+    const programIds = programsData?.map((p) => p.id) || [];
+    let checklistData: any[] = [];
+
+    if (programIds.length > 0) {
+      const { data } = await this.supabase
+        .from("audit_program_checklists")
+        .select("status, program_id")
+        .in("program_id", programIds);
+      if (data) checklistData = data;
+    }
 
     return fwData.map((f: any) => {
       const fwPrograms =
         programsData?.filter((p) => p.framework_id === f.id) || [];
-      const programIds = fwPrograms.map((p) => p.id);
+      const fProgramIds = fwPrograms.map((p) => p.id);
 
       const fwChecklists =
-        checklistData?.filter((c) => programIds.includes(c.audit_program_id)) ||
-        [];
+        checklistData?.filter((c) => fProgramIds.includes(c.program_id)) || [];
       const total = fwChecklists.length;
       const compliant = fwChecklists.filter(
         (c) => c.status === "compliant",
@@ -52,6 +61,8 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
       let status = "pending";
       if (progress >= 100) status = "compliant";
       else if (progress > 0) status = "partial";
+
+      if (total > 0 && status === "pending") status = "active";
 
       return {
         id: f.id,

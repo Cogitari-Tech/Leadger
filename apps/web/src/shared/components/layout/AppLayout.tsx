@@ -99,7 +99,7 @@ export const AppLayout: React.FC = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:relative z-50 h-full flex-shrink-0 border-r border-border/40 bg-background/80 backdrop-blur-2xl flex flex-col overflow-hidden transition-all duration-300 ${
+        className={`fixed md:relative z-50 h-full flex-shrink-0 border-r border-border/40 bg-background md:bg-background/80 md:backdrop-blur-2xl flex flex-col overflow-hidden transition-all duration-300 ${
           isCollapsed ? "w-16" : "w-72"
         } ${isMobileMenuOpen ? "translate-x-0 w-72 shadow-2xl" : "-translate-x-full md:translate-x-0"}`}
       >
