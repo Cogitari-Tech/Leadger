@@ -35,7 +35,7 @@ describe("useSwot hook", () => {
   });
 
   it("should fetch and load SWOT items on mount", async () => {
-    vi.mocked(supabase.from).mockReturnValue({
+    (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: mockItems, error: null }),
@@ -55,7 +55,7 @@ describe("useSwot hook", () => {
   });
 
   it("should handle error when fetching SWOT items", async () => {
-    vi.mocked(supabase.from).mockReturnValue({
+    (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       order: vi
@@ -82,7 +82,7 @@ describe("useSwot hook", () => {
       createdAt: "2024-01-03",
     };
 
-    vi.mocked(supabase.from).mockReturnValue({
+    (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: [], error: null }),
@@ -109,7 +109,7 @@ describe("useSwot hook", () => {
   });
 
   it("should remove a SWOT item via repository", async () => {
-    vi.mocked(supabase.from).mockReturnValue({
+    (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: mockItems, error: null }),

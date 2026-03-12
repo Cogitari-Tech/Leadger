@@ -37,7 +37,7 @@ describe("useProjects hook", () => {
       created_at: "2024-01-01T00:00:00Z",
     };
 
-    vi.mocked(supabase.from).mockReturnValue({
+    (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       insert: vi.fn().mockReturnThis(),
@@ -72,7 +72,7 @@ describe("useProjects hook", () => {
   });
 
   it("should fetch projects", async () => {
-    vi.mocked(supabase.from).mockReturnValue({
+    (supabase.from as any).mockReturnValue({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
       order: vi.fn().mockResolvedValue({ data: mockProjects, error: null }),
