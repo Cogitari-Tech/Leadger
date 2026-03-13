@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import { vi, beforeEach } from "vitest";
 
 // Mock Supabase
-vi.mock("../config/supabase", () => ({
+vi.mock("@/config/supabase", () => ({
   supabase: {
     from: vi.fn(() => ({
       select: vi.fn().mockReturnThis(),
