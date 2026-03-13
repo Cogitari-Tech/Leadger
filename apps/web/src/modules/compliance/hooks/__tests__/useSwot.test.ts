@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { useSwot } from "../useSwot";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { supabase } from "../../../../config/supabase";
+import { supabase } from "@/config/supabase";
 
 const mockTenant = { id: "test-tenant-id" };
 vi.mock("../../../auth/context/AuthContext", () => ({

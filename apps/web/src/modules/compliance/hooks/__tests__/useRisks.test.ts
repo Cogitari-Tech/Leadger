@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { useRisks } from "../useRisks";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { supabase } from "../../../../config/supabase";
+import { supabase } from "@/config/supabase";
 
 // Mock useAuth
 const mockTenant = { id: "test-tenant-id" };
