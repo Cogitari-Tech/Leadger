@@ -1,31 +1,32 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../../auth/context/AuthContext";
 import type { SwotItem } from "../types/compliance.types";
+import { SupabaseComplianceRepository } from "../repositories/SupabaseComplianceRepository";
 
 export function useSwot() {
   const { tenant } = useAuth();
   const [items, setItems] = useState<SwotItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const repository = useMemo(
+    () => new SupabaseComplianceRepository(supabase),
+    [],
+  );
+
   const fetchItems = useCallback(async () => {
     if (!tenant) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("swot_items")
-      .select("*")
-      .order("impact", { ascending: false });
 
-    if (!error && data) {
-      setItems(
-        data.map((item: any) => ({
-          ...item,
-          createdAt: item.created_at,
-        })) as SwotItem[],
-      );
+    try {
+      const data = await repository.listItems(tenant.id);
+      setItems(data as unknown as SwotItem[]);
+    } catch (error) {
+      console.error("Error fetching SWOT items:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, [tenant]);
+  }, [tenant, repository]);
 
   useEffect(() => {
     fetchItems();
@@ -35,30 +36,21 @@ export function useSwot() {
     item: Omit<SwotItem, "id" | "createdAt" | "tenant_id">,
   ) => {
     if (!tenant) return;
-    const { data, error } = await supabase
-      .from("swot_items")
-      .insert({
-        tenant_id: tenant.id,
-        title: item.title,
-        description: item.description,
-        type: item.type,
-        impact: item.impact,
-      })
-      .select()
-      .single();
 
-    if (!error && data) {
-      setItems((prev) => [
-        ...prev,
-        { ...data, createdAt: data.created_at } as unknown as SwotItem,
-      ]);
+    try {
+      const data = await repository.addItem(tenant.id, item as any);
+      setItems((prev) => [...prev, data as unknown as SwotItem]);
+    } catch (error) {
+      console.error("Error adding SWOT item:", error);
     }
   };
 
   const removeItem = async (id: string) => {
-    const { error } = await supabase.from("swot_items").delete().eq("id", id);
-    if (!error) {
+    try {
+      await repository.removeItem(id);
       setItems((prev) => prev.filter((i) => i.id !== id));
+    } catch (error) {
+      console.error("Error removing SWOT item:", error);
     }
   };
 

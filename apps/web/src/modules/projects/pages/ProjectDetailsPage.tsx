@@ -19,6 +19,8 @@ import { useProjectMembers } from "../services/projects.service";
 import { AssignMemberModal } from "../components/AssignMemberModal";
 import { ProjectFormModal } from "../components/ProjectFormModal";
 import { useAuth } from "../../auth/context/AuthContext";
+import { SupabaseProjectRepository } from "../repositories/SupabaseProjectRepository";
+import { useMemo } from "react";
 
 export function ProjectDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +33,8 @@ export function ProjectDetailsPage() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+
+  const repository = useMemo(() => new SupabaseProjectRepository(supabase), []);
 
   const [programs, setPrograms] = useState<any[]>([]);
   const [repos, setRepos] = useState<any[]>([]);
@@ -87,16 +91,12 @@ export function ProjectDetailsPage() {
   };
 
   const loadProject = async () => {
+    if (!id) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (error) throw error;
-      setProject(data);
+      const data = await repository.getProjectById(id);
+      if (!data) throw new Error("Projeto não encontrado.");
+      setProject(data as unknown as Project);
     } catch (err: any) {
       console.error("Error loading project:", err);
       setError("Não foi possível carregar os detalhes do projeto.");
@@ -106,14 +106,11 @@ export function ProjectDetailsPage() {
   };
 
   const handleUpdateProject = async (data: any) => {
+    if (!id) return;
     try {
-      const { error } = await supabase
-        .from("projects")
-        .update(data)
-        .eq("id", id);
-
-      if (error) throw error;
-      await loadProject();
+      const updated = await repository.updateProject(id, data);
+      setProject(updated as unknown as Project);
+      setIsEditModalOpen(false);
     } catch (err) {
       console.error("Erro ao atualizar projeto:", err);
       alert("Erro ao atualizar o projeto.");
@@ -267,8 +264,8 @@ export function ProjectDetailsPage() {
                           Data de Início
                         </p>
                         <p className="text-foreground font-medium">
-                          {project.start_date
-                            ? new Date(project.start_date).toLocaleDateString(
+                          {project.startDate
+                            ? new Date(project.startDate).toLocaleDateString(
                                 "pt-BR",
                               )
                             : "-"}
@@ -284,8 +281,8 @@ export function ProjectDetailsPage() {
                           Término Previsto
                         </p>
                         <p className="text-foreground font-medium">
-                          {project.end_date
-                            ? new Date(project.end_date).toLocaleDateString(
+                          {project.endDate
+                            ? new Date(project.endDate).toLocaleDateString(
                                 "pt-BR",
                               )
                             : "-"}
@@ -369,7 +366,7 @@ export function ProjectDetailsPage() {
                               {member.member.user?.email}
                             </span>
                             <span className="px-1.5 py-0.5 rounded bg-background border border-border/60 text-[10px] text-muted-foreground font-medium whitespace-nowrap">
-                              {member.project_role.toUpperCase()}
+                              {member.projectRole.toUpperCase()}
                             </span>
                           </div>
                         </div>
@@ -379,7 +376,7 @@ export function ProjectDetailsPage() {
                         <button
                           onClick={async () => {
                             if (confirm("Remover este membro do projeto?")) {
-                              await removeMember(member.member_id);
+                              await removeMember(member.memberId);
                             }
                           }}
                           className="p-2 text-muted-foreground hover:text-destructive bg-background rounded-md opacity-0 group-hover:opacity-100 transition-all border border-border/40 hover:border-destructive/20"
@@ -435,8 +432,8 @@ export function ProjectDetailsPage() {
                                 {p.status.toUpperCase()}
                               </span>
                               <span className="text-xs text-muted-foreground">
-                                {p.start_date
-                                  ? new Date(p.start_date).toLocaleDateString(
+                                {p.startDate
+                                  ? new Date(p.startDate).toLocaleDateString(
                                       "pt-BR",
                                     )
                                   : "-"}
@@ -502,7 +499,7 @@ export function ProjectDetailsPage() {
         onAssign={async (memberId, role) => {
           await assignMember(memberId, role);
         }}
-        currentMemberIds={members.map((m) => m.member_id)}
+        currentMemberIds={members.map((m) => m.memberId)}
       />
     </div>
   );
