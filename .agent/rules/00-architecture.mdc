@@ -3,10 +3,9 @@ description: "Regras de Clean Architecture (OBRIGATÓRIO EM TODAS AS TAREFAS)"
 alwaysApply: true
 ---
 
-# 🏛️ REGRAS GLOBAIS DE ARQUITETURA - AMURI SAAS
+# 🏛️ REGRAS GLOBAIS DE ARQUITETURA - LEADGERS PLATFORM
 
 ## Princípios Fundamentais
-
 ### Clean Architecture (Camadas)
 - **Domain Layer** (src/domain/): Entidades, Value Objects, Regras de Negócio
 - **Application Layer** (src/application/): Use Cases, DTOs, Interfaces
@@ -21,15 +20,15 @@ alwaysApply: true
 - **Dependency Inversion**: Dependa de abstrações, não de implementações concretas
 
 ### Domain-Driven Design (DDD)
-- **Bounded Contexts**: Cada módulo de integração (YouTube, TikTok) é um contexto isolado
-- **Aggregates**: User + Profile + Credits é um agregado
-- **Value Objects**: Email, CPF, APIKey devem ser Value Objects imutáveis
-- **Domain Events**: PublishSucceeded, CreditsPurchased, UserBanned
+- **Bounded Contexts**: Cada módulo (Auditoria, Financeiro) é um contexto isolado
+- **Aggregates**: AuditProgram + Findings + ActionPlans é um agregado
+- **Value Objects**: Email, CPF, RiskLevel devem ser Value Objects imutáveis
+- **Domain Events**: AuditCreated, RiskAssessed, ViolationDetected
 
 ## Estrutura de Pastas (OBRIGATÓRIA)
 
 src/
-├── app/                    # Next.js App Router (Presentation)
+├── app/                    # React Router Setup (Presentation)
 ├── components/             # UI Components
 │   ├── ui/                # shadcn/ui base components
 │   └── features/          # Feature-specific components
@@ -43,7 +42,7 @@ src/
 │   │   └── dtos/
 │   ├── infrastructure/    # Infrastructure Layer
 │   │   ├── db/           # Prisma, Supabase clients
-│   │   ├── integrations/ # YouTube, TikTok, etc.
+│   │   ├── integrations/ # GitHub, External Auth
 │   │   └── mcp/          # MCP servers
 │   └── utils/            # Helpers
 └── types/                 # TypeScript types
@@ -57,14 +56,14 @@ src/
 - Types: `kebab-case.d.ts` (ex: `api-response.d.ts`)
 
 ### Variáveis e Funções
-- Variáveis: `camelCase` (ex: `userId`, `creditsBalance`)
+- Variáveis: `camelCase` (ex: `userId`, `riskScore`)
 - Constantes: `UPPER_SNAKE_CASE` (ex: `MAX_UPLOAD_SIZE`, `API_BASE_URL`)
 - Funções: `camelCase` com verbos (ex: `getUserProfile`, `validateEmail`)
-- Componentes: `PascalCase` (ex: `BuyCoinsButton`)
+- Componentes: `PascalCase` (ex: `AuditDashboard`)
 
 ### Database (Prisma Schema)
-- Tabelas: `snake_case` no plural (ex: `user_profiles`, `coin_transactions`)
-- Colunas: `snake_case` (ex: `created_at`, `credits_balance`)
+- Tabelas: `snake_case` no plural (ex: `user_profiles`, `audit_programs`)
+- Colunas: `snake_case` (ex: `created_at`, `risk_score`)
 - Enums: `PascalCase` (ex: `UserRole`, `TransactionType`)
 
 ## TypeScript (STRICT MODE)
@@ -115,13 +114,13 @@ async function getUser(id: string) {
 ## Logging e Observabilidade
 ````typescript
 // ✅ Use Sentry para errors críticos
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from '@sentry/react';
 
 try {
   // operação crítica
 } catch (error) {
   Sentry.captureException(error, {
-    tags: { module: 'youtube-upload' },
+    tags: { module: 'github-sync' },
     extra: { userId, videoId }
   });
   throw error;
@@ -145,24 +144,24 @@ docs/
 └── adr/
 ├── 001-context-sharding.md
 ├── 002-landing-page-architecture.md
-├── 003-escolha-nextjs-app-router.md
+├── 003-escolha-vite-react-router.md
 ├── 004-supabase-vs-planetscale.md
 ├── 005-modelo-byok-para-apis.md
 └── ...
 
 Formato:
 ````markdown
-# ADR 001: Escolha do Next.js App Router
+# ADR 003: Escolha do Vite + React Router
 
 **Status:** Aceito
 **Data:** 2026-01-16
 **Decisores:** @tech-team
 
 ## Contexto
-Precisamos de SSR para SEO e performance na landing page...
+Precisamos de alta velocidade em Client-Side SPA...
 
 ## Decisão
-Usar Next.js 14+ com App Router...
+Usar Vite com React Router v6+...
 
 ## Consequências
 - ✅ Pros: SEO nativo, streaming...
@@ -192,14 +191,14 @@ main              # Produção (protegido)
 
 # Feature branches
 feature/user-auth
-fix/youtube-quota-error
+fix/github-rate-limit
 refactor/prisma-queries
 
 # Commits (Conventional Commits)
-feat: add YouTube upload with resumable protocol
-fix: handle 403 quota exceeded error
-docs: update ADR for BYOK strategy
-test: add e2e test for coin purchase flow
+feat: add automated compliance sync validation
+fix: handle github API rate limit
+docs: update ADR for core architecture
+test: add e2e test for governance dashboard
 ````
 
 ## Regras de Merge
@@ -222,14 +221,14 @@ test: add e2e test for coin purchase flow
 ## Segurança (NON-NEGOTIABLE)
 ````typescript
 // ❌ NUNCA exponha secrets no cliente
-const API_KEY = "sk_live_xxxxx"; // PROIBIDO
+const API_KEY = "gh_live_xxxxx"; // PROIBIDO
 
 // ✅ Use variáveis de ambiente server-side
 // .env.local (NUNCA commitar)
-STRIPE_SECRET_KEY=sk_live_xxxxx
+GITHUB_ADMIN_TOKEN=gh_live_xxxxx
 
-// Server Component/API Route
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Supabase Edge Function / Server-side script
+const github = new GitHubApi(process.env.GITHUB_ADMIN_TOKEN!);
 ````
 
 ---

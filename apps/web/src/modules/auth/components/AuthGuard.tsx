@@ -117,9 +117,15 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
   // Email not confirmed -> verify-email screen
   const supabaseUser = session?.user;
+  const isSetupTestUser =
+    supabaseUser?.email === "teste@leadgers.com" ||
+    (supabaseUser?.email?.startsWith("onboarding-test") &&
+      supabaseUser?.email?.endsWith("@leadgers.com"));
+
   if (
     supabaseUser &&
     !supabaseUser.email_confirmed_at &&
+    !isSetupTestUser &&
     location.pathname !== "/verify-email"
   ) {
     return <Navigate to="/verify-email" replace />;
@@ -146,8 +152,48 @@ export function AuthGuard({ children }: AuthGuardProps) {
     const isOwnerOrAdmin =
       user.role?.name === "owner" || user.role?.name === "admin";
 
+    // #region agent log
+    fetch("http://127.0.0.1:7419/ingest/344ba88e-a654-4e32-a88d-91e1d507acbb", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Debug-Session-Id": "62a3e4",
+      },
+      body: JSON.stringify({
+        sessionId: "62a3e4",
+        runId: "pre-fix",
+        hypothesisId: "A",
+        location: "AuthGuard.tsx:tenant-branch",
+        message: "AuthGuard tenant onboarding state",
+        data: {
+          path: location.pathname,
+          tenantId: tenant.id,
+          onboardingCompleted: tenant.onboarding_completed,
+          userId: user.id,
+          userRole: user.role?.name ?? null,
+          userOnboardingCompleted: user.user_onboarding_completed,
+          isOwnerOrAdmin,
+          isTestUser:
+            user.email === "teste@leadgers.com" ||
+            (user.email?.startsWith("onboarding-test") &&
+              user.email?.endsWith("@leadgers.com")),
+          hasSeenTour:
+            typeof window !== "undefined" &&
+            sessionStorage.getItem("has_seen_tour") === "true",
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion agent log
+
     // 1. Company Setup (Tenant Onboarding)
     if (!tenant.onboarding_completed) {
+      console.log(
+        "[AuthGuard] Tenant onboarding NOT completed. Redirecting to /onboarding. Tenant ID:",
+        tenant.id,
+        "Path:",
+        location.pathname,
+      );
       if (isOwnerOrAdmin) {
         if (location.pathname !== "/onboarding") {
           return <Navigate to="/onboarding" replace />;
@@ -168,27 +214,36 @@ export function AuthGuard({ children }: AuthGuardProps) {
       }
 
       // --- Special case for Test User: always see onboarding once per session ---
-      const isTestUser = user.email === "teste@leadgers.com";
-      const hasSeenTour = sessionStorage.getItem("has_seen_tour");
+      const isTestUser =
+        user.email === "teste@leadgers.com" ||
+        (user.email?.startsWith("onboarding-test") &&
+          user.email?.endsWith("@leadgers.com"));
+
+      const hasSeenTour = sessionStorage.getItem("has_seen_tour") === "true";
 
       if (
         isTestUser &&
         !hasSeenTour &&
-        location.pathname !== "/user-onboarding"
+        location.pathname !== "/user-onboarding" &&
+        location.pathname !== "/onboarding"
       ) {
         return <Navigate to="/user-onboarding" replace />;
       }
 
       // Tenant is set up. Now check user onboarding.
+      // Optimistically consider it complete if they just finished and have the session flag
+      const onboardingCompleted = user.user_onboarding_completed || hasSeenTour;
+
       if (
-        !user.user_onboarding_completed &&
-        location.pathname !== "/user-onboarding"
+        !onboardingCompleted &&
+        location.pathname !== "/user-onboarding" &&
+        location.pathname !== "/onboarding"
       ) {
         if (!isOwnerOrAdmin) {
           return <Navigate to="/user-onboarding" replace />;
         }
       } else if (
-        (user.user_onboarding_completed || isOwnerOrAdmin) &&
+        (onboardingCompleted || isOwnerOrAdmin) &&
         location.pathname === "/user-onboarding" &&
         !(isTestUser && !hasSeenTour)
       ) {

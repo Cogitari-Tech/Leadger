@@ -204,10 +204,35 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const userEmail = state.supabaseUser?.email;
     if (
       userEmail === "qa_vibe_test@leadgers.com" ||
-      userEmail === "test_removivel@leadgers.com"
+      userEmail === "test_removivel@leadgers.com" ||
+      (userEmail?.startsWith("onboarding-test") &&
+        userEmail?.endsWith("@leadgers.com"))
     ) {
       try {
         await supabase.rpc("cleanup_test_user", { p_email: userEmail });
+        // #region agent log
+        fetch(
+          "http://127.0.0.1:7419/ingest/344ba88e-a654-4e32-a88d-91e1d507acbb",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Debug-Session-Id": "62a3e4",
+            },
+            body: JSON.stringify({
+              sessionId: "62a3e4",
+              runId: "pre-fix",
+              hypothesisId: "D",
+              location: "SessionContext.tsx:signOut",
+              message: "cleanup_test_user RPC called for test user",
+              data: {
+                email: userEmail,
+              },
+              timestamp: Date.now(),
+            }),
+          },
+        ).catch(() => {});
+        // #endregion agent log
       } catch (err) {
         console.error("Failed to cleanup test user", err);
       }

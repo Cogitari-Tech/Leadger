@@ -10,8 +10,12 @@ export default defineConfig({
       "@leadgers/core": path.resolve(__dirname, "../../packages/core/src"),
     },
   },
+  css: {
+    devSourcemap: false,
+  },
   build: {
     target: "esnext",
+    sourcemap: "hidden",
     rollupOptions: {
       output: {
         manualChunks: {
