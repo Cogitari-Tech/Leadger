@@ -12,7 +12,7 @@ globs:
 ## Quando Aplicar
 
 ✅ **SIM** para:
-- Integrações com APIs externas (YouTube, TikTok, Stripe)
+- Integrações com APIs externas (GitHub, Google, External Services)
 - Acesso a banco de dados
 - Providers de IA (Veo, Runway, OpenAI)
 - Serviços de email/SMS
@@ -28,17 +28,17 @@ globs:
 
 ### 1. Definir Port (Interface)
 ```typescript
-// src/application/ports/secondary/IYouTubeGateway.ts
-export interface IYouTubeGateway {
-  publishVideo(video: Video): Promise<Result<PublishResult>>;
+// src/application/ports/secondary/IGitHubGateway.ts
+export interface IGitHubGateway {
+  getOrganizationHealth(orgId: string): Promise<Result<HealthScore>>;
 }
 ```
 
 ### 2. Implementar Adapter
 ```typescript
-// src/infrastructure/adapters/secondary/gateways/YouTubeApiGateway.ts
-export class YouTubeApiGateway implements IYouTubeGateway {
-  async publishVideo(video: Video): Promise<Result<PublishResult>> {
+// src/infrastructure/adapters/secondary/gateways/GitHubApiGateway.ts
+export class GitHubApiGateway implements IGitHubGateway {
+  async getOrganizationHealth(orgId: string): Promise<Result<HealthScore>> {
     // Implementação real
   }
 }
@@ -46,12 +46,12 @@ export class YouTubeApiGateway implements IYouTubeGateway {
 
 ### 3. Usar no Use Case
 ```typescript
-// src/application/use-cases/PublishVideoUseCase.ts
-export class PublishVideoUseCase {
-  constructor(private gateway: IYouTubeGateway) {} // ✅ Depende da INTERFACE
+// src/application/use-cases/SyncOrgHealthUseCase.ts
+export class SyncOrgHealthUseCase {
+  constructor(private gateway: IGitHubGateway) {} // ✅ Depende da INTERFACE
   
   async execute() {
-    await this.gateway.publishVideo(video); // ✅ Não sabe se é real ou mock
+    await this.gateway.getOrganizationHealth(orgId); // ✅ Não sabe se é real ou mock
   }
 }
 ```
