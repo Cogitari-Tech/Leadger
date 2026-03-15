@@ -35,7 +35,7 @@ paths:
 
 ## Imports
 
-- Ordem: 1) React/libs externas, 2) Domínio (`@cogitari-platform/core`), 3) Módulos locais, 4) Types.
+- Ordem: 1) React/libs externas, 2) Domínio (`@leadgers/core`), 3) Módulos locais, 4) Types.
 - Use path aliases quando disponíveis.
 - Nunca importe de `../../../..` mais que 3 níveis. Refatore para um barrel export ou path alias.
 

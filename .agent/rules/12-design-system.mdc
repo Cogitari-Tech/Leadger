@@ -7,9 +7,9 @@ globs:
   - "tailwind.config.ts"
 ---
 
-# 🎨 DESIGN SYSTEM & UI UX - AMURI SAAS
+# 🎨 DESIGN SYSTEM & UI UX - LEADGERS PLATFORM
 
-> **FONTE DA VERDADE:** A Landing Page (`amuri-landingpage-example.html`) é a referência visual absoluta. Todos os componentes devem seguir sua estética.
+> **FONTE DA VERDADE:** O Dashboard de Auditoria é a referência visual absoluta. Todos os componentes devem seguir sua estética premium e funcional.
 
 ## 1. Fundamentos Visuais
 
