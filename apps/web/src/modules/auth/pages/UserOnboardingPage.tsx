@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../context/AuthContext";
 import { ThemeToggle } from "../../../shared/components/ui/ThemeToggle";
+import { Button } from "../../../shared/components/ui/Button";
 import {
   UserCircle,
   ShieldCheck,
@@ -16,21 +17,48 @@ import {
 export function UserOnboardingPage() {
   const { user, tenant, signOut, refreshProfile } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const finalizingRef = useRef(false);
+
+  // Sync step with URL or fallback to draft
+  const getDraftStep = () => {
+    try {
+      const stored = localStorage.getItem("user_onboarding_step_draft");
+      return stored ? parseInt(stored, 10) : 1;
+    } catch {
+      return 1;
+    }
+  };
+
+  const stepQuery = searchParams.has("step")
+    ? parseInt(searchParams.get("step") || "1", 10)
+    : getDraftStep();
+  const step = isNaN(stepQuery) || stepQuery < 1 ? 1 : Math.min(stepQuery, 2);
+
+  useEffect(() => {
+    localStorage.setItem("user_onboarding_step_draft", step.toString());
+  }, [step]);
+
+  const setStep = (nextStep: number | ((s: number) => number)) => {
+    const nextValue =
+      typeof nextStep === "function" ? nextStep(step) : nextStep;
+    setSearchParams({ step: nextValue.toString() }, { replace: true });
+  };
 
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const hasSeenTour = sessionStorage.getItem("has_seen_tour");
-    // Only auto-navigate if onboarding is completed AND (it's not a forced tour or tour was already seen)
-    if (user?.user_onboarding_completed && hasSeenTour) {
+    if (finalizingRef.current) return;
+    const hasSeenTour = sessionStorage.getItem("has_seen_tour") === "true";
+    if (user?.user_onboarding_completed || hasSeenTour) {
       navigate("/dashboard", { replace: true });
     }
   }, [user, navigate]);
 
   const handleFinish = async () => {
     if (!user) return;
+    finalizingRef.current = true;
     setLoading(true);
     setError(null);
 
@@ -40,23 +68,51 @@ export function UserOnboardingPage() {
         .from("tenant_members")
         .update({ user_onboarding_completed: true })
         .eq("user_id", user.id)
-        .eq("tenant_id", tenant?.id); // Should uniquely identify the row for the active tenant
+        .eq("tenant_id", tenant?.id);
 
       if (dbError) throw dbError;
 
-      // Set session flag for the tour
-      sessionStorage.setItem("has_seen_tour", "true");
+      // #region agent log
+      fetch(
+        "http://127.0.0.1:7419/ingest/344ba88e-a654-4e32-a88d-91e1d507acbb",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Debug-Session-Id": "62a3e4",
+          },
+          body: JSON.stringify({
+            sessionId: "62a3e4",
+            runId: "pre-fix",
+            hypothesisId: "C",
+            location: "UserOnboardingPage.tsx:handleFinish",
+            message: "User onboarding flag updated",
+            data: {
+              tenantId: tenant?.id ?? null,
+              userId: user.id,
+              email: user.email,
+            },
+            timestamp: Date.now(),
+          }),
+        },
+      ).catch(() => {});
+      // #endregion agent log
 
-      // 2. Clear state and navigate
+      // Set session flag for the tour so AuthGuard considers it complete
+      sessionStorage.setItem("has_seen_tour", "true");
+      localStorage.removeItem("user_onboarding_step_draft");
+
       if (refreshProfile) {
         await refreshProfile();
       }
 
-      navigate("/dashboard");
+      // 2. Clear state and navigate allowing AuthGuard re-render
+      setTimeout(() => navigate("/dashboard", { replace: true }), 0);
     } catch (err: any) {
       console.error(err);
       setError("Erro ao finalizar configuração. Tente novamente.");
       setLoading(false);
+      finalizingRef.current = false;
     }
   };
 
@@ -68,7 +124,6 @@ export function UserOnboardingPage() {
         <ThemeToggle />
       </div>
 
-      {/* Dynamic Background decor */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[150px] rounded-full animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
@@ -132,13 +187,13 @@ export function UserOnboardingPage() {
                 </ul>
               </div>
 
-              <button
+              <Button
                 onClick={nextStep}
-                className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-4 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-xl shadow-primary/20 rounded-2xl transition-all active:scale-[0.98]"
+                className="w-full font-bold tracking-[0.2em] uppercase rounded-2xl shadow-xl shadow-primary/20 py-6"
               >
                 Entendi, continuar
                 <ArrowRight className="w-4 h-4 ml-1" />
-              </button>
+              </Button>
             </div>
           )}
 
@@ -165,27 +220,29 @@ export function UserOnboardingPage() {
                 <strong>{tenant?.name}</strong>. O painel central está liberado.
               </p>
 
-              <button
+              <Button
                 onClick={handleFinish}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-foreground text-background py-4 text-xs font-bold tracking-[0.2em] uppercase hover:opacity-90 shadow-xl rounded-2xl transition-all active:scale-[0.98] mt-8"
+                variant="default"
+                className="w-full bg-foreground text-background font-bold tracking-[0.2em] uppercase rounded-2xl shadow-xl py-6 mt-8 hover:opacity-90 active:scale-[0.98]"
               >
                 {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-5 h-5 animate-spin text-background" />
                 ) : (
                   "Acessar Dashboard"
                 )}
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={async () => {
                   await signOut();
                   window.location.href = "/";
                 }}
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mx-auto mt-4 p-2"
+                variant="ghost"
+                className="mx-auto mt-4 text-muted-foreground"
               >
-                <ArrowLeft className="w-4 h-4" /> Sair / Voltar para Início
-              </button>
+                <ArrowLeft className="w-4 h-4 mr-2" /> Sair / Voltar para Início
+              </Button>
             </div>
           )}
         </div>
@@ -193,5 +250,3 @@ export function UserOnboardingPage() {
     </div>
   );
 }
-
-/* aria-label Bypass for UX audit dummy regex */

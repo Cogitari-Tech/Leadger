@@ -57,10 +57,21 @@ export default {
           "8px 8px 16px 0px rgba(0, 0, 0, 0.4), -8px -8px 16px 0px rgba(255, 255, 255, 0.05)",
         glass: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
       },
-      backdropBlur: {
-        xs: "2px",
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
