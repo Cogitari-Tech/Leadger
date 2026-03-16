@@ -370,19 +370,18 @@ export default function OnboardingWizard() {
         await refreshProfile();
       }
 
+      // Small additional delay to ensure AuthContext state is fully propagated
+      // and RLS caches are invalidated in the edge proxy if applicable.
       console.log(
-        "[OnboardingWizard] Profile refreshed. Current tenant onboarding_completed:",
-        tenant?.onboarding_completed,
+        "[OnboardingWizard] Finalizing... Waiting for state stabilization.",
       );
 
-      // Allow React state to flush
       setTimeout(() => {
         console.log(
-          "[OnboardingWizard] Executing final navigation to /dashboard. Tenant state:",
-          tenant,
+          "[OnboardingWizard] Executing final navigation to /dashboard.",
         );
         navigate("/dashboard", { replace: true });
-      }, 500); // Increased delay to ensure state propagates
+      }, 800);
     } catch (err: any) {
       console.error("Failed to finish onboarding", err);
       alert(

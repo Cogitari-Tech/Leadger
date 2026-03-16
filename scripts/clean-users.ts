@@ -30,12 +30,32 @@ async function cleanUsers() {
 
   let deleted = 0;
   for (const user of users) {
-    if (user.email === "teste@leadgers.com") {
-      console.log(`▶ Poupando: ${user.email}`);
+    if (!user.email) continue;
+
+    // Protection: Never delete the primary test account or specific domains if not intended
+    if (
+      user.email === "teste@leadgers.com" ||
+      user.email === "teste@cogitari.com"
+    ) {
+      console.log(`▶ Poupando conta persistente: ${user.email}`);
       continue;
     }
 
-    console.log(`🗑 Removendo usuário: ${user.email} (${user.id})...`);
+    const isTestPattern =
+      user.email === "qa_vibe_test@leadgers.com" ||
+      user.email === "test_removivel@leadgers.com" ||
+      user.email === "qa_vibe_test_new@leadgers.com" ||
+      user.email.startsWith("onboarding-test") ||
+      user.email.endsWith("@cogitari.com"); // Also cover cogitari test domain
+
+    if (isTestPattern) {
+      console.log(`🗑 [TEST] Removendo usuário: ${user.email} (${user.id})...`);
+    } else {
+      console.log(
+        `⚠️ [NON-PATTERN] Removendo usuário: ${user.email} (${user.id})...`,
+      );
+    }
+
     const { error } = await supabase.auth.admin.deleteUser(user.id);
     if (error) {
       console.error(`  🔴 Falha ao apagar o usuário ${user.email}:`, error);
@@ -44,7 +64,7 @@ async function cleanUsers() {
       deleted++;
     }
   }
-  console.log(`🚀 Concluído! Limpamos ${deleted} usuários de teste.`);
+  console.log(`🚀 Concluído! Limpamos ${deleted} usuários do ambiente.`);
 }
 
 cleanUsers();

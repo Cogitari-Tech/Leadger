@@ -20,7 +20,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/dist packages/*/dist",
     "prepare": "husky",
-    "security-check": "node scripts/security-scan.js"
+    "security-check": "node scripts/security-scan.js",
+    "mcp:setup": "cd tools/mcp && npm install"
   },
   "lint-staged": {
     "*": [
@@ -58,7 +59,9 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@prisma/client": "^6.19.2",
-    "@supabase/supabase-js": "^2.98.0"
+    "@supabase/supabase-js": "^2.98.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "overrides": {
     "tar": "^7.5.9",
