@@ -60,8 +60,9 @@
     "@supabase/supabase-js": "^2.98.0"
   },
   "overrides": {
-    "tar": "^7.5.9",
-    "minimatch": "^10.2.1"
+    "tar": "^7.5.11",
+    "minimatch": "^10.2.1",
+    "flatted": "^3.4.0"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.59.0"
