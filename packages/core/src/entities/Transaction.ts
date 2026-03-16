@@ -2,7 +2,7 @@
 
 /**
  * Entidade de Domínio: Transação Financeira
- * 
+ *
  * Representa um lançamento contábil seguindo o método de partidas dobradas.
  * Toda transação afeta duas contas: uma no débito e outra no crédito.
  */
@@ -15,7 +15,7 @@ export class Transaction {
     public readonly accountCreditId: string,
     public readonly amount: number,
     public readonly createdBy: string,
-    public readonly createdAt: Date
+    public readonly createdAt: Date,
   ) {
     this.validate();
   }
@@ -39,7 +39,7 @@ export class Transaction {
       props.accountCreditId,
       props.amount,
       props.createdBy,
-      new Date()
+      new Date(),
     );
   }
 
@@ -55,7 +55,7 @@ export class Transaction {
       data.account_credit_id,
       Number(data.amount),
       data.created_by,
-      new Date(data.created_at)
+      new Date(data.created_at),
     );
   }
 
@@ -65,13 +65,13 @@ export class Transaction {
   toPersistence(): any {
     return {
       id: this.id,
-      date: this.date.toISOString().split('T')[0],
+      date: this.date.toISOString().split("T")[0],
       description: this.description,
       account_debit_id: this.accountDebitId,
       account_credit_id: this.accountCreditId,
       amount: this.amount,
       created_by: this.createdBy,
-      created_at: this.createdAt.toISOString()
+      created_at: this.createdAt.toISOString(),
     };
   }
 
@@ -80,15 +80,15 @@ export class Transaction {
    */
   private validate(): void {
     if (this.amount <= 0) {
-      throw new Error('Amount must be positive');
+      throw new Error("Amount must be positive");
     }
 
     if (!this.description || this.description.trim().length === 0) {
-      throw new Error('Description is required');
+      throw new Error("Description is required");
     }
 
     if (this.accountDebitId === this.accountCreditId) {
-      throw new Error('Debit and credit accounts must be different');
+      throw new Error("Debit and credit accounts must be different");
     }
   }
 
@@ -104,13 +104,13 @@ export class Transaction {
   }
 
   getFormattedAmount(): string {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(this.amount);
   }
 
   getFormattedDate(): string {
-    return new Intl.DateTimeFormat('pt-BR').format(this.date);
+    return new Intl.DateTimeFormat("pt-BR").format(this.date);
   }
 }

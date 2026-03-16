@@ -34,6 +34,7 @@ Our Continuous Integration (CI) pipeline runs on GitHub Actions to verify code i
 ### Triggers/Rules
 
 The pipeline runs on:
+
 - **Pull Requests** targeting `develop` (Feature merge).
 - **Pull Requests** targeting `beta` (Hotfixes).
 
@@ -43,8 +44,8 @@ The pipeline runs on:
 
 We follow a Gitflow-based deployment strategy targeting **Vercel**.
 
-| Environment        | Branch    | URL (Example)    | Deployment Trigger               | Purpose                                  |
-| :----------------- | :-------- | :--------------- | :------------------------------- | :--------------------------------------- |
+| Environment        | Branch    | URL (Example)       | Deployment Trigger               | Purpose                                  |
+| :----------------- | :-------- | :------------------ | :------------------------------- | :--------------------------------------- |
 | **Development**    | `develop` | `dev.leadgers.com`  | **Automatic** (Merge to develop) | Integration testing, internal review.    |
 | **Beta (Staging)** | `beta`    | `beta.leadgers.com` | **Automatic** (PR/Merge to beta) | User Acceptance Testing (UAT), Hotfixes. |
 | **Production**     | `main`    | `leadgers.com`      | **Manual** (Promotion)           | Stable release for end-users.            |

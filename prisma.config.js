@@ -1,5 +1,5 @@
-const { defineConfig } = require('@prisma/config');
-require('dotenv').config();
+const { defineConfig } = require("@prisma/config");
+require("dotenv").config();
 
 module.exports = defineConfig({
   earlyAccess: true,

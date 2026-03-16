@@ -13,6 +13,7 @@ Este documento descreve como configurar o ambiente de desenvolvimento local, inc
 O projeto utiliza uma série de MCPs para estender as capacidades do agente de IA. Abaixo estão as instruções exatas de onde obter cada chave e como configurar.
 
 ### 1. GitHub MCP (`server-github`)
+
 - **Finalidade:** Permite que a IA realize operações de branch, commits, pull requests e auditoria de código diretamente.
 - **Configuração:**
   - Gere um **Personal Access Token (PAT)** em [GitHub Settings > Tokens](https://github.com/settings/tokens).
@@ -20,18 +21,21 @@ O projeto utiliza uma série de MCPs para estender as capacidades do agente de I
   - **Onde colar:** No campo `GITHUB_PERSONAL_ACCESS_TOKEN` no seu `mcp_config.json`.
 
 ### 2. Supabase MCP (`supabase-mcp-server`)
+
 - **Finalidade:** Auditoria de banco de dados, comparação de schemas e execuções de SQL.
 - **Configuração:**
   - Gere um **Supabase Access Token** em [Supabase Dashboard > Account Settings > Access Tokens](https://supabase.com/dashboard/account/tokens).
   - **Onde colar:** No argumento `--access-token` do servidor `supabase-mcp-server`.
 
 ### 3. StitchMCP (Stitch API)
+
 - **Finalidade:** Geração de telas UI e design de alta fidelidade via IA.
 - **Configuração:**
   - Solicite a `X-Goog-Api-Key` à equipe técnica ou gere no console do Google Cloud (se tiver permissão).
   - **Onde colar:** No header `X-Goog-Api-Key`.
 
 ### 4. Prisma e Redis
+
 - **Prisma:** Já configurado para ler o arquivo `schema.prisma` local.
 - **Redis:** Requer uma `REDIS_URL`. Recomendamos o [Upstash](https://upstash.com/) para desenvolvimento.
 
@@ -45,6 +49,7 @@ O projeto utiliza uma série de MCPs para estender as capacidades do agente de I
 ### Estrutura de Placeholder para Novos Devs
 
 Ao configurar um novo ambiente para um desenvolvedor, forneça apenas o arquivo `mcp_config.example.json`. O desenvolvedor deve:
+
 1. Instalar as dependências globais via `npm install`.
 2. Perguntar à equipe se há uma conta compartilhada ou se deve criar a sua própria para os serviços externos (GitHub, Supabase, etc.).
 
@@ -59,6 +64,7 @@ Você pode colar o conteúdo do `mcp_config.example.json` no chat com o seu agen
 ## 📅 Auditoria de Ambientes
 
 O projeto mantém dois ambientes principais no Supabase:
+
 - **Audit-Tool-Beta:** Ambiente de testes e novas features.
 - **Audit-Tool-Prod:** Ambiente de produção com dados reais de clientes.
 

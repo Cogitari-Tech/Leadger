@@ -39,8 +39,7 @@ export const useAuditStore = create<AuditState>((set) => ({
   setFindings: (findings) => set({ findings }),
   setActionPlans: (actionPlans) => set({ actionPlans }),
 
-  addProgram: (program) =>
-    set((s) => ({ programs: [program, ...s.programs] })),
+  addProgram: (program) => set((s) => ({ programs: [program, ...s.programs] })),
   updateProgram: (id, data) =>
     set((s) => ({
       programs: s.programs.map((p) => (p.id === id ? { ...p, ...data } : p)),
@@ -48,8 +47,7 @@ export const useAuditStore = create<AuditState>((set) => ({
   removeProgram: (id) =>
     set((s) => ({ programs: s.programs.filter((p) => p.id !== id) })),
 
-  addFinding: (finding) =>
-    set((s) => ({ findings: [finding, ...s.findings] })),
+  addFinding: (finding) => set((s) => ({ findings: [finding, ...s.findings] })),
   updateFinding: (id, data) =>
     set((s) => ({
       findings: s.findings.map((f) => (f.id === id ? { ...f, ...data } : f)),
@@ -60,7 +58,7 @@ export const useAuditStore = create<AuditState>((set) => ({
   updateActionPlan: (id, data) =>
     set((s) => ({
       actionPlans: s.actionPlans.map((p) =>
-        p.id === id ? { ...p, ...data } : p
+        p.id === id ? { ...p, ...data } : p,
       ),
     })),
 }));
