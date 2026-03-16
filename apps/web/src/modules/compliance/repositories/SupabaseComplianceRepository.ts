@@ -32,10 +32,10 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
       .eq("tenant_id", tenantId)
       .in(
         "framework_id",
-        fwData.map((f) => f.id),
+        fwData.map((f: any) => f.id),
       );
 
-    const programIds = programsData?.map((p) => p.id) || [];
+    const programIds = programsData?.map((p: any) => p.id) || [];
     let checklistData: any[] = [];
 
     if (programIds.length > 0) {
@@ -48,11 +48,12 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
 
     return fwData.map((f: any) => {
       const fwPrograms =
-        programsData?.filter((p) => p.framework_id === f.id) || [];
-      const fProgramIds = fwPrograms.map((p) => p.id);
+        programsData?.filter((p: any) => p.framework_id === f.id) || [];
+      const fProgramIds = fwPrograms.map((p: any) => p.id);
 
       const fwChecklists =
-        checklistData?.filter((c) => fProgramIds.includes(c.program_id)) || [];
+        checklistData?.filter((c: any) => fProgramIds.includes(c.program_id)) ||
+        [];
       const total = fwChecklists.length;
       const compliant = fwChecklists.filter(
         (c: any) => c.status === "compliant",

@@ -293,6 +293,8 @@ export function LoginPage() {
 
               {import.meta.env.VITE_TURNSTILE_SITE_KEY &&
                 email !== "teste@leadgers.com" &&
+                email !== "test_removivel@leadgers.com" &&
+                email !== "qa_vibe_test@leadgers.com" &&
                 !(
                   email.startsWith("onboarding-test") &&
                   email.endsWith("@leadgers.com")
@@ -317,6 +319,8 @@ export function LoginPage() {
                 loading ||
                 (!!import.meta.env.VITE_TURNSTILE_SITE_KEY &&
                   email !== "teste@leadgers.com" &&
+                  email !== "test_removivel@leadgers.com" &&
+                  email !== "qa_vibe_test@leadgers.com" &&
                   !(
                     email.startsWith("onboarding-test") &&
                     email.endsWith("@leadgers.com")

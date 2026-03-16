@@ -89,7 +89,7 @@ export function useAuditExecution() {
 
         if (!controls?.length) return;
 
-        const items = controls.map((c) => ({
+        const items = controls.map((c: any) => ({
           program_id: programId,
           control_id: c.id,
           title: `${c.code} — ${c.title}`,

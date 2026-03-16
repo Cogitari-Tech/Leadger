@@ -32,7 +32,7 @@ export function RoleManagement() {
       //   .order("module");
 
       // Fetch role-permission mappings
-      const roleIds = rolesData?.map((r) => r.id) ?? [];
+      const roleIds = rolesData?.map((r: any) => r.id) ?? [];
       const { data: rpData } = await supabase
         .from("role_permissions")
         .select("role_id, permission:permissions(code)")
@@ -47,7 +47,7 @@ export function RoleManagement() {
       });
 
       const enrichedRoles: RoleWithPermissions[] = (rolesData ?? []).map(
-        (r) => ({
+        (r: any) => ({
           ...r,
           permissions: permMap.get(r.id) ?? [],
         }),
@@ -161,7 +161,7 @@ export function RoleManagement() {
                       Privilégios Ativos
                     </span>
                     {role.permissions && role.permissions.length > 0 ? (
-                      role.permissions.map((p) => (
+                      role.permissions.map((p: any) => (
                         <div
                           key={p}
                           className="px-4 py-2 rounded-xl bg-muted/20 border border-border/40 text-[10px] font-black tracking-widest text-muted-foreground/60 group-hover:bg-primary/5 group-hover:border-primary/20 group-hover:text-primary transition-all flex items-center gap-2"

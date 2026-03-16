@@ -175,37 +175,37 @@ export function useExecutiveDashboard(): ExecutiveKPIs {
         const accountsData = accountsDataRes.data || [];
 
         // Aggregate audit KPIs
-        const activePrograms = programs.filter((p) =>
+        const activePrograms = programs.filter((p: any) =>
           ["in_progress", "under_review"].includes(p.status),
         ).length;
         const underReview = programs.filter(
-          (p) => p.status === "under_review",
+          (p: any) => p.status === "under_review",
         ).length;
         const openFindings = findings.length;
         const criticalFindings = findings.filter(
-          (f) => f.risk_level === "critical",
+          (f: any) => f.risk_level === "critical",
         ).length;
 
         // Aggregate compliance KPIs
         const totalChecked = checklists.filter(
-          (c) => c.status !== "pending",
+          (c: any) => c.status !== "pending",
         ).length;
         const compliantItems = checklists.filter(
-          (c) => c.status === "compliant",
+          (c: any) => c.status === "compliant",
         ).length;
         const nonCompliantPending = checklists.filter(
-          (c) => c.status === "non_compliant",
+          (c: any) => c.status === "non_compliant",
         ).length;
 
         // Aggregate GitHub KPIs
         const openVulnerabilities = alerts.length;
         const criticalVulnerabilities = alerts.filter(
-          (a) => a.severity === "critical",
+          (a: any) => a.severity === "critical",
         ).length;
         const highestRiskRepos = repos
-          .filter((r) => (r.open_vulnerabilities_count || 0) > 0)
+          .filter((r: any) => (r.open_vulnerabilities_count || 0) > 0)
           .slice(0, 5)
-          .map((r) => ({
+          .map((r: any) => ({
             name: r.name,
             vulns: r.open_vulnerabilities_count || 0,
           }));
@@ -231,7 +231,7 @@ export function useExecutiveDashboard(): ExecutiveKPIs {
 
         // Build pending decisions
         const decisions: ExecutiveKPIs["pendingDecisions"] = [];
-        pendingApprovals.forEach((p) => {
+        pendingApprovals.forEach((p: any) => {
           decisions.push({
             id: p.id,
             type: "approval",
@@ -241,9 +241,9 @@ export function useExecutiveDashboard(): ExecutiveKPIs {
           });
         });
         findings
-          .filter((f) => f.risk_level === "critical")
+          .filter((f: any) => f.risk_level === "critical")
           .slice(0, 3)
-          .forEach((f) => {
+          .forEach((f: any) => {
             decisions.push({
               id: f.id,
               type: "finding",
