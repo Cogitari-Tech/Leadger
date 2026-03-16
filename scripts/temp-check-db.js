@@ -24,15 +24,19 @@ async function fetchOpenApi(envName, url, anonKey) {
     );
 }
 
-const prodUrl = "https://yuldkgknnvvtmlpkqsji.supabase.co";
-const prodAnon =
-  "REDACTED_SUPABASE_ANON_JWT";
+const prodUrl = process.env.SUPABASE_PROD_URL;
+const prodAnon = process.env.SUPABASE_PROD_ANON_KEY;
 
-const betaUrl = "https://grqhnhftseisxsobamju.supabase.co";
-const betaAnon =
-  "REDACTED_SUPABASE_ANON_JWT";
+const betaUrl = process.env.SUPABASE_BETA_URL;
+const betaAnon = process.env.SUPABASE_BETA_ANON_KEY;
 
 async function main() {
+  if (!betaUrl || !betaAnon || !prodUrl || !prodAnon) {
+    throw new Error(
+      "Missing required environment variables: SUPABASE_BETA_URL, SUPABASE_BETA_ANON_KEY, SUPABASE_PROD_URL, SUPABASE_PROD_ANON_KEY",
+    );
+  }
+
   await fetchOpenApi("BETA", betaUrl, betaAnon);
   await fetchOpenApi("PROD", prodUrl, prodAnon);
 }
