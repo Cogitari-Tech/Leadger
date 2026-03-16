@@ -66,7 +66,7 @@ Para facilitar os testes locais e E2E, utilize as seguintes credenciais de teste
 
 - **Usuário Padrão (Fixo):** `teste@leadgers.com` / `Cogitari@2026!Dev`
 - **Usuário Secundário (Removível):** `test_removivel@leadgers.com` / `Cogitari@2026!Dev`
-  *(Nota: O segundo usuário é deletado automaticamente do banco de dados ao fazer logout, ideal para testar fluxos de cadastro e onboarding!)*
+  _(Nota: O segundo usuário é deletado automaticamente do banco de dados ao fazer logout, ideal para testar fluxos de cadastro e onboarding!)_
 
 ---
 

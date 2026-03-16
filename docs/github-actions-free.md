@@ -40,7 +40,7 @@ jobs:
     name: Lint & Format Check
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -48,8 +48,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -64,14 +64,14 @@ jobs:
     name: TypeScript Type Check
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -83,14 +83,14 @@ jobs:
     name: Unit Tests (Vitest)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -108,14 +108,14 @@ jobs:
     name: Build Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -139,10 +139,10 @@ jobs:
   #   name: E2E Tests (Playwright)
   #   runs-on: ubuntu-latest
   #   timeout-minutes: 20
-  #   
+  #
   #   steps:
   #     - uses: actions/checkout@v4
-  #     
+  #
   #     - uses: actions/setup-node@v4
   #       with:
   #         node-version: '20'
@@ -184,18 +184,18 @@ jobs:
     name: Deploy to Vercel (Preview)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     environment:
       name: beta
       url: https://beta-audit-tool.vercel.app
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -212,7 +212,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+          vercel-args: "--prod"
           working-directory: ./apps/web
 
   notify-slack:
@@ -220,7 +220,7 @@ jobs:
     needs: deploy-vercel
     runs-on: ubuntu-latest
     if: always()
-    
+
     steps:
       - name: Send Slack notification
         if: env.SLACK_WEBHOOK_URL != ''
@@ -261,18 +261,18 @@ jobs:
   create-release:
     name: Create Release Tag
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Get version from package.json
         id: version
         run: |
           VERSION=$(node -p "require('./apps/web/package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-      
+
       - name: Create Release
         uses: actions/create-release@v1
         env:
@@ -287,18 +287,18 @@ jobs:
     name: Deploy to Vercel (Production)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     environment:
       name: production
       url: https://app.cogitari.com.br
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -315,8 +315,8 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-          alias-domains: 'app.cogitari.com.br'
+          vercel-args: "--prod"
+          alias-domains: "app.cogitari.com.br"
           working-directory: ./apps/web
 
   notify-team:
@@ -324,7 +324,7 @@ jobs:
     needs: deploy-vercel
     runs-on: ubuntu-latest
     if: always()
-    
+
     steps:
       - name: Send notification
         run: |
@@ -339,6 +339,7 @@ jobs:
 Configure em: `Settings → Secrets and variables → Actions`
 
 ### Vercel (Deploy)
+
 ```
 VERCEL_TOKEN           # Token da Vercel (gratuito)
 VERCEL_ORG_ID          # ID da organização
@@ -346,6 +347,7 @@ VERCEL_PROJECT_ID      # ID do projeto
 ```
 
 **Como obter:**
+
 ```bash
 # Instalar Vercel CLI
 npm install -g vercel
@@ -360,18 +362,21 @@ vercel link
 ```
 
 ### Supabase (Beta)
+
 ```
 SUPABASE_BETA_URL       # URL do projeto Supabase de staging
 SUPABASE_BETA_ANON_KEY  # Chave anônima (public)
 ```
 
 ### Supabase (Produção)
+
 ```
 SUPABASE_PROD_URL       # URL do projeto Supabase de produção
 SUPABASE_PROD_ANON_KEY  # Chave anônima (public)
 ```
 
 ### Opcional
+
 ```
 SLACK_WEBHOOK_URL       # Para notificações no Slack (grátis)
 ```
@@ -412,30 +417,34 @@ Estimativa mensal (20 PRs + 10 deploys):
 ## 🎯 Otimizações para Economizar Minutos
 
 ### 1. Cache de dependências
+
 ```yaml
 - uses: actions/setup-node@v4
   with:
-    cache: 'npm'  # ✅ Economiza ~2 min/job
+    cache: "npm" # ✅ Economiza ~2 min/job
 ```
 
 ### 2. Timeouts
+
 ```yaml
 jobs:
   test:
-    timeout-minutes: 10  # ✅ Evita jobs travados
+    timeout-minutes: 10 # ✅ Evita jobs travados
 ```
 
 ### 3. Jobs condicionais
+
 ```yaml
-if: github.event.pull_request.draft == false  # ✅ Não roda em draft PRs
+if: github.event.pull_request.draft == false # ✅ Não roda em draft PRs
 ```
 
 ### 4. Paralelização
+
 ```yaml
 jobs:
-  lint:    # Roda em paralelo
-  test:    # Roda em paralelo
-  build:   # Roda em paralelo
+  lint: # Roda em paralelo
+  test: # Roda em paralelo
+  build: # Roda em paralelo
 ```
 
 ---
@@ -443,6 +452,7 @@ jobs:
 ## 🚀 Como Usar
 
 ### 1. Configurar workflows
+
 ```bash
 # Copiar workflows para o repositório
 mkdir -p .github/workflows
@@ -454,10 +464,12 @@ git push origin main
 ```
 
 ### 2. Configurar secrets
+
 - Acesse: https://github.com/Cogitari-Tech/Audit-Tool/settings/secrets/actions
 - Adicione todos os secrets listados acima
 
 ### 3. Fazer primeiro PR
+
 ```bash
 git checkout -b seu-nickname
 git push origin seu-nickname
@@ -465,6 +477,7 @@ gh pr create --base develop --title "test: primeiro PR"
 ```
 
 ### 4. Verificar execução
+
 - Actions: https://github.com/Cogitari-Tech/Audit-Tool/actions
 
 ---
@@ -472,14 +485,17 @@ gh pr create --base develop --title "test: primeiro PR"
 ## 🆘 Troubleshooting
 
 ### Workflow não executou
+
 - ✅ Verifique se o arquivo está em `.github/workflows/`
 - ✅ Verifique se o branch está correto em `on.push.branches`
 
 ### Build falhou
+
 - ✅ Verifique se os secrets estão configurados
 - ✅ Rode `npm run build` localmente primeiro
 
 ### Deploy não funcionou
+
 - ✅ Verifique se o token da Vercel está válido
 - ✅ Rode `vercel --prod` localmente para testar
 

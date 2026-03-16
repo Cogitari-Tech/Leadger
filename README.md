@@ -77,6 +77,7 @@ Este repositório contém toda a especificação técnica para evolução da pla
 Os MCPs são ferramentas usadas pelo seu Agente de IA Local (Cursor, Gemini CLI, Claude Desktop, etc) e rodam nativamente via `npx` em ambientes isolados pela própria IDE/Agente. O `package.json` do projeto deve permanecer limpo.
 
 ### Visão Geral dos MCPs Utilizados
+
 Para permitir que o seu Agente contribua eficientemente ("Vibe Coding") neste repositório mantendo o alto padrão da arquitetura e das interfaces, utilizamos as seguintes capacidades estendidas (MCP Servers):
 
 1. **`filesystem`**: Concede ao Agente a capacidade de ler, criar e alterar o código deste repositório com precisão.
@@ -94,16 +95,21 @@ Para permitir que o seu Agente contribua eficientemente ("Vibe Coding") neste re
 A configuração é projetada para ser "Plug and Play". Siga uma das duas opções:
 
 #### Opção A: Configuração Automática (Recomendada)
+
 Forneça o seguinte prompt de início (Vibe Coding) para o seu Agente/IDE:
-> *"Agente, verifique o arquivo `mcp_config.example.json` na raiz do projeto e configure seus servidores MCP internos (sua IDE) usando essas definições. Avise-me quando concluir."*
-Após ele carregar as configurações, basta você acessar as propriedades do seu Agente e colar as `API keys`.
+
+> _"Agente, verifique o arquivo `mcp_config.example.json` na raiz do projeto e configure seus servidores MCP internos (sua IDE) usando essas definições. Avise-me quando concluir."_
+> Após ele carregar as configurações, basta você acessar as propriedades do seu Agente e colar as `API keys`.
 
 #### Opção B: Configuração Manual
+
 1. Copie o conteúdo de `mcp_config.example.json` (localizado na raiz).
 2. Cole no arquivo de configurações de MCP do seu cliente (ex: `~/AppData/Roaming/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json` se estiver no VSCode/Cline, ou na UI de configurações do Cursor/Claude Desktop).
 
 ### 🔑 Política de Chaves (API Keys)
+
 O arquivo de template requer múltiplas chaves (Supabase Token, GitHub PAT, Vercel Auth, Google X-Goog-Api-Key e Upstash Redis).
+
 - **Consulte a equipe ("Ask your team"):** Verifique no canal oficial da engenharia se existe um conjunto de API Keys compartilhadas para ambiente de `Desenvolvimento` ou de `Homologação`.
 - Se as chaves compartilhadas não estiverem disponíveis, você deverá **criar contas gratuitas pessoais** nas plataformas correspondentes (Supabase, Vercel, Upstash, Google Cloud) para injetar as credenciais no seu agente de IA local.
 
@@ -616,11 +622,11 @@ Uso interno restrito. Distribuição não autorizada é proibida.
 
 Para testes rápidos em ambiente de produção ou homologação:
 
-| Usuário                              | Senha               | Função             | Comportamento             |
-| ------------------------------------ | ------------------- | ------------------ | ------------------------- |
-| `teste@leadgers.com`                 | `Cogitari@2026!Dev` | Admin (Auditoria)  | Estático (Persistente)    |
-| `qa_vibe_test@leadgers.com`          | `Cogitari@2026!Dev` | Novo Registro      | **Auto-Removível** (LImpa ao Sair) |
-| `test_removivel@leadgers.com`        | `Cogitari@2026!Dev` | Teste de Cadastro  | **Auto-Removível** (Limpa ao Sair) |
+| Usuário                       | Senha               | Função            | Comportamento                      |
+| ----------------------------- | ------------------- | ----------------- | ---------------------------------- |
+| `teste@leadgers.com`          | `Cogitari@2026!Dev` | Admin (Auditoria) | Estático (Persistente)             |
+| `qa_vibe_test@leadgers.com`   | `Cogitari@2026!Dev` | Novo Registro     | **Auto-Removível** (LImpa ao Sair) |
+| `test_removivel@leadgers.com` | `Cogitari@2026!Dev` | Teste de Cadastro | **Auto-Removível** (Limpa ao Sair) |
 
 > 💡 **Dica:** Use o e-mail `qa_vibe_test@leadgers.com` se quiser testar o fluxo de registro e onboarding do zero repetidas vezes. O sistema apagará os dados deste usuário e de sua organização assim que você clicar em "Sair" do dashboard.
 
