@@ -30,6 +30,7 @@ export function RegisterPage() {
     searchTenants,
     requestAccess,
     refreshProfile,
+    tenant,
   } = useAuth();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,7 +46,7 @@ export function RegisterPage() {
 
   const setStep = (newStep: WizardStep) => {
     setSearchParams(
-      (prev) => {
+      (prev: URLSearchParams) => {
         prev.set("step", newStep);
         return prev;
       },
@@ -126,10 +127,10 @@ export function RegisterPage() {
 
   // ── All hooks MUST be called before any early return ──
   useEffect(() => {
-    if (user && !user.tenant_id && step === "personal") {
+    if (user && !tenant && step === "personal") {
       setStep("choice");
     }
-  }, [user, step]);
+  }, [user, tenant, step]);
 
   useEffect(() => {
     if (searchQuery.length < 2) {
@@ -152,17 +153,19 @@ export function RegisterPage() {
 
   // ── Early returns (AFTER all hooks) ──
   // If already logged in and has a tenant, redirect home.
-  if (user && user.tenant_id) return <Navigate to="/" replace />;
+  if (user && tenant) return <Navigate to="/" replace />;
 
   if (success) {
     if (successMode === "join")
       return <Navigate to="/pending-approval" replace />;
 
     // If user has tenant, go to dashboard.
-    if (user?.tenant_id) return <Navigate to="/dashboard" replace />;
+    if (user && tenant) return <Navigate to="/dashboard" replace />;
 
     const isTestUser =
       email === "teste@leadgers.com" ||
+      email === "test_removivel@leadgers.com" ||
+      email === "qa_vibe_test@leadgers.com" ||
       (email.startsWith("onboarding-test") && email.endsWith("@leadgers.com"));
 
     // For test users, even without session yet, we assume success and try to go to onboarding
@@ -178,6 +181,8 @@ export function RegisterPage() {
 
     const isTestUser =
       email === "teste@leadgers.com" ||
+      email === "test_removivel@leadgers.com" ||
+      email === "qa_vibe_test@leadgers.com" ||
       (email.startsWith("onboarding-test") && email.endsWith("@leadgers.com"));
 
     if (!isTestUser && !acceptedTerms) {
@@ -512,6 +517,8 @@ export function RegisterPage() {
         {/* Turnstile */}
         {(import.meta as any).env.VITE_TURNSTILE_SITE_KEY &&
           email !== "teste@leadgers.com" &&
+          email !== "test_removivel@leadgers.com" &&
+          email !== "qa_vibe_test@leadgers.com" &&
           !(
             email.startsWith("onboarding-test") &&
             email.endsWith("@leadgers.com")
@@ -536,12 +543,16 @@ export function RegisterPage() {
           loading ||
           (!acceptedTerms &&
             email !== "teste@leadgers.com" &&
+            email !== "test_removivel@leadgers.com" &&
+            email !== "qa_vibe_test@leadgers.com" &&
             !(
               email.startsWith("onboarding-test") &&
               email.endsWith("@leadgers.com")
             )) ||
           (!!(import.meta as any).env.VITE_TURNSTILE_SITE_KEY &&
             email !== "teste@leadgers.com" &&
+            email !== "test_removivel@leadgers.com" &&
+            email !== "qa_vibe_test@leadgers.com" &&
             !(
               email.startsWith("onboarding-test") &&
               email.endsWith("@leadgers.com")

@@ -29,7 +29,8 @@ leadgers-platform/
 ├── supabase/              # Migrations, Edge Functions, config
 ├── prisma/                # Schema Prisma (sync com Supabase)
 ├── scripts/               # Utilitários e testes E2E
-└── docs/                  # Documentação técnica
+├── docs/                  # Documentação técnica (Ver docs/developer-experience.md)
+└── tools/mcp/             # Infraestrutura estável para MCPs
 ```
 
 ### Camadas
@@ -61,6 +62,7 @@ npm run lint           # ESLint
 npm run format         # Prettier --write
 npm run test           # Vitest
 npm run security-check # Scan de segurança antes de commit
+npm run mcp:setup      # Instalação estável de MCPs locais
 ```
 
 Antes de qualquer commit, execute `npm run build` para garantir que o TypeScript compila sem erros.
@@ -102,7 +104,7 @@ Módulos se registram em `apps/web/src/modules/registry.ts` via `ModuleRegistry`
 ## Domínios Ativos
 
 | Módulo          | Caminho                     | Responsabilidade                                         |
-| --------------- | --------------------------- | -------------------------------------------------------- |
+| :-------------- | :-------------------------- | :------------------------------------------------------- |
 | `audit`         | `/dashboard/audit/*`        | Programas, Findings, Action Plans, Relatórios, Analytics |
 | `finance`       | `/dashboard/finance/*`      | Transações, DRE, Balancete, Burn Rate, Cap Table         |
 | `compliance`    | `/dashboard/compliance/*`   | Frameworks, Controles, Risk Matrix                       |

@@ -24,15 +24,19 @@ async function fetchOpenApi(envName, url, anonKey) {
     );
 }
 
-const prodUrl = "https://yuldkgknnvvtmlpkqsji.supabase.co";
-const prodAnon =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1bGRrZ2tubnZ2dG1scGtxc2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzNTQ2NDcsImV4cCI6MjA4NjkzMDY0N30.M9Oe89xO6uwhNtEmbpuNjQmnAfrak-g6vii5HE8azsc";
+const prodUrl = process.env.SUPABASE_PROD_URL;
+const prodAnon = process.env.SUPABASE_PROD_ANON_KEY;
 
-const betaUrl = "https://grqhnhftseisxsobamju.supabase.co";
-const betaAnon =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdycWhuaGZ0c2Vpc3hzb2JhbWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzNTQwMjQsImV4cCI6MjA4NjkzMDAyNH0.l3DP2Bz9WcHVK9Lj3OgOwiiltUt2wZVP5AQtGsZ0QcU";
+const betaUrl = process.env.SUPABASE_BETA_URL;
+const betaAnon = process.env.SUPABASE_BETA_ANON_KEY;
 
 async function main() {
+  if (!betaUrl || !betaAnon || !prodUrl || !prodAnon) {
+    throw new Error(
+      "Missing required environment variables: SUPABASE_BETA_URL, SUPABASE_BETA_ANON_KEY, SUPABASE_PROD_URL, SUPABASE_PROD_ANON_KEY",
+    );
+  }
+
   await fetchOpenApi("BETA", betaUrl, betaAnon);
   await fetchOpenApi("PROD", prodUrl, prodAnon);
 }

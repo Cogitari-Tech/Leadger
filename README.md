@@ -17,6 +17,7 @@ Este repositório contém toda a especificação técnica para evolução da pla
 | **Estrutura do Projeto**               | Organização completa de pastas, módulos e pacotes               | `docs/project-structure.md`            |
 | **Guia de Migração**                   | Passo a passo para migrar do sistema legado                     | `docs/migration-guide.md`              |
 | **Workflow de Desenvolvimento**        | CI/CD, Testes e Segurança (Pre-commit)                          | `docs/development-workflow.md`         |
+| **Developer Experience (DX)**          | Usuários de teste, bypasses e shortcuts de Vibe Coding          | `docs/developer-experience.md`          |
 
 ### 💻 Exemplos de Código
 

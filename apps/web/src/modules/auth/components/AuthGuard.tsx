@@ -119,6 +119,8 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const supabaseUser = session?.user;
   const isSetupTestUser =
     supabaseUser?.email === "teste@leadgers.com" ||
+    supabaseUser?.email === "test_removivel@leadgers.com" ||
+    supabaseUser?.email === "qa_vibe_test@leadgers.com" ||
     (supabaseUser?.email?.startsWith("onboarding-test") &&
       supabaseUser?.email?.endsWith("@leadgers.com"));
 
@@ -175,6 +177,8 @@ export function AuthGuard({ children }: AuthGuardProps) {
           isOwnerOrAdmin,
           isTestUser:
             user.email === "teste@leadgers.com" ||
+            user.email === "test_removivel@leadgers.com" ||
+            user.email === "qa_vibe_test@leadgers.com" ||
             (user.email?.startsWith("onboarding-test") &&
               user.email?.endsWith("@leadgers.com")),
           hasSeenTour:
@@ -216,6 +220,8 @@ export function AuthGuard({ children }: AuthGuardProps) {
       // --- Special case for Test User: always see onboarding once per session ---
       const isTestUser =
         user.email === "teste@leadgers.com" ||
+        user.email === "test_removivel@leadgers.com" ||
+        user.email === "qa_vibe_test@leadgers.com" ||
         (user.email?.startsWith("onboarding-test") &&
           user.email?.endsWith("@leadgers.com"));
 
