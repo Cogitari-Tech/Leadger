@@ -95,7 +95,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session?.user) {
+      if (
+        (event === "SIGNED_IN" ||
+          event === "USER_UPDATED" ||
+          event === "INITIAL_SESSION") &&
+        session?.user
+      ) {
         sessionStorage.setItem("leadgers_session_active", "true");
         setState({
           session,

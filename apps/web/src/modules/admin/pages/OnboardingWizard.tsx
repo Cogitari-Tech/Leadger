@@ -153,7 +153,7 @@ export default function OnboardingWizard() {
   const step = STEPS[currentStep];
 
   const inputClass =
-    "w-full px-5 py-3 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-40";
+    "w-full px-5 py-3 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-40 cursor-text select-text";
   const labelClass =
     "text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1";
 
@@ -259,7 +259,7 @@ export default function OnboardingWizard() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans cursor-default select-none">
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>
