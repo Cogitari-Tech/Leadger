@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
+    "@hookform/resolvers": "^3.3.4",
     "@leadgers/core": "*",
     "@marsidev/react-turnstile": "^1.4.2",
     "@radix-ui/react-label": "^2.1.8",
@@ -32,7 +32,7 @@
     "recharts": "^2.10.3",
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.22.4",
+    "zod": "^3.23.3",
     "zustand": "^4.5.0"
   },
   "devDependencies": {
