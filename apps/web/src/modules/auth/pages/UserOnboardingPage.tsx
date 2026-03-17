@@ -51,7 +51,19 @@ export function UserOnboardingPage() {
   useEffect(() => {
     if (finalizingRef.current) return;
     const hasSeenTour = sessionStorage.getItem("has_seen_tour") === "true";
-    if (user?.user_onboarding_completed || hasSeenTour) {
+
+    const isTestUser =
+      user?.email === "teste@leadgers.com" ||
+      user?.email === "test_removivel@leadgers.com" ||
+      user?.email === "qa_vibe_test@leadgers.com" ||
+      (user?.email?.startsWith("onboarding-test") &&
+        user?.email?.endsWith("@leadgers.com"));
+
+    // Previne loop infinito: Usuários de teste DEVEM passar pelo tour manual para setar hasSeenTour = true
+    // Se eles apenas tiverem user_onboarding_completed = true vindo do wizard, o AuthGuard os jogará de volta para cá
+    if (hasSeenTour) {
+      navigate("/dashboard", { replace: true });
+    } else if (!isTestUser && user?.user_onboarding_completed) {
       navigate("/dashboard", { replace: true });
     }
   }, [user, navigate]);

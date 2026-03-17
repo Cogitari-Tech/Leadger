@@ -1,0 +1,16 @@
+{
+  "name": "leadgers-mcp-tools",
+  "version": "1.0.0",
+  "description": "Local stable MCP servers for Leadgers Platform",
+  "main": "index.js",
+  "dependencies": {
+    "@modelcontextprotocol/server-github": "latest",
+    "@supabase/mcp-server-supabase": "latest",
+    "@modelcontextprotocol/server-memory": "latest",
+    "@modelcontextprotocol/server-filesystem": "latest",
+    "mcp-remote": "latest"
+  },
+  "scripts": {
+    "setup": "npm install"
+  }
+}

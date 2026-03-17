@@ -5,8 +5,9 @@ Este documento descreve como configurar o ambiente de desenvolvimento local, inc
 ## 🚀 Início Rápido
 
 1. Clone o repositório.
-2. Copie o arquivo `mcp_config.example.json` para a pasta de configuração do seu agente de IA (ex: `.gemini/` ou `.claude/` conforme o caso).
-3. Preencha as chaves de API necessárias no arquivo de configuração final.
+2. Execute `npm run mcp:setup` na raiz do projeto para instalar a infraestrutura estável de MCPs.
+3. Copie o arquivo `mcp_config.example.json` para a pasta de configuração do seu agente de IA (ex: `.gemini/` ou `.claude/` conforme o caso).
+4. Preencha as chaves de API necessárias no arquivo de configuração final.
 
 ## 🛠️ MCPs Configurados
 

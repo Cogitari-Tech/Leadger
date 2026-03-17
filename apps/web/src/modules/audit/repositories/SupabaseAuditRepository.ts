@@ -47,7 +47,7 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("tenant_id", tenantId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Failed to list programs: ${error.message}`);
-    return (data ?? []).map((row) => AuditProgram.fromPersistence(row));
+    return (data ?? []).map((row: any) => AuditProgram.fromPersistence(row));
   }
 
   async updateProgram(program: AuditProgram): Promise<void> {
@@ -96,7 +96,7 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("program_id", programId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Failed to list findings: ${error.message}`);
-    return (data ?? []).map((row) => AuditFinding.fromPersistence(row));
+    return (data ?? []).map((row: any) => AuditFinding.fromPersistence(row));
   }
 
   async listFindings(tenantId: string): Promise<AuditFinding[]> {
@@ -106,7 +106,7 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("tenant_id", tenantId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Failed to list findings: ${error.message}`);
-    return (data ?? []).map((row) => AuditFinding.fromPersistence(row));
+    return (data ?? []).map((row: any) => AuditFinding.fromPersistence(row));
   }
 
   async updateFinding(finding: AuditFinding): Promise<void> {
@@ -148,7 +148,7 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("finding_id", findingId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Failed to list action plans: ${error.message}`);
-    return (data ?? []).map((row) => AuditActionPlan.fromPersistence(row));
+    return (data ?? []).map((row: any) => AuditActionPlan.fromPersistence(row));
   }
 
   async listActionPlans(tenantId: string): Promise<AuditActionPlan[]> {
@@ -158,7 +158,7 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("tenant_id", tenantId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Failed to list action plans: ${error.message}`);
-    return (data ?? []).map((row) => AuditActionPlan.fromPersistence(row));
+    return (data ?? []).map((row: any) => AuditActionPlan.fromPersistence(row));
   }
 
   async updateActionPlan(plan: AuditActionPlan): Promise<void> {
@@ -220,11 +220,12 @@ export class SupabaseAuditRepository implements IAuditRepository {
     const findings = data ?? [];
     return {
       total: findings.length,
-      open: findings.filter((f) => f.status === "open").length,
-      inProgress: findings.filter((f) => f.status === "in_progress").length,
-      resolved: findings.filter((f) => f.status === "resolved").length,
-      critical: findings.filter((f) => f.risk_level === "critical").length,
-      high: findings.filter((f) => f.risk_level === "high").length,
+      open: findings.filter((f: any) => f.status === "open").length,
+      inProgress: findings.filter((f: any) => f.status === "in_progress")
+        .length,
+      resolved: findings.filter((f: any) => f.status === "resolved").length,
+      critical: findings.filter((f: any) => f.risk_level === "critical").length,
+      high: findings.filter((f: any) => f.risk_level === "high").length,
     };
   }
 }
