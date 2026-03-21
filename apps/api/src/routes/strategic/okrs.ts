@@ -23,10 +23,10 @@ okrsRoutes.get("/", async (c) => {
     });
 
     // Auto calculate progress wrapper
-    const data = objectives.map((obj) => {
+    const data = objectives.map((obj: any) => {
       let totalProgress = 0;
       if (obj.key_results && obj.key_results.length > 0) {
-        const sum = obj.key_results.reduce((acc, kr) => {
+        const sum = obj.key_results.reduce((acc: number, kr: any) => {
           const krProgress = Math.min(
             (Number(kr.current_val) / Number(kr.target_val)) * 100,
             100,
@@ -34,7 +34,7 @@ okrsRoutes.get("/", async (c) => {
           return acc + krProgress * Number(kr.weight);
         }, 0);
         const totalWeight = obj.key_results.reduce(
-          (acc, kr) => acc + Number(kr.weight),
+          (acc: number, kr: any) => acc + Number(kr.weight),
           0,
         );
         totalProgress = totalWeight > 0 ? sum / totalWeight : 0;
