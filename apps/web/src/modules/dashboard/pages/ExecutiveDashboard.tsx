@@ -19,6 +19,7 @@ import { useAuth } from "../../auth/context/AuthContext";
 import { useExecutiveDashboard } from "../hooks/useExecutiveDashboard";
 import { useProjectRiskScores } from "../hooks/useProjectRiskScores";
 import { useWeeklyDigest } from "../hooks/useWeeklyDigest";
+import { useHealthScore } from "../hooks/useHealthScore";
 
 function KPICard({
   title,
@@ -111,6 +112,7 @@ export default function ExecutiveDashboard() {
   const kpis = useExecutiveDashboard();
   const { scores: riskScores, loading: riskLoading } = useProjectRiskScores();
   const { data: digest, loading: aiLoading, fetchDigest } = useWeeklyDigest();
+  const { data: healthScore } = useHealthScore();
 
   const isManager =
     user?.role?.name === "owner" ||
@@ -150,7 +152,21 @@ export default function ExecutiveDashboard() {
       </div>
 
       {/* Top KPI Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <KPICard
+          title="Health Score"
+          value={healthScore?.total_score || "-"}
+          subtitle="Geral"
+          icon={Activity}
+          color={
+            (healthScore?.total_score || 0) >= 80
+              ? "emerald"
+              : (healthScore?.total_score || 0) >= 50
+                ? "amber"
+                : "red"
+          }
+          onClick={() => navigate("/dashboard/health-score")}
+        />
         <KPICard
           title="Auditorias Ativas"
           value={kpis.audit.activePrograms}
@@ -499,10 +515,60 @@ export default function ExecutiveDashboard() {
             <SectionTitle icon={Bot} title="AI Analyst" />
             <div className="space-y-4 relative z-10">
               {digest ? (
-                <div className="text-sm text-foreground/80 prose prose-sm dark:prose-invert max-w-none">
-                  <ReactMarkdown>{digest.digest}</ReactMarkdown>
-                  <p className="text-[10px] text-muted-foreground mt-4 text-right italic">
-                    Gerado pelo Google Gemini
+                <div className="space-y-6">
+                  {digest.metrics && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20">
+                      <div>
+                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                          Receita
+                        </p>
+                        <p className="text-sm font-bold text-foreground">
+                          {digest.metrics.revenue.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                          Despesas
+                        </p>
+                        <p className="text-sm font-bold text-foreground">
+                          {digest.metrics.expenses.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                          Resultado
+                        </p>
+                        <p
+                          className={`text-sm font-bold ${digest.metrics.netIncome >= 0 ? "text-emerald-500" : "text-destructive"}`}
+                        >
+                          {digest.metrics.netIncome.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                          Transações
+                        </p>
+                        <p className="text-sm font-bold text-foreground">
+                          {digest.metrics.transactionsCount}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="text-sm text-foreground/80 prose prose-sm dark:prose-invert prose-indigo max-w-none">
+                    <ReactMarkdown>{digest.digest}</ReactMarkdown>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-4 text-right italic border-t border-border/20 pt-4">
+                    Gerado por Inteligência Artificial (
+                    {digest.metrics?.period || "Semana atual"})
                   </p>
                 </div>
               ) : (
