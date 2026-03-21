@@ -1,3 +1,3 @@
-export * from "./ports/IAIService.ts";
-export * from "./adapters/AnthropicAdapter.ts";
-export * from "./adapters/GoogleAdapter.ts";
+export * from "./ports/IAIService.js";
+export * from "./adapters/AnthropicAdapter.js";
+export * from "./adapters/GoogleAdapter.js";
