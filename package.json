@@ -9,6 +9,8 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace=apps/web",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:all": "npm run dev:api & npm run dev",
     "build": "npm run build --workspaces --if-present",
     "test": "vitest run --passWithNoTests",
     "test:watch": "npm run test:watch --workspace=packages/core",
@@ -61,7 +63,8 @@
     "@prisma/client": "^6.19.2",
     "@supabase/supabase-js": "^2.98.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "web-streams-polyfill": "^4.0.0-beta.3"
   },
   "overrides": {
     "tar": "^7.5.11",

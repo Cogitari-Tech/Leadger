@@ -25,7 +25,7 @@ import { useMemo } from "react";
 export function ProjectDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { permissions } = useAuth();
+  const { can } = useAuth();
 
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,8 +36,8 @@ export function ProjectDetailsPage() {
 
   const repository = useMemo(() => new SupabaseProjectRepository(supabase), []);
 
-  const [programs, setPrograms] = useState<any[]>([]);
-  const [repos, setRepos] = useState<any[]>([]);
+  const [programs, setPrograms] = useState<Record<string, unknown>[]>([]);
+  const [repos, setRepos] = useState<Record<string, unknown>[]>([]);
   const [loadingResources, setLoadingResources] = useState(false);
 
   // Tabs: 'geral' | 'equipe' | 'recursos'
@@ -52,15 +52,9 @@ export function ProjectDetailsPage() {
     removeMember,
   } = useProjectMembers(id || "");
 
-  const canManage = permissions.some(
-    (p: any) =>
-      p.module === "projects" && (p.action === "manage" || p.action === "edit"),
-  );
+  const canManage = can("projects.manage") || can("projects.edit");
 
-  const canManageTeam =
-    permissions.some(
-      (p: any) => p.module === "projects" && p.action === "manager", // or implicit from edit
-    ) || canManage;
+  const canManageTeam = can("projects.manager") || canManage;
 
   useEffect(() => {
     if (id) {
@@ -97,7 +91,7 @@ export function ProjectDetailsPage() {
       const data = await repository.getProjectById(id);
       if (!data) throw new Error("Projeto não encontrado.");
       setProject(data as unknown as Project);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error loading project:", err);
       setError("Não foi possível carregar os detalhes do projeto.");
     } finally {
@@ -105,7 +99,9 @@ export function ProjectDetailsPage() {
     }
   };
 
-  const handleUpdateProject = async (data: any) => {
+  const handleUpdateProject = async (
+    data: Partial<import("../types/project.types").ProjectFormData>,
+  ) => {
     if (!id) return;
     try {
       const updated = await repository.updateProject(id, data);
@@ -425,17 +421,17 @@ export function ProjectDetailsPage() {
                             className="block p-4 bg-card border border-border/60 shadow-sm rounded-lg hover:border-primary/50 hover:shadow-md transition-all"
                           >
                             <p className="font-medium text-card-foreground text-sm">
-                              {p.name}
+                              {p.name as string}
                             </p>
                             <div className="flex justify-between mt-2">
                               <span className="text-xs font-semibold text-muted-foreground">
-                                {p.status.toUpperCase()}
+                                {String(p.status).toUpperCase()}
                               </span>
                               <span className="text-xs text-muted-foreground">
-                                {p.startDate
-                                  ? new Date(p.startDate).toLocaleDateString(
-                                      "pt-BR",
-                                    )
+                                {p.startDate || p.start_date
+                                  ? new Date(
+                                      (p.startDate || p.start_date) as string,
+                                    ).toLocaleDateString("pt-BR")
                                   : "-"}
                               </span>
                             </div>
@@ -464,13 +460,14 @@ export function ProjectDetailsPage() {
                             className="block p-4 bg-card border border-border/60 shadow-sm rounded-lg hover:border-cyan-500/50 hover:shadow-md transition-all"
                           >
                             <p className="font-medium text-card-foreground text-sm truncate">
-                              {r.full_name}
+                              {r.full_name as string}
                             </p>
                             <div className="flex justify-between mt-2">
                               <span className="text-xs text-muted-foreground">
                                 Vulns Abertas:{" "}
                                 <strong className="text-foreground">
-                                  {r.open_vulnerabilities_count || 0}
+                                  {(r.open_vulnerabilities_count as number) ||
+                                    0}
                                 </strong>
                               </span>
                             </div>

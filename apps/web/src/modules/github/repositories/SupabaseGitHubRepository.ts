@@ -146,88 +146,88 @@ export class SupabaseGitHubRepository implements IGitHubRepository {
 
   // ─── Mappers (snake_case → camelCase) ─────────────────
 
-  private mapOrg = (row: any): GitHubOrgDTO => ({
-    id: row.id,
-    tenantId: row.tenant_id,
-    login: row.login,
-    name: row.name,
-    avatarUrl: row.avatar_url,
-    membersCount: row.members_count ?? 0,
-    reposCount: row.repos_count ?? 0,
-    syncedAt: row.synced_at,
+  private mapOrg = (row: Record<string, unknown>): GitHubOrgDTO => ({
+    id: row.id as string,
+    tenantId: row.tenant_id as string,
+    login: row.login as string,
+    name: (row.name as string) || null,
+    avatarUrl: (row.avatar_url as string) || null,
+    membersCount: (row.members_count as number) ?? 0,
+    reposCount: (row.repos_count as number) ?? 0,
+    syncedAt: (row.synced_at as string) || null,
   });
 
-  private mapRepo = (row: any): GitHubRepoDTO => ({
-    id: row.id,
-    tenantId: row.tenant_id,
-    orgId: row.org_id,
-    fullName: row.full_name,
-    name: row.name,
-    isPrivate: row.is_private,
-    hasBranchProtection: row.has_branch_protection,
-    openVulnerabilitiesCount: row.open_vulnerabilities_count ?? 0,
-    openIssuesCount: row.open_issues_count ?? 0,
-    openPrsCount: row.open_prs_count ?? 0,
-    healthScore: row.health_score ?? 0,
-    language: row.language,
+  private mapRepo = (row: Record<string, unknown>): GitHubRepoDTO => ({
+    id: row.id as string,
+    tenantId: row.tenant_id as string,
+    orgId: row.org_id as string,
+    fullName: row.full_name as string,
+    name: row.name as string,
+    isPrivate: row.is_private as boolean,
+    hasBranchProtection: row.has_branch_protection as boolean,
+    openVulnerabilitiesCount: (row.open_vulnerabilities_count as number) ?? 0,
+    openIssuesCount: (row.open_issues_count as number) ?? 0,
+    openPrsCount: (row.open_prs_count as number) ?? 0,
+    healthScore: (row.health_score as number) ?? 0,
+    language: (row.language as string) || null,
   });
 
-  private mapPR = (row: any): GitHubPRDTO => ({
-    id: row.id,
-    repoId: row.repo_id,
-    githubPrNumber: row.github_pr_number,
-    title: row.title,
-    state: row.state,
-    author: row.author,
-    reviewCount: row.review_count ?? 0,
-    mergedByAdmin: row.merged_by_admin ?? false,
-    openedAt: row.opened_at,
-    mergedAt: row.merged_at,
+  private mapPR = (row: Record<string, unknown>): GitHubPRDTO => ({
+    id: row.id as string,
+    repoId: row.repo_id as string,
+    githubPrNumber: row.github_pr_number as number,
+    title: row.title as string,
+    state: row.state as string,
+    author: row.author as string,
+    reviewCount: (row.review_count as number) ?? 0,
+    mergedByAdmin: (row.merged_by_admin as boolean) ?? false,
+    openedAt: row.opened_at as string,
+    mergedAt: (row.merged_at as string) || null,
   });
 
-  private mapIssue = (row: any): GitHubIssueDTO => ({
-    id: row.id,
-    repoId: row.repo_id,
-    githubIssueNumber: row.github_issue_number,
-    title: row.title,
-    state: row.state,
-    author: row.author,
-    isCritical: row.is_critical ?? false,
-    slaBreached: row.sla_breached ?? false,
-    openedAt: row.opened_at,
-    closedAt: row.closed_at,
+  private mapIssue = (row: Record<string, unknown>): GitHubIssueDTO => ({
+    id: row.id as string,
+    repoId: row.repo_id as string,
+    githubIssueNumber: row.github_issue_number as number,
+    title: row.title as string,
+    state: row.state as string,
+    author: row.author as string,
+    isCritical: (row.is_critical as boolean) ?? false,
+    slaBreached: (row.sla_breached as boolean) ?? false,
+    openedAt: row.opened_at as string,
+    closedAt: (row.closed_at as string) || null,
   });
 
-  private mapAlert = (row: any): GitHubAlertDTO => ({
-    id: row.id,
-    repoId: row.repo_id,
-    alertType: row.alert_type,
-    severity: row.severity,
-    state: row.state,
-    packageName: row.package_name,
-    cveId: row.cve_id,
-    summary: row.summary,
-    detectedAt: row.detected_at,
+  private mapAlert = (row: Record<string, unknown>): GitHubAlertDTO => ({
+    id: row.id as string,
+    repoId: row.repo_id as string,
+    alertType: row.alert_type as string,
+    severity: row.severity as string,
+    state: row.state as string,
+    packageName: row.package_name as string,
+    cveId: (row.cve_id as string) || null,
+    summary: (row.summary as string) || null,
+    detectedAt: row.detected_at as string,
   });
 
-  private mapSnapshot = (row: any): GitHubSnapshotDTO => ({
-    id: row.id,
-    snapshotDate: row.snapshot_date,
-    totalRepos: row.total_repos ?? 0,
-    reposWithProtection: row.repos_with_protection ?? 0,
-    openVulnerabilities: row.open_vulnerabilities ?? 0,
-    criticalVulnerabilities: row.critical_vulnerabilities ?? 0,
-    governanceScore: row.governance_score ?? 0,
+  private mapSnapshot = (row: Record<string, unknown>): GitHubSnapshotDTO => ({
+    id: row.id as string,
+    snapshotDate: row.snapshot_date as string,
+    totalRepos: (row.total_repos as number) ?? 0,
+    reposWithProtection: (row.repos_with_protection as number) ?? 0,
+    openVulnerabilities: (row.open_vulnerabilities as number) ?? 0,
+    criticalVulnerabilities: (row.critical_vulnerabilities as number) ?? 0,
+    governanceScore: (row.governance_score as number) ?? 0,
   });
 
-  private mapEvent = (row: any): GitHubEventDTO => ({
-    id: row.id,
-    eventType: row.event_type,
-    action: row.action,
-    severity: row.severity,
-    sourceRepo: row.source_repo,
-    sourceActor: row.source_actor,
-    summary: row.summary,
-    createdAt: row.created_at,
+  private mapEvent = (row: Record<string, unknown>): GitHubEventDTO => ({
+    id: row.id as string,
+    eventType: row.event_type as string,
+    action: row.action as string,
+    severity: (row.severity as string) || null,
+    sourceRepo: (row.source_repo as string) || null,
+    sourceActor: row.source_actor as string,
+    summary: (row.summary as string) || null,
+    createdAt: row.created_at as string,
   });
 }

@@ -223,8 +223,8 @@ export function RegisterPage() {
       if (authError) throw authError;
       setSuccessMode("invite");
       setSuccess(true);
-    } catch (err: any) {
-      setError(err.message || "Erro ao criar conta.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao criar conta.");
     } finally {
       setSubmitting(false);
     }
@@ -282,8 +282,10 @@ export function RegisterPage() {
       // #endregion agent log
       setSuccessMode("create");
       setSuccess(true);
-    } catch (err: any) {
-      setError(err.message || "Erro ao configurar organização.");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao configurar organização.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -313,8 +315,8 @@ export function RegisterPage() {
 
       setSuccessMode("join");
       setSuccess(true);
-    } catch (err: any) {
-      setError(err.message || "Erro ao criar conta.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao criar conta.");
     } finally {
       setSubmitting(false);
     }

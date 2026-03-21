@@ -45,7 +45,7 @@ export default function AuditReports() {
         .order("approved_at", { ascending: false });
 
       if (error) throw error;
-      setReports((data ?? []) as any as AuditVersionWithProgram[]);
+      setReports((data as unknown as AuditVersionWithProgram[]) ?? []);
     } catch (err) {
       console.error("Failed to load reports", err);
     } finally {

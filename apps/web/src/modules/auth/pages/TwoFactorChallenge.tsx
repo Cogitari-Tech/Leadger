@@ -77,7 +77,7 @@ export function TwoFactorChallenge() {
 
       // Redirect to their destination
       navigate(from, { replace: true });
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setError("Código inválido. Tente novamente.");
       setVerifyCode("");

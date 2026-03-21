@@ -285,12 +285,14 @@ export default function OnboardingWizard() {
       // Clear draft since it is successfully saved
       localStorage.removeItem("onboarding_draft");
       setCurrentStep((s) => s + 1);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error saving company:", err);
       form.setError("root", {
         type: "manual",
         message:
-          err.message || "Erro ao salvar os dados da empresa. Tente novamente.",
+          err instanceof Error
+            ? err.message
+            : "Erro ao salvar os dados da empresa. Tente novamente.",
       });
     }
   };
@@ -382,10 +384,10 @@ export default function OnboardingWizard() {
         );
         navigate("/dashboard", { replace: true });
       }, 800);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to finish onboarding", err);
       alert(
-        `Ocorreu um erro ao finalizar as configurações: ${err.message || "Erro desconhecido"}`,
+        `Ocorreu um erro ao finalizar as configurações: ${err instanceof Error ? err.message : "Erro desconhecido"}`,
       );
       finalizingRef.current = false;
     }

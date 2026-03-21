@@ -128,8 +128,10 @@ export function BankAccountForm({ accounts, onUpdate }: BankAccountFormProps) {
       setShowForm(false);
       setEditingId(null);
       onUpdate();
-    } catch (err: any) {
-      setError(err.message || "Erro ao salvar conta bancária.");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao salvar conta bancária.",
+      );
     } finally {
       setSubmitting(false);
     }

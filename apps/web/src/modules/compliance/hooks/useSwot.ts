@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../../auth/context/AuthContext";
 import type { SwotItem } from "../types/compliance.types";
+import type { CreateSwotInput } from "@leadgers/core/repositories/IComplianceRepository";
 import { SupabaseComplianceRepository } from "../repositories/SupabaseComplianceRepository";
 
 export function useSwot() {
@@ -38,7 +39,10 @@ export function useSwot() {
     if (!tenant) return;
 
     try {
-      const data = await repository.addItem(tenant.id, item as any);
+      const data = await repository.addItem(
+        tenant.id,
+        item as unknown as CreateSwotInput,
+      );
       setItems((prev) => [...prev, data as unknown as SwotItem]);
     } catch (error) {
       console.error("Error adding SWOT item:", error);
