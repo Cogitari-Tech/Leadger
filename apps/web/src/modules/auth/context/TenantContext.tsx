@@ -169,34 +169,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
         tenantLoading: false,
       });
 
-      // #region agent log
-      fetch(
-        "http://127.0.0.1:7419/ingest/344ba88e-a654-4e32-a88d-91e1d507acbb",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Debug-Session-Id": "62a3e4",
-          },
-          body: JSON.stringify({
-            sessionId: "62a3e4",
-            runId: "pre-fix",
-            hypothesisId: "B",
-            location: "TenantContext.tsx:loadUserProfile",
-            message: "Tenant profile loaded",
-            data: {
-              userId: authUser.id,
-              email: authUser.email,
-              tenantId: tenant?.id ?? null,
-              tenantOnboardingCompleted: tenant?.onboarding_completed ?? null,
-              role: authUser.role?.name ?? null,
-              userOnboardingCompleted: authUser.user_onboarding_completed,
-            },
-            timestamp: Date.now(),
-          }),
-        },
-      ).catch(() => {});
-      // #endregion agent log
+      // Removed agent log for stability
     } catch (error) {
       console.error("Failed to load user profile:", error);
       setState((prev) => ({ ...prev, tenantLoading: false }));

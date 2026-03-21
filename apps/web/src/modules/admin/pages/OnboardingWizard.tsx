@@ -333,31 +333,7 @@ export default function OnboardingWizard() {
 
       console.log("[OnboardingWizard] Member updated. Refreshing profile...");
 
-      // #region agent log
-      fetch(
-        "http://127.0.0.1:7419/ingest/344ba88e-a654-4e32-a88d-91e1d507acbb",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Debug-Session-Id": "62a3e4",
-          },
-          body: JSON.stringify({
-            sessionId: "62a3e4",
-            runId: "pre-fix",
-            hypothesisId: "C",
-            location: "OnboardingWizard.tsx:handleFinish",
-            message: "Tenant and member onboarding flags updated",
-            data: {
-              tenantId: tenant.id,
-              userId: user?.id ?? null,
-              email: user?.email ?? null,
-            },
-            timestamp: Date.now(),
-          }),
-        },
-      ).catch(() => {});
-      // #endregion agent log
+      // Removed agent log for stability
 
       // Set session flag for the tour so `AuthGuard` doesn't ping back if the user is a test user
       sessionStorage.setItem("has_seen_tour", "true");
@@ -394,7 +370,7 @@ export default function OnboardingWizard() {
   const step = STEPS[currentStep];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans cursor-default select-none">
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>

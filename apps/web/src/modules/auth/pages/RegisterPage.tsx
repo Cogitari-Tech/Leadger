@@ -151,6 +151,9 @@ export function RegisterPage() {
     return () => clearTimeout(timer);
   }, [searchQuery, searchTenants]);
 
+  const btnPrimary =
+    "w-full bg-primary text-primary-foreground py-4 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-lg shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:opacity-50 transition-all rounded-xl active:scale-95";
+
   // ── Early returns (AFTER all hooks) ──
   // If already logged in and has a tenant, redirect home.
   if (user && tenant) return <Navigate to="/" replace />;
@@ -171,8 +174,73 @@ export function RegisterPage() {
     // For test users, even without session yet, we assume success and try to go to onboarding
     if (isTestUser) return <Navigate to="/user-onboarding" replace />;
 
-    // If no user yet (email confirmation pending), go to verify-email
-    if (!user) return <Navigate to="/verify-email" replace />;
+    // If no user yet (not yet logged in or email confirmation required)
+    if (!user) {
+      return (
+        <div className="min-h-screen flex items-center justify-center p-6 text-center">
+          <div className="max-w-md space-y-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+              <CheckCircle className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="text-3xl font-black tracking-tight">
+              E-mail enviado!
+            </h2>
+            <p className="text-muted-foreground font-medium">
+              Enviamos um link de confirmação para <strong>{email}</strong>.
+              <br />
+              Por favor, verifique sua caixa de entrada para ativar sua conta.
+            </p>
+            <Link to="/login" className={btnPrimary + " inline-block mt-4"}>
+              Ir para o Login
+            </Link>
+          </div>
+        </div>
+      );
+    }
+
+    // --- PROVISIONING STATE ---
+    // User is logged in but tenant is not ready yet.
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[150px] rounded-full animate-pulse" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
+        </div>
+
+        <div className="w-full max-w-md glass-panel p-10 rounded-[2.5rem] border border-border/40 shadow-2xl relative z-10 text-center space-y-8 animate-in zoom-in-95 duration-500">
+          <div className="relative mx-auto w-20 h-20">
+            <div className="h-20 w-20 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Building2 className="w-8 h-8 text-primary animate-pulse" />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-2xl font-black tracking-tight">
+              Finalizando seu Espaço
+            </h2>
+            <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+              Estamos preparando o ambiente da <strong>{companyName}</strong>{" "}
+              para você. Isso levará apenas alguns segundos...
+            </p>
+          </div>
+
+          <div className="p-4 bg-primary/5 rounded-2xl flex items-center gap-3 text-left">
+            <Loader2 className="w-4 h-4 text-primary animate-spin shrink-0" />
+            <p className="text-[10px] text-primary uppercase font-black tracking-widest">
+              Security Protocol: Provisioning Virtual Tenant
+            </p>
+          </div>
+
+          <button
+            onClick={() => refreshProfile && refreshProfile()}
+            className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors underline"
+          >
+            Ainda não carregou? Clique para tentar novamente.
+          </button>
+        </div>
+      </div>
+    );
   }
 
   const handlePersonalNext = (e: FormEvent) => {
@@ -199,8 +267,10 @@ export function RegisterPage() {
         return;
       }
     }
-    if (password.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres.");
+    if (strengthScore < 3) {
+      setError(
+        "Sua segurança é nossa prioridade. Por favor, utilize uma senha mais forte (nível 'Razoável' ou superior).",
+      );
       return;
     }
     if (inviteToken && inviteMode) {
@@ -255,33 +325,14 @@ export function RegisterPage() {
         await refreshProfile();
       }
 
-      // #region agent log
-      fetch(
-        "http://127.0.0.1:7419/ingest/344ba88e-a654-4e32-a88d-91e1d507acbb",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Debug-Session-Id": "62a3e4",
-          },
-          body: JSON.stringify({
-            sessionId: "62a3e4",
-            runId: "pre-fix",
-            hypothesisId: "E",
-            location: "RegisterPage.tsx:handleCreateCompany",
-            message: "Signup/create company completed",
-            data: {
-              email,
-              hasUser: !!user,
-              companyName,
-            },
-            timestamp: Date.now(),
-          }),
-        },
-      ).catch(() => {});
-      // #endregion agent log
+      // Removed agent log for stability
       setSuccessMode("create");
       setSuccess(true);
+
+      // Auto-navigation attempt after a short delay
+      setTimeout(() => {
+        if (refreshProfile) refreshProfile();
+      }, 2000);
     } catch (err: any) {
       setError(err.message || "Erro ao configurar organização.");
     } finally {
@@ -321,11 +372,9 @@ export function RegisterPage() {
   };
 
   const inputClass =
-    "w-full px-5 py-3 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-50";
+    "w-full px-5 py-3 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-50 cursor-text select-text";
   const labelClass =
     "text-[11px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1";
-  const btnPrimary =
-    "w-full bg-primary text-primary-foreground py-4 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-lg shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:opacity-50 transition-all rounded-xl active:scale-95";
 
   const renderPersonalStep = () => (
     <form
@@ -782,7 +831,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row relative overflow-hidden font-sans cursor-default select-none">
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>

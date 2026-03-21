@@ -154,41 +154,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     const isOwnerOrAdmin =
       user.role?.name === "owner" || user.role?.name === "admin";
 
-    // #region agent log
-    fetch("http://127.0.0.1:7419/ingest/344ba88e-a654-4e32-a88d-91e1d507acbb", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Debug-Session-Id": "62a3e4",
-      },
-      body: JSON.stringify({
-        sessionId: "62a3e4",
-        runId: "pre-fix",
-        hypothesisId: "A",
-        location: "AuthGuard.tsx:tenant-branch",
-        message: "AuthGuard tenant onboarding state",
-        data: {
-          path: location.pathname,
-          tenantId: tenant.id,
-          onboardingCompleted: tenant.onboarding_completed,
-          userId: user.id,
-          userRole: user.role?.name ?? null,
-          userOnboardingCompleted: user.user_onboarding_completed,
-          isOwnerOrAdmin,
-          isTestUser:
-            user.email === "teste@leadgers.com" ||
-            user.email === "test_removivel@leadgers.com" ||
-            user.email === "qa_vibe_test@leadgers.com" ||
-            (user.email?.startsWith("onboarding-test") &&
-              user.email?.endsWith("@leadgers.com")),
-          hasSeenTour:
-            typeof window !== "undefined" &&
-            sessionStorage.getItem("has_seen_tour") === "true",
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion agent log
+    // Removed agent log for stability
 
     // 1. Company Setup (Tenant Onboarding)
     if (!tenant.onboarding_completed) {
