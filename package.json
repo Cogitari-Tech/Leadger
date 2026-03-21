@@ -12,7 +12,7 @@
     "dev:api": "npm run dev --workspace=apps/api",
     "dev:all": "npm run dev:api & npm run dev",
     "build": "npm run build --workspaces --if-present",
-    "test": "vitest run --passWithNoTests",
+    "test": "npm run test --workspaces --if-present",
     "test:watch": "npm run test:watch --workspace=packages/core",
     "test:e2e": "npm run test:e2e --workspace=apps/web",
     "test:integration": "npm run test:integration --workspaces --if-present",
