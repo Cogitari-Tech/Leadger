@@ -97,14 +97,18 @@ export function useProfile() {
         tenantId: memberData?.tenant_id || "",
         projects: (projectMemberships || []).map(
           (pm: {
-            projects?: { id: string; name: string; status: string };
+            projects?: Array<{ id: string; name: string; status: string }>;
             project_role?: string;
-          }) => ({
-            id: pm.projects?.id || "",
-            name: pm.projects?.name || "",
-            status: pm.projects?.status || "",
-            role: pm.project_role || "member",
-          }),
+          }) => {
+            const project = pm.projects?.[0];
+
+            return {
+              id: project?.id || "",
+              name: project?.name || "",
+              status: project?.status || "",
+              role: pm.project_role || "member",
+            };
+          },
         ),
         mfaEnabled: mfaEnabled || false,
         emailConfirmedAt: authUser?.email_confirmed_at || null,

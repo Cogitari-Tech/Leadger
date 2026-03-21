@@ -17,6 +17,14 @@ import type {
 export class SupabaseComplianceRepository implements IComplianceRepository {
   constructor(private supabase: SupabaseClient) {}
 
+  private toStringValue(value: unknown, fallback = ""): string {
+    return typeof value === "string" ? value : fallback;
+  }
+
+  private toNumberValue(value: unknown, fallback = 0): number {
+    return typeof value === "number" ? value : fallback;
+  }
+
   // ─── Frameworks ─────────────────────────────────────────
 
   async listFrameworks(tenantId: string): Promise<FrameworkDTO[]> {
@@ -70,16 +78,20 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
 
       if (total > 0 && status === "pending") status = "active";
 
+      const createdAt = this.toStringValue(f.created_at);
+
       return {
-        id: f.id,
-        name: f.name,
-        description: f.description || "",
-        version: f.version || "1.0",
+        id: this.toStringValue(f.id),
+        name: this.toStringValue(f.name),
+        description: this.toStringValue(f.description),
+        version: this.toStringValue(f.version, "1.0"),
         status,
         progress,
         controlsCount: total as number,
         compliantCount: compliant as number,
-        lastUpdated: new Date(f.created_at as string).toLocaleDateString(),
+        lastUpdated: createdAt
+          ? new Date(createdAt).toLocaleDateString()
+          : new Date().toLocaleDateString(),
       };
     });
   }
@@ -137,8 +149,17 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
     if (error || !data) return [];
 
     return data.map((item: Record<string, unknown>) => ({
-      ...item,
-      createdAt: item.created_at,
+      id: this.toStringValue(item.id),
+      tenant_id: this.toStringValue(item.tenant_id),
+      title: this.toStringValue(item.title),
+      description: this.toStringValue(item.description),
+      category: this.toStringValue(item.category),
+      likelihood: this.toNumberValue(item.likelihood),
+      impact: this.toNumberValue(item.impact),
+      score: this.toNumberValue(item.score),
+      status: this.toStringValue(item.status),
+      owner: this.toStringValue(item.owner),
+      createdAt: this.toStringValue(item.created_at),
     }));
   }
 
@@ -173,8 +194,13 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
     if (error || !data) return [];
 
     return data.map((item: Record<string, unknown>) => ({
-      ...item,
-      createdAt: item.created_at,
+      id: this.toStringValue(item.id),
+      tenant_id: this.toStringValue(item.tenant_id),
+      type: this.toStringValue(item.type),
+      title: this.toStringValue(item.title),
+      description: this.toStringValue(item.description),
+      impact: this.toNumberValue(item.impact),
+      createdAt: this.toStringValue(item.created_at),
     }));
   }
 

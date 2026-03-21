@@ -8,6 +8,11 @@ interface RoleWithPermissions extends Role {
   permissions: string[];
 }
 
+type RolePermissionRow = {
+  role_id: string;
+  permission?: { code: string }[];
+};
+
 export function RoleManagement() {
   const { tenant } = useAuth();
   const [roles, setRoles] = useState<RoleWithPermissions[]>([]);
@@ -40,13 +45,11 @@ export function RoleManagement() {
 
       // Build role-permissions map
       const permMap = new Map<string, string[]>();
-      rpData?.forEach(
-        (rp: { role_id: string; permission?: { code: string } }) => {
-          const codes = permMap.get(rp.role_id) ?? [];
-          if (rp.permission?.code) codes.push(rp.permission.code);
-          permMap.set(rp.role_id, codes);
-        },
-      );
+      rpData?.forEach((rp: RolePermissionRow) => {
+        const codes = permMap.get(rp.role_id) ?? [];
+        const permissionCodes = (rp.permission ?? []).map((p) => p.code);
+        permMap.set(rp.role_id, [...codes, ...permissionCodes]);
+      });
 
       const enrichedRoles: RoleWithPermissions[] = (rolesData ?? []).map(
         (r: Role) => ({

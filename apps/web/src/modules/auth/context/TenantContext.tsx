@@ -32,6 +32,20 @@ export interface TenantActions {
 
 export type TenantContextType = TenantState & TenantActions;
 
+type RolePermissionJoinRow = {
+  permission?: { code: string }[];
+};
+
+function extractPermissionCodes(
+  rolePerms: RolePermissionJoinRow[] | null,
+): string[] {
+  if (!rolePerms) return [];
+
+  return rolePerms
+    .flatMap((rp) => (rp.permission ?? []).map((permission) => permission.code))
+    .filter((code): code is string => Boolean(code));
+}
+
 // ─── Context ────────────────────────────────────────────
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
@@ -141,13 +155,9 @@ export function TenantProvider({ children }: { children: ReactNode }) {
               .from("role_permissions")
               .select("permission:permissions(code)")
               .eq("role_id", role.id);
-            permissions =
-              rolePerms
-                ?.map(
-                  (rp: { permission?: { code: string } }) =>
-                    rp.permission?.code,
-                )
-                .filter(Boolean) ?? [];
+            permissions = extractPermissionCodes(
+              (rolePerms as RolePermissionJoinRow[] | null) ?? null,
+            );
           }
         }
       }

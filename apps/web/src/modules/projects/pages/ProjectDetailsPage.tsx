@@ -22,6 +22,21 @@ import { useAuth } from "../../auth/context/AuthContext";
 import { SupabaseProjectRepository } from "../repositories/SupabaseProjectRepository";
 import { useMemo } from "react";
 
+interface ProjectProgramResource {
+  id: string;
+  name: string;
+  status: string;
+  start_date?: string | null;
+  startDate?: string | null;
+}
+
+interface ProjectRepoResource {
+  id: string;
+  full_name: string;
+  name: string;
+  open_vulnerabilities_count?: number;
+}
+
 export function ProjectDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,8 +51,8 @@ export function ProjectDetailsPage() {
 
   const repository = useMemo(() => new SupabaseProjectRepository(supabase), []);
 
-  const [programs, setPrograms] = useState<Record<string, unknown>[]>([]);
-  const [repos, setRepos] = useState<Record<string, unknown>[]>([]);
+  const [programs, setPrograms] = useState<ProjectProgramResource[]>([]);
+  const [repos, setRepos] = useState<ProjectRepoResource[]>([]);
   const [loadingResources, setLoadingResources] = useState(false);
 
   // Tabs: 'geral' | 'equipe' | 'recursos'
