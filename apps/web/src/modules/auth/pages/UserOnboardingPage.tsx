@@ -84,31 +84,7 @@ export function UserOnboardingPage() {
 
       if (dbError) throw dbError;
 
-      // #region agent log
-      fetch(
-        "http://127.0.0.1:7419/ingest/344ba88e-a654-4e32-a88d-91e1d507acbb",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Debug-Session-Id": "62a3e4",
-          },
-          body: JSON.stringify({
-            sessionId: "62a3e4",
-            runId: "pre-fix",
-            hypothesisId: "C",
-            location: "UserOnboardingPage.tsx:handleFinish",
-            message: "User onboarding flag updated",
-            data: {
-              tenantId: tenant?.id ?? null,
-              userId: user.id,
-              email: user.email,
-            },
-            timestamp: Date.now(),
-          }),
-        },
-      ).catch(() => {});
-      // #endregion agent log
+      // Removed agent log for stability
 
       // Set session flag for the tour so AuthGuard considers it complete
       sessionStorage.setItem("has_seen_tour", "true");
