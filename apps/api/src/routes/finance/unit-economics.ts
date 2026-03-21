@@ -9,8 +9,6 @@ unitEconomicsRoutes.use("*", authMiddleware);
 unitEconomicsRoutes.use("*", tenancyMiddleware);
 
 unitEconomicsRoutes.get("/", async (c) => {
-  const tenantId = c.get("tenantId");
-
   // TODO: Buscar o snapshot mais recente da tabela unit_economics_snapshots
   // const latest = await prisma.unit_economics_snapshots.findFirst({ where: { tenant_id: tenantId }, orderBy: { date: 'desc' } });
 

@@ -125,7 +125,7 @@ export class PrismaFinanceRepository implements IFinanceRepository {
       : Number(raw[0].total_credit) - Number(raw[0].total_debit);
   }
 
-  async getTrialBalance(date: Date): Promise<TrialBalanceEntry[]> {
+  async getTrialBalance(_date: Date): Promise<TrialBalanceEntry[]> {
     throw new Error("Method not implemented.");
   }
 
@@ -179,8 +179,8 @@ export class PrismaFinanceRepository implements IFinanceRepository {
   }
 
   async getAccountBalances(
-    startDate: Date,
-    endDate: Date,
+    _startDate: Date,
+    _endDate: Date,
   ): Promise<AccountBalanceDTO[]> {
     throw new Error("Method not implemented.");
   }
