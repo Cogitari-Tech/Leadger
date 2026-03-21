@@ -47,45 +47,56 @@ export function useFrameworks() {
           mappedControls[f.id] = [];
         });
 
-        controlsData?.forEach((c: any) => {
-          const relevantChecklists = checklistData.filter(
-            (chk: any) => chk.control_id === c.id,
-          );
+        controlsData?.forEach(
+          (c: {
+            id: string;
+            framework_id: string;
+            code: string;
+            title: string;
+            description: string | null;
+          }) => {
+            const relevantChecklists = checklistData.filter(
+              (chk: { control_id: string; status: string }) =>
+                chk.control_id === c.id,
+            );
 
-          let controlStatus: Control["status"] = "evaluating";
-          if (relevantChecklists.length > 0) {
-            if (
-              relevantChecklists.some(
-                (chk: any) => chk.status === "non_compliant",
-              )
-            ) {
-              controlStatus = "non_compliant";
-            } else if (
-              relevantChecklists.every(
-                (chk: any) => chk.status === "not_applicable",
-              )
-            ) {
-              controlStatus = "not_applicable";
-            } else if (
-              relevantChecklists.every((chk: any) => chk.status === "compliant")
-            ) {
-              controlStatus = "compliant";
-            } else {
-              controlStatus = "evaluating";
+            let controlStatus: Control["status"] = "evaluating";
+            if (relevantChecklists.length > 0) {
+              if (
+                relevantChecklists.some(
+                  (chk: { status: string }) => chk.status === "non_compliant",
+                )
+              ) {
+                controlStatus = "non_compliant";
+              } else if (
+                relevantChecklists.every(
+                  (chk: { status: string }) => chk.status === "not_applicable",
+                )
+              ) {
+                controlStatus = "not_applicable";
+              } else if (
+                relevantChecklists.every(
+                  (chk: { status: string }) => chk.status === "compliant",
+                )
+              ) {
+                controlStatus = "compliant";
+              } else {
+                controlStatus = "evaluating";
+              }
             }
-          }
 
-          if (mappedControls[c.framework_id]) {
-            mappedControls[c.framework_id].push({
-              id: c.id,
-              frameworkId: c.framework_id,
-              code: c.code,
-              title: c.title,
-              description: c.description || "",
-              status: controlStatus,
-            });
-          }
-        });
+            if (mappedControls[c.framework_id]) {
+              mappedControls[c.framework_id].push({
+                id: c.id,
+                frameworkId: c.framework_id,
+                code: c.code,
+                title: c.title,
+                description: c.description || "",
+                status: controlStatus,
+              });
+            }
+          },
+        );
 
         setControls(mappedControls);
       } else {

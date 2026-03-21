@@ -188,7 +188,19 @@ export function useCapTable() {
         (sum, s) => sum + s.shares_count,
         0,
       );
-      const newTotalShares = totalCurrentShares + input.newInvestorShares;
+      let newInvestorShares = input.newInvestorShares || 0;
+
+      // Smart calculation: If we have pre-money and amount raised, we calculate exact shares to issue
+      if (
+        input.preMoneyValuation > 0 &&
+        input.amountRaised > 0 &&
+        totalCurrentShares > 0
+      ) {
+        const pricePerShare = input.preMoneyValuation / totalCurrentShares;
+        newInvestorShares = input.amountRaised / pricePerShare;
+      }
+
+      const newTotalShares = totalCurrentShares + newInvestorShares;
 
       const previews: DilutionPreview[] = shareholders.map((s) => {
         const currentPct =
@@ -209,9 +221,7 @@ export function useCapTable() {
         shareholderName: input.newInvestorName || "Novo Investidor",
         currentPct: 0,
         newPct:
-          newTotalShares > 0
-            ? (input.newInvestorShares / newTotalShares) * 100
-            : 0,
+          newTotalShares > 0 ? (newInvestorShares / newTotalShares) * 100 : 0,
         dilution: 0,
       });
 

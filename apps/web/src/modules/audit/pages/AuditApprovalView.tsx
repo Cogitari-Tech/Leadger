@@ -27,7 +27,7 @@ import type {
 const STATUS_OPTIONS: {
   value: AuditResponseStatus;
   label: string;
-  icon: any;
+  icon: React.ElementType;
   color: string;
 }[] = [
   {
@@ -177,10 +177,11 @@ export default function AuditApprovalView() {
       await approveAudit(programId, simulatedDocHash, blob);
 
       navigate("/audit/programs");
-    } catch (err: any) {
+    } catch (err) {
       alert(
-        err.message ||
-          "Erro ao aprovar auditoria. Talvez você não possua permissões suficientes (SoD).",
+        err instanceof Error
+          ? err.message
+          : "Erro ao aprovar auditoria. Talvez você não possua permissões suficientes (SoD).",
       );
     }
   };
@@ -196,8 +197,8 @@ export default function AuditApprovalView() {
       setRejectReason("");
       setIsRejectModalOpen(false);
       navigate("/audit/programs");
-    } catch (err: any) {
-      alert(err.message || "Erro ao devolver auditoria.");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao devolver auditoria.");
     }
   };
 

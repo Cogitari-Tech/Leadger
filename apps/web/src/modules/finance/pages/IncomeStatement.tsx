@@ -19,6 +19,17 @@ interface IncomeStatementData {
   };
 }
 
+interface IncomeStatementRow {
+  id: string;
+  label: string;
+  value: number;
+  level: number;
+  type?: string;
+  highlight?: boolean;
+  isNetProfit?: boolean;
+  children?: IncomeStatementRow[];
+}
+
 export default function IncomeStatement() {
   const { getIncomeStatement, loading, error } = useFinance();
   const [data, setData] = useState<IncomeStatementData | null>(null);
@@ -130,7 +141,7 @@ export default function IncomeStatement() {
 
   const rows = getRows();
 
-  const getRowStyles = (item: any) => {
+  const getRowStyles = (item: IncomeStatementRow) => {
     if (item.isNetProfit)
       return "bg-slate-900 dark:bg-slate-800 text-white font-bold text-lg";
     if (item.highlight)
@@ -140,7 +151,7 @@ export default function IncomeStatement() {
     return "text-slate-600 dark:text-slate-400 text-sm border-b border-slate-50 dark:border-white/5";
   };
 
-  const renderRow = (item: any) => {
+  const renderRow = (item: IncomeStatementRow): React.ReactNode => {
     const isExpanded = expandedRows.includes(item.id);
     const hasChildren = item.children && item.children.length > 0;
 
@@ -174,7 +185,7 @@ export default function IncomeStatement() {
 
         {isExpanded &&
           hasChildren &&
-          item.children.map((child: any) => renderRow(child))}
+          item.children!.map((child: IncomeStatementRow) => renderRow(child))}
       </>
     );
   };

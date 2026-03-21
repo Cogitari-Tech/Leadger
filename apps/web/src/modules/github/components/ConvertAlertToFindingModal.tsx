@@ -71,8 +71,10 @@ export function ConvertAlertToFindingModal({
       });
 
       onSuccess(finding.id);
-    } catch (err: any) {
-      setError(err.message || "Erro ao criar apontamento");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao criar apontamento",
+      );
     } finally {
       setLoading(false);
     }

@@ -39,11 +39,16 @@ export interface SessionActions {
       invite_token?: string;
       captchaToken?: string;
     },
-  ) => Promise<{ error: Error | null; data?: any }>;
+  ) => Promise<{
+    error: Error | null;
+    data?: { user: User | null; session: Session | null };
+  }>;
   signInWithGoogle: () => Promise<void>;
   signInWithGitHub: () => Promise<void>;
   signOut: () => Promise<void>;
-  updateMetadata: (data: any) => Promise<{ error: Error | null }>;
+  updateMetadata: (
+    data: Record<string, unknown>,
+  ) => Promise<{ error: Error | null }>;
 }
 
 export type SessionContextType = SessionState & SessionActions;
@@ -181,7 +186,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       }
 
       setState((prev) => ({ ...prev, loading: false }));
-      return { error: error as Error | null, data };
+      return {
+        error: error as Error | null,
+        data: { user: data.user, session: data.session },
+      };
     },
     [],
   );
@@ -240,7 +248,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   }, [state.supabaseUser]);
 
-  const updateMetadata = useCallback(async (data: any) => {
+  const updateMetadata = useCallback(async (data: Record<string, unknown>) => {
     const { error } = await supabase.auth.updateUser({ data });
     return { error: error as Error | null };
   }, []);

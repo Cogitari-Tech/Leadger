@@ -134,7 +134,8 @@ export function TenantProvider({ children }: { children: ReactNode }) {
           }
 
           if (role && (role.name === "admin" || role.name === "owner")) {
-            permissions = allPermsRes.data?.map((p: any) => p.code) ?? [];
+            permissions =
+              allPermsRes.data?.map((p: { code: string }) => p.code) ?? [];
           } else if (role) {
             const { data: rolePerms } = await supabase
               .from("role_permissions")
@@ -142,7 +143,10 @@ export function TenantProvider({ children }: { children: ReactNode }) {
               .eq("role_id", role.id);
             permissions =
               rolePerms
-                ?.map((rp: any) => rp.permission?.code)
+                ?.map(
+                  (rp: { permission?: { code: string } }) =>
+                    rp.permission?.code,
+                )
                 .filter(Boolean) ?? [];
           }
         }

@@ -17,6 +17,7 @@ import { type ReactNode } from "react";
 import type { AuthState, Tenant, SignupMode } from "../types/auth.types";
 import { SessionProvider, useSession } from "./SessionContext";
 import { TenantProvider, useTenant } from "./TenantContext";
+import type { Session, User } from "@supabase/supabase-js";
 
 // ─── Public Interface (unchanged) ───────────────────────
 
@@ -37,7 +38,10 @@ interface AuthContextType extends AuthState {
       invite_token?: string;
       captchaToken?: string;
     },
-  ) => Promise<{ error: Error | null; data?: any }>;
+  ) => Promise<{
+    error: Error | null;
+    data?: { user: User | null; session: Session | null };
+  }>;
   signInWithGoogle: () => Promise<void>;
   signInWithGitHub: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -48,7 +52,9 @@ interface AuthContextType extends AuthState {
     tenantId: string,
     message?: string,
   ) => Promise<{ error: Error | null }>;
-  updateMetadata: (data: any) => Promise<{ error: Error | null }>;
+  updateMetadata: (
+    data: Record<string, unknown>,
+  ) => Promise<{ error: Error | null }>;
   refreshProfile?: () => Promise<void>;
 }
 
