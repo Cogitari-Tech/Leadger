@@ -111,7 +111,11 @@ export default function ExecutiveDashboard() {
   const navigate = useNavigate();
   const kpis = useExecutiveDashboard();
   const { scores: riskScores, loading: riskLoading } = useProjectRiskScores();
-  const { data: digest, loading: aiLoading, fetchDigest } = useWeeklyDigest();
+  const {
+    data: digest,
+    loading: aiLoading,
+    fetchDigest: generateDigest,
+  } = useWeeklyDigest();
   const { data: healthScore } = useHealthScore();
 
   const isManager =
@@ -523,10 +527,13 @@ export default function ExecutiveDashboard() {
                           Receita
                         </p>
                         <p className="text-sm font-bold text-foreground">
-                          {digest.metrics.revenue.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
+                          {Number(digest.metrics.revenue || 0).toLocaleString(
+                            "pt-BR",
+                            {
+                              style: "currency",
+                              currency: "BRL",
+                            },
+                          )}
                         </p>
                       </div>
                       <div>
@@ -534,10 +541,13 @@ export default function ExecutiveDashboard() {
                           Despesas
                         </p>
                         <p className="text-sm font-bold text-foreground">
-                          {digest.metrics.expenses.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
+                          {Number(digest.metrics.expenses || 0).toLocaleString(
+                            "pt-BR",
+                            {
+                              style: "currency",
+                              currency: "BRL",
+                            },
+                          )}
                         </p>
                       </div>
                       <div>
@@ -545,12 +555,15 @@ export default function ExecutiveDashboard() {
                           Resultado
                         </p>
                         <p
-                          className={`text-sm font-bold ${digest.metrics.netIncome >= 0 ? "text-emerald-500" : "text-destructive"}`}
+                          className={`text-sm font-bold ${Number(digest.metrics.netIncome || 0) >= 0 ? "text-emerald-500" : "text-destructive"}`}
                         >
-                          {digest.metrics.netIncome.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
+                          {Number(digest.metrics.netIncome || 0).toLocaleString(
+                            "pt-BR",
+                            {
+                              style: "currency",
+                              currency: "BRL",
+                            },
+                          )}
                         </p>
                       </div>
                       <div>
@@ -558,7 +571,7 @@ export default function ExecutiveDashboard() {
                           Transações
                         </p>
                         <p className="text-sm font-bold text-foreground">
-                          {digest.metrics.transactionsCount}
+                          {Number(digest.metrics.transactionsCount || 0)}
                         </p>
                       </div>
                     </div>
@@ -568,7 +581,10 @@ export default function ExecutiveDashboard() {
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-4 text-right italic border-t border-border/20 pt-4">
                     Gerado por Inteligência Artificial (
-                    {digest.metrics?.period || "Semana atual"})
+                    {digest.metrics?.period
+                      ? String(digest.metrics.period)
+                      : "Semana atual"}
+                    )
                   </p>
                 </div>
               ) : (
@@ -583,7 +599,7 @@ export default function ExecutiveDashboard() {
 
               <button
                 type="button"
-                onClick={fetchDigest}
+                onClick={generateDigest}
                 disabled={aiLoading}
                 className="w-full flex items-center justify-center gap-2 mt-4 px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-xl transition-colors"
               >
