@@ -79,28 +79,43 @@ export default function BalanceSheet() {
 
   // Process data into sections
   const processData = () => {
-    const assetsList = balances.filter((b) =>
-      ["checking", "savings", "investment", "cash"].includes(b.accountType),
+    // ⚡ Bolt: Consolidated multiple array filters and reductions into a single pass
+    // Reduces multiple iterations over the balances array (O(5n)) to a single pass O(n)
+    const { assetsList, liabilitiesList, revenue, expenses, assetsTotal, liabilitiesTotal } = balances.reduce(
+      (acc, b) => {
+        if (["checking", "savings", "investment", "cash"].includes(b.accountType)) {
+          acc.assetsList.push(b);
+          acc.assetsTotal += b.balance;
+        } else if (["credit_card"].includes(b.accountType)) {
+          acc.liabilitiesList.push(b);
+          acc.liabilitiesTotal += b.balance;
+        } else if (b.accountType === "Receita") {
+          acc.revenue += b.balance;
+        } else if (b.accountType === "Despesa") {
+          acc.expenses += b.balance;
+        }
+        return acc;
+      },
+      {
+        assetsList: [] as AccountBalanceDTO[],
+        liabilitiesList: [] as AccountBalanceDTO[],
+        revenue: 0,
+        expenses: 0,
+        assetsTotal: 0,
+        liabilitiesTotal: 0,
+      }
     );
-    const liabilitiesList = balances.filter((b) =>
-      ["credit_card"].includes(b.accountType),
-    );
+
     // Equity? Currently usually empty in our seed, but let's separate Revenue/Expense?
     // No, Revenue/Expense are for Income Statement. Their net result goes to Equity.
 
     // Calculate Net Result manually to balance?
-    const revenue = balances
-      .filter((b) => b.accountType === "Receita")
-      .reduce((sum, b) => sum + b.balance, 0);
-    const expenses = balances
-      .filter((b) => b.accountType === "Despesa")
-      .reduce((sum, b) => sum + b.balance, 0);
     const netResult = revenue - expenses;
 
     const assetsNode = {
       id: "assets",
       label: "Ativos",
-      value: assetsList.reduce((sum, b) => sum + b.balance, 0),
+      value: assetsTotal,
       level: 1,
       children: assetsList.map((b) => ({
         id: b.accountId,
@@ -113,7 +128,7 @@ export default function BalanceSheet() {
     const liabilitiesNode = {
       id: "liabilities",
       label: "Passivos",
-      value: liabilitiesList.reduce((sum, b) => sum + b.balance, 0),
+      value: liabilitiesTotal,
       level: 1,
       children: liabilitiesList.map((b) => ({
         id: b.accountId,
