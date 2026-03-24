@@ -24,6 +24,14 @@ interface AccountBalanceDTO {
   balance: number;
 }
 
+interface BalanceSheetNode {
+  id: string;
+  label: string;
+  value: number;
+  level: number;
+  children?: BalanceSheetNode[];
+}
+
 export default function BalanceSheet() {
   const { getAccountBalances, loading, error } = useFinance();
   const [balances, setBalances] = useState<AccountBalanceDTO[]>([]);
@@ -150,7 +158,7 @@ export default function BalanceSheet() {
 
   const renderSection = (
     title: string,
-    data: any[],
+    data: BalanceSheetNode[],
     totalValue: number,
     colorClass: string,
   ) => (
@@ -196,7 +204,7 @@ export default function BalanceSheet() {
 
               {isExpanded &&
                 hasChildren &&
-                item.children.map((child: any) => (
+                item.children!.map((child: BalanceSheetNode) => (
                   <div
                     key={child.id}
                     className="flex justify-between items-center px-6 py-2 border-b border-white/5 text-sm text-slate-500 dark:text-slate-400 hover:bg-white/20 dark:hover:bg-white/5"

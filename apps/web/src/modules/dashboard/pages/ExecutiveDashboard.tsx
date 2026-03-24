@@ -10,11 +10,16 @@ import {
   Activity,
   BarChart3,
   Wallet,
+  Bot,
+  Sparkles,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/context/AuthContext";
 import { useExecutiveDashboard } from "../hooks/useExecutiveDashboard";
 import { useProjectRiskScores } from "../hooks/useProjectRiskScores";
+import { useWeeklyDigest } from "../hooks/useWeeklyDigest";
+import { useHealthScore } from "../hooks/useHealthScore";
 
 function KPICard({
   title,
@@ -106,6 +111,12 @@ export default function ExecutiveDashboard() {
   const navigate = useNavigate();
   const kpis = useExecutiveDashboard();
   const { scores: riskScores, loading: riskLoading } = useProjectRiskScores();
+  const {
+    data: digest,
+    loading: aiLoading,
+    fetchDigest: generateDigest,
+  } = useWeeklyDigest();
+  const { data: healthScore } = useHealthScore();
 
   const isManager =
     user?.role?.name === "owner" ||
@@ -145,7 +156,21 @@ export default function ExecutiveDashboard() {
       </div>
 
       {/* Top KPI Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <KPICard
+          title="Health Score"
+          value={healthScore?.total_score || "-"}
+          subtitle="Geral"
+          icon={Activity}
+          color={
+            (healthScore?.total_score || 0) >= 80
+              ? "emerald"
+              : (healthScore?.total_score || 0) >= 50
+                ? "amber"
+                : "red"
+          }
+          onClick={() => navigate("/dashboard/health-score")}
+        />
         <KPICard
           title="Auditorias Ativas"
           value={kpis.audit.activePrograms}
@@ -486,6 +511,111 @@ export default function ExecutiveDashboard() {
             >
               Ver módulo financeiro →
             </button>
+          </div>
+
+          {/* AI Finance Analyst Snippet */}
+          <div className="glass-card soft-shadow rounded-2xl p-6 transition-all hover:scale-[1.01] hover:shadow-md relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <SectionTitle icon={Bot} title="AI Analyst" />
+            <div className="space-y-4 relative z-10">
+              {digest ? (
+                <div className="space-y-6">
+                  {digest.metrics && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20">
+                      <div>
+                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                          Receita
+                        </p>
+                        <p className="text-sm font-bold text-foreground">
+                          {Number(digest.metrics.revenue || 0).toLocaleString(
+                            "pt-BR",
+                            {
+                              style: "currency",
+                              currency: "BRL",
+                            },
+                          )}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                          Despesas
+                        </p>
+                        <p className="text-sm font-bold text-foreground">
+                          {Number(digest.metrics.expenses || 0).toLocaleString(
+                            "pt-BR",
+                            {
+                              style: "currency",
+                              currency: "BRL",
+                            },
+                          )}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                          Resultado
+                        </p>
+                        <p
+                          className={`text-sm font-bold ${Number(digest.metrics.netIncome || 0) >= 0 ? "text-emerald-500" : "text-destructive"}`}
+                        >
+                          {Number(digest.metrics.netIncome || 0).toLocaleString(
+                            "pt-BR",
+                            {
+                              style: "currency",
+                              currency: "BRL",
+                            },
+                          )}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                          Transações
+                        </p>
+                        <p className="text-sm font-bold text-foreground">
+                          {Number(digest.metrics.transactionsCount || 0)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="text-sm text-foreground/80 prose prose-sm dark:prose-invert prose-indigo max-w-none">
+                    <ReactMarkdown>{digest.digest}</ReactMarkdown>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-4 text-right italic border-t border-border/20 pt-4">
+                    Gerado por Inteligência Artificial (
+                    {digest.metrics?.period
+                      ? String(digest.metrics.period)
+                      : "Semana atual"}
+                    )
+                  </p>
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <Sparkles className="w-8 h-8 text-indigo-400/40 mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground">
+                    Obtenha insights automatizados sobre os números da última
+                    semana.
+                  </p>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={generateDigest}
+                disabled={aiLoading}
+                className="w-full flex items-center justify-center gap-2 mt-4 px-3 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-xl transition-colors"
+              >
+                {aiLoading ? (
+                  <>
+                    <div className="w-4 h-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                    Analisando...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3 h-3" />
+                    Gerar Análise Semanal
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>

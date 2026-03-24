@@ -332,15 +332,15 @@ export default function CapTable() {
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                Novas Ações
+                Valor Levantado (R$)
               </label>
               <input
                 type="number"
-                value={simInput.newInvestorShares}
+                value={simInput.amountRaised}
                 onChange={(e) =>
                   setSimInput({
                     ...simInput,
-                    newInvestorShares: Number(e.target.value),
+                    amountRaised: Number(e.target.value),
                   })
                 }
                 className="glass-input w-full px-4 py-3 rounded-xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"

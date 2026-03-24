@@ -58,7 +58,7 @@ export function TenantSettings() {
       } = supabase.storage.from("audit-evidences").getPublicUrl(path);
 
       setLogoUrl(publicUrl);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Logo upload error:", err);
     } finally {
       setUploading(false);

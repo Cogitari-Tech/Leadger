@@ -230,7 +230,7 @@ export function useGitHub() {
 
       await loadIssues(); // Refresh list
       return data.issue;
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to create issue:", err);
       throw err;
     }
@@ -253,7 +253,7 @@ export function useGitHub() {
 
       await loadIssues(); // Refresh list
       return data.issue;
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to close issue:", err);
       throw err;
     }
@@ -275,9 +275,9 @@ export function useGitHub() {
           pr.id === prId ? { ...pr, linked_finding_id: findingId } : pr,
         ),
       );
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to link PR:", err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
       throw err;
     } finally {
       setLoading(false);
@@ -300,9 +300,9 @@ export function useGitHub() {
           a.id === alertId ? { ...a, linked_finding_id: findingId } : a,
         ),
       );
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to link Alert:", err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
       throw err;
     } finally {
       setLoading(false);

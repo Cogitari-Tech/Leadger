@@ -40,9 +40,11 @@ export function useProjectRiskScores() {
         if (queryError) throw queryError;
 
         setScores((data as ProjectRiskScore[]) || []);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Risk scores fetch error:", err);
-        setError(err.message || "Erro ao carregar risk scores.");
+        setError(
+          err instanceof Error ? err.message : "Erro ao carregar risk scores.",
+        );
       } finally {
         setLoading(false);
       }

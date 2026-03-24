@@ -8,6 +8,11 @@ interface RoleWithPermissions extends Role {
   permissions: string[];
 }
 
+type RolePermissionRow = {
+  role_id: string;
+  permission?: { code: string }[];
+};
+
 export function RoleManagement() {
   const { tenant } = useAuth();
   const [roles, setRoles] = useState<RoleWithPermissions[]>([]);
@@ -32,7 +37,7 @@ export function RoleManagement() {
       //   .order("module");
 
       // Fetch role-permission mappings
-      const roleIds = rolesData?.map((r: any) => r.id) ?? [];
+      const roleIds = rolesData?.map((r: { id: string }) => r.id) ?? [];
       const { data: rpData } = await supabase
         .from("role_permissions")
         .select("role_id, permission:permissions(code)")
@@ -40,14 +45,14 @@ export function RoleManagement() {
 
       // Build role-permissions map
       const permMap = new Map<string, string[]>();
-      rpData?.forEach((rp: any) => {
+      rpData?.forEach((rp: RolePermissionRow) => {
         const codes = permMap.get(rp.role_id) ?? [];
-        if (rp.permission?.code) codes.push(rp.permission.code);
-        permMap.set(rp.role_id, codes);
+        const permissionCodes = (rp.permission ?? []).map((p) => p.code);
+        permMap.set(rp.role_id, [...codes, ...permissionCodes]);
       });
 
       const enrichedRoles: RoleWithPermissions[] = (rolesData ?? []).map(
-        (r: any) => ({
+        (r: Role) => ({
           ...r,
           permissions: permMap.get(r.id) ?? [],
         }),
@@ -161,7 +166,7 @@ export function RoleManagement() {
                       Privilégios Ativos
                     </span>
                     {role.permissions && role.permissions.length > 0 ? (
-                      role.permissions.map((p: any) => (
+                      role.permissions.map((p: string) => (
                         <div
                           key={p}
                           className="px-4 py-2 rounded-xl bg-muted/20 border border-border/40 text-[10px] font-black tracking-widest text-muted-foreground/60 group-hover:bg-primary/5 group-hover:border-primary/20 group-hover:text-primary transition-all flex items-center gap-2"

@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   IComplianceRepository,
   FrameworkDTO,
+  ControlDTO,
   RiskDTO,
   CreateRiskInput,
   SwotDTO,
@@ -15,6 +16,14 @@ import type {
  */
 export class SupabaseComplianceRepository implements IComplianceRepository {
   constructor(private supabase: SupabaseClient) {}
+
+  private toStringValue(value: unknown, fallback = ""): string {
+    return typeof value === "string" ? value : fallback;
+  }
+
+  private toNumberValue(value: unknown, fallback = 0): number {
+    return typeof value === "number" ? value : fallback;
+  }
 
   // ─── Frameworks ─────────────────────────────────────────
 
@@ -32,11 +41,12 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
       .eq("tenant_id", tenantId)
       .in(
         "framework_id",
-        fwData.map((f: any) => f.id),
+        fwData.map((f: Record<string, unknown>) => f.id),
       );
 
-    const programIds = programsData?.map((p: any) => p.id) || [];
-    let checklistData: any[] = [];
+    const programIds =
+      programsData?.map((p: Record<string, unknown>) => p.id) || [];
+    let checklistData: Record<string, unknown>[] = [];
 
     if (programIds.length > 0) {
       const { data } = await this.supabase
@@ -46,17 +56,20 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
       if (data) checklistData = data;
     }
 
-    return fwData.map((f: any) => {
+    return fwData.map((f: Record<string, unknown>) => {
       const fwPrograms =
-        programsData?.filter((p: any) => p.framework_id === f.id) || [];
-      const fProgramIds = fwPrograms.map((p: any) => p.id);
+        programsData?.filter(
+          (p: Record<string, unknown>) => p.framework_id === f.id,
+        ) || [];
+      const fProgramIds = fwPrograms.map((p: Record<string, unknown>) => p.id);
 
       const fwChecklists =
-        checklistData?.filter((c: any) => fProgramIds.includes(c.program_id)) ||
-        [];
+        checklistData?.filter((c: Record<string, unknown>) =>
+          fProgramIds.includes(c.program_id),
+        ) || [];
       const total = fwChecklists.length;
       const compliant = fwChecklists.filter(
-        (c: any) => c.status === "compliant",
+        (c: Record<string, unknown>) => c.status === "compliant",
       ).length;
       const progress = total > 0 ? Math.round((compliant / total) * 100) : 0;
       let status = "pending";
@@ -65,31 +78,43 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
 
       if (total > 0 && status === "pending") status = "active";
 
+      const createdAt = this.toStringValue(f.created_at);
+
       return {
-        id: f.id,
-        name: f.name,
-        description: f.description || "",
-        version: f.version || "1.0",
+        id: this.toStringValue(f.id),
+        name: this.toStringValue(f.name),
+        description: this.toStringValue(f.description),
+        version: this.toStringValue(f.version, "1.0"),
         status,
         progress,
-        controlsCount: total,
-        compliantCount: compliant,
-        lastUpdated: new Date(f.created_at).toLocaleDateString(),
+        controlsCount: total as number,
+        compliantCount: compliant as number,
+        lastUpdated: createdAt
+          ? new Date(createdAt).toLocaleDateString()
+          : new Date().toLocaleDateString(),
       };
     });
   }
 
-  async listControls(frameworkIds: string[]): Promise<any[]> {
+  async listControls(frameworkIds: string[]): Promise<ControlDTO[]> {
     const { data, error } = await this.supabase
       .from("audit_framework_controls")
       .select("*")
       .in("framework_id", frameworkIds);
     if (error) throw error;
-    return data || [];
+    return (data || []).map((row: Record<string, unknown>) => ({
+      id: row.id as string,
+      framework_id: row.framework_id as string,
+      code: row.code as string,
+      title: row.title as string,
+      description: (row.description as string) || "",
+    }));
   }
 
   // Helper method to fetch checklists for computation in hook
-  async listChecklistsForPrograms(programIds: string[]): Promise<any[]> {
+  async listChecklistsForPrograms(
+    programIds: string[],
+  ): Promise<{ status: string; program_id: string; control_id: string }[]> {
     if (programIds.length === 0) return [];
     const { data, error } = await this.supabase
       .from("audit_program_checklists")
@@ -102,7 +127,7 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
   async listProgramsForFrameworks(
     tenantId: string,
     frameworkIds: string[],
-  ): Promise<any[]> {
+  ): Promise<{ id: string; framework_id: string }[]> {
     const { data, error } = await this.supabase
       .from("audit_programs")
       .select("id, framework_id")
@@ -123,9 +148,18 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
 
     if (error || !data) return [];
 
-    return data.map((item: any) => ({
-      ...item,
-      createdAt: item.created_at,
+    return data.map((item: Record<string, unknown>) => ({
+      id: this.toStringValue(item.id),
+      tenant_id: this.toStringValue(item.tenant_id),
+      title: this.toStringValue(item.title),
+      description: this.toStringValue(item.description),
+      category: this.toStringValue(item.category),
+      likelihood: this.toNumberValue(item.likelihood),
+      impact: this.toNumberValue(item.impact),
+      score: this.toNumberValue(item.score),
+      status: this.toStringValue(item.status),
+      owner: this.toStringValue(item.owner),
+      createdAt: this.toStringValue(item.created_at),
     }));
   }
 
@@ -159,9 +193,14 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
 
     if (error || !data) return [];
 
-    return data.map((item: any) => ({
-      ...item,
-      createdAt: item.created_at,
+    return data.map((item: Record<string, unknown>) => ({
+      id: this.toStringValue(item.id),
+      tenant_id: this.toStringValue(item.tenant_id),
+      type: this.toStringValue(item.type),
+      title: this.toStringValue(item.title),
+      description: this.toStringValue(item.description),
+      impact: this.toNumberValue(item.impact),
+      createdAt: this.toStringValue(item.created_at),
     }));
   }
 
