@@ -36,7 +36,7 @@ export function TwoFactorSetup() {
           setFactorId(verifiedFactor.id);
         }
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error checking MFA status:", err);
     }
   };
@@ -56,12 +56,15 @@ export function TwoFactorSetup() {
       setQrCode(data.totp.qr_code);
       setSecret(data.totp.secret);
       setUri(data.totp.uri);
-    } catch (err: any) {
+    } catch (err) {
       console.error("[2FA Enrollment Error]:", err);
-      let errMsg = err.message || "Falha ao iniciar configuração do 2FA.";
-      if (err.message?.includes("not enabled")) {
-        errMsg =
-          "O Autenticador TOTP não foi ativado no painel do banco de dados de autenticação. Confirme se a funcionalidade MFA está habilitada.";
+      let errMsg = "Falha ao iniciar configuração do 2FA.";
+      if (err instanceof Error) {
+        errMsg = err.message;
+        if (err.message.includes("not enabled")) {
+          errMsg =
+            "O Autenticador TOTP não foi ativado no painel do banco de dados de autenticação. Confirme se a funcionalidade MFA está habilitada.";
+        }
       }
       setError(errMsg);
     } finally {
@@ -91,9 +94,13 @@ export function TwoFactorSetup() {
       if (error) throw error;
 
       setIsEnrolled(true);
-    } catch (err: any) {
+    } catch (err) {
       console.error("[2FA Verification Error]:", err);
-      setError(err.message || "Código inválido. Tente novamente.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Código inválido. Tente novamente.",
+      );
     } finally {
       setLoading(false);
     }
@@ -113,9 +120,9 @@ export function TwoFactorSetup() {
       setQrCode(null);
       setSecret(null);
       setVerifyCode("");
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Falha ao desativar 2FA.");
+    } catch (err) {
+      console.error("2FA Unenroll Error:", err);
+      setError(err instanceof Error ? err.message : "Falha ao desativar 2FA.");
     } finally {
       setLoading(false);
     }

@@ -26,6 +26,16 @@ import UsageManual from "./modules/public/pages/UsageManual";
 const ExecutiveDashboard = lazy(
   () => import("./modules/dashboard/pages/ExecutiveDashboard"),
 );
+const HealthScoreDashboard = lazy(
+  () => import("./modules/dashboard/pages/HealthScoreDashboard"),
+);
+const NorthStarMetric = lazy(
+  () => import("./modules/dashboard/pages/NorthStarMetric"),
+);
+const BusinessModelCanvas = lazy(
+  () => import("./modules/dashboard/pages/BusinessModelCanvas"),
+);
+const OkrsPage = lazy(() => import("./modules/dashboard/pages/OkrsPage"));
 const ProfilePage = lazy(() => import("./modules/profile/pages/ProfilePage"));
 const OnboardingWizard = lazy(
   () => import("./modules/admin/pages/OnboardingWizard"),
@@ -163,6 +173,22 @@ export const createAppRouter = () =>
         {
           index: true,
           element: <ExecutiveDashboard />,
+        },
+        {
+          path: "health-score",
+          element: <HealthScoreDashboard />,
+        },
+        {
+          path: "north-star",
+          element: <NorthStarMetric />,
+        },
+        {
+          path: "bmc",
+          element: <BusinessModelCanvas />,
+        },
+        {
+          path: "okrs",
+          element: <OkrsPage />,
         },
         {
           path: "profile",

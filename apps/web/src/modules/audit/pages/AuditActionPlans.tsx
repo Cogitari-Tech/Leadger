@@ -12,6 +12,7 @@ import type {
   ActionPlanPriority,
   ActionPlanStatus,
   CreateActionPlanInput,
+  AuditActionPlan,
 } from "../types/audit.types";
 import { useGitHub } from "../../github/hooks/useGitHub";
 import { Loader2 } from "lucide-react";
@@ -107,7 +108,7 @@ export default function AuditActionPlans() {
     new Date(ap.due_date) < new Date() &&
     ap.status !== "completed";
 
-  const handleCompleteActionPlan = async (ap: any) => {
+  const handleCompleteActionPlan = async (ap: AuditActionPlan) => {
     setProcessingId(ap.id);
     try {
       if (

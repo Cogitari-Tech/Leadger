@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { useProjects } from "../services/projects.service";
 import { ProjectFormModal } from "../components/ProjectFormModal";
 import { useAuth } from "../../auth/context/AuthContext";
+import { Project } from "../types/project.types";
 
 export function ProjectsListPage() {
   const {
@@ -25,28 +26,29 @@ export function ProjectsListPage() {
     updateProject,
     deleteProject,
   } = useProjects();
-  const { permissions } = useAuth();
+  const { can } = useAuth();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState<any>(null);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
 
-  const canManage = permissions.some(
-    (p: any) =>
-      p.module === "projects" &&
-      (p.action === "manage" || p.action === "create" || p.action === "edit"),
-  );
+  const canManage =
+    can("projects.manage") || can("projects.create") || can("projects.edit");
 
   useEffect(() => {
     fetchProjects();
   }, [fetchProjects]);
 
-  const handleCreate = async (data: any) => {
+  const handleCreate = async (
+    data: import("../types/project.types").ProjectFormData,
+  ) => {
     await createProject(data);
   };
 
-  const handleUpdate = async (data: any) => {
+  const handleUpdate = async (
+    data: Partial<import("../types/project.types").ProjectFormData>,
+  ) => {
     if (editingProject) {
       await updateProject(editingProject.id, data);
       setEditingProject(null);
@@ -310,7 +312,7 @@ export function ProjectsListPage() {
           setEditingProject(null);
         }}
         onSubmit={editingProject ? handleUpdate : handleCreate}
-        initialData={editingProject}
+        initialData={editingProject || undefined}
       />
 
       <div className="py-16 flex flex-col items-center gap-6 opacity-30 mt-12">

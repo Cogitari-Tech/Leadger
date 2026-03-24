@@ -137,6 +137,7 @@ export interface AuditFinding {
   resolved_at: string | null;
   source_type?: "manual" | "github";
   source_url?: string;
+  source_ref?: string;
   // Joined
   program?: AuditProgram;
 }

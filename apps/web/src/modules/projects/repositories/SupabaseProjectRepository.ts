@@ -83,7 +83,9 @@ export class SupabaseProjectRepository implements IProjectRepository {
     return (data ?? []).map(this.mapMember);
   }
 
-  async listProjectMembersWithDetails(projectId: string): Promise<any[]> {
+  async listProjectMembersWithDetails(
+    projectId: string,
+  ): Promise<Record<string, unknown>[]> {
     const { data, error } = await this.supabase
       .from("project_members")
       .select(
@@ -106,7 +108,7 @@ export class SupabaseProjectRepository implements IProjectRepository {
       .eq("project_id", projectId);
 
     if (error) throw error;
-    return (data || []).map((row: any) => ({
+    return (data || []).map((row: Record<string, unknown>) => ({
       id: row.id,
       projectId: row.project_id,
       memberId: row.member_id,
@@ -142,8 +144,8 @@ export class SupabaseProjectRepository implements IProjectRepository {
 
   // ─── Mappers ──────────────────────────────────────────
 
-  private mapToPersistence(input: any) {
-    const mapped: any = {};
+  private mapToPersistence(input: Partial<CreateProjectInput>) {
+    const mapped: Record<string, unknown> = {};
     if (input.name !== undefined) mapped.name = input.name;
     if (input.description !== undefined) mapped.description = input.description;
     if (input.status !== undefined) mapped.status = input.status;
@@ -152,22 +154,22 @@ export class SupabaseProjectRepository implements IProjectRepository {
     return mapped;
   }
 
-  private mapProject = (row: any): ProjectDTO => ({
-    id: row.id,
-    tenantId: row.tenant_id,
-    name: row.name,
-    description: row.description,
-    status: row.status,
-    startDate: row.start_date,
-    endDate: row.end_date,
-    createdAt: row.created_at,
+  private mapProject = (row: Record<string, unknown>): ProjectDTO => ({
+    id: row.id as string,
+    tenantId: row.tenant_id as string,
+    name: row.name as string,
+    description: row.description as string,
+    status: row.status as "active" | "completed" | "on_hold" | "cancelled",
+    startDate: (row.start_date as string) || null,
+    endDate: (row.end_date as string) || null,
+    createdAt: row.created_at as string,
   });
 
-  private mapMember = (row: any): ProjectMemberDTO => ({
-    id: row.id,
-    projectId: row.project_id,
-    memberId: row.member_id,
-    projectRole: row.project_role,
-    assignedAt: row.assigned_at,
+  private mapMember = (row: Record<string, unknown>): ProjectMemberDTO => ({
+    id: row.id as string,
+    projectId: row.project_id as string,
+    memberId: row.member_id as string,
+    projectRole: row.project_role as string,
+    assignedAt: row.assigned_at as string,
   });
 }

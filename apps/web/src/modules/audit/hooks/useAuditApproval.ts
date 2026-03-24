@@ -44,7 +44,7 @@ export function useAuditApproval() {
 
       if (findings) {
         const incomplete = findings.find(
-          (f: any) =>
+          (f: { status: string; description?: string }) =>
             f.status === "draft" ||
             !f.description ||
             f.description.trim() === "",

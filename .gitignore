@@ -54,3 +54,4 @@ tmp/
 
 e2e-user-registration.ts
 e2e-audit-menus.ts
+mcp_config.json

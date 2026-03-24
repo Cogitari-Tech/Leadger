@@ -32,6 +32,20 @@ export interface TenantActions {
 
 export type TenantContextType = TenantState & TenantActions;
 
+type RolePermissionJoinRow = {
+  permission?: { code: string }[];
+};
+
+function extractPermissionCodes(
+  rolePerms: RolePermissionJoinRow[] | null,
+): string[] {
+  if (!rolePerms) return [];
+
+  return rolePerms
+    .flatMap((rp) => (rp.permission ?? []).map((permission) => permission.code))
+    .filter((code): code is string => Boolean(code));
+}
+
 // ─── Context ────────────────────────────────────────────
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
@@ -134,16 +148,16 @@ export function TenantProvider({ children }: { children: ReactNode }) {
           }
 
           if (role && (role.name === "admin" || role.name === "owner")) {
-            permissions = allPermsRes.data?.map((p: any) => p.code) ?? [];
+            permissions =
+              allPermsRes.data?.map((p: { code: string }) => p.code) ?? [];
           } else if (role) {
             const { data: rolePerms } = await supabase
               .from("role_permissions")
               .select("permission:permissions(code)")
               .eq("role_id", role.id);
-            permissions =
-              rolePerms
-                ?.map((rp: any) => rp.permission?.code)
-                .filter(Boolean) ?? [];
+            permissions = extractPermissionCodes(
+              (rolePerms as RolePermissionJoinRow[] | null) ?? null,
+            );
           }
         }
       }

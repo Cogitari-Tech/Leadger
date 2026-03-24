@@ -72,8 +72,8 @@ export function useTeamManagement() {
         loadAccessRequests(),
         loadInviteLinks(),
       ]);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
       setLoading(false);
     }

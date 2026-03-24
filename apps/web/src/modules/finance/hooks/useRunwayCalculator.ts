@@ -1,5 +1,6 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useFinance } from "./useFinance";
+import { apiClient } from "../../../shared/utils/apiClient";
 
 export interface ScenarioParams {
   label: string;
@@ -45,10 +46,6 @@ const DEFAULT_SCENARIOS: ScenarioParams[] = [
   },
 ];
 
-/**
- * Hook para cálculo de runway com cenários múltiplos.
- * Calcula automaticamente a partir dos dados financeiros existentes.
- */
 export function useRunwayCalculator() {
   const { getMonthSummary, formatCurrency } = useFinance();
   const summary = getMonthSummary();
@@ -59,64 +56,31 @@ export function useRunwayCalculator() {
     summary.netIncome > 0 ? summary.netIncome * 6 : 100000,
   );
   const [projectionMonths, setProjectionMonths] = useState(24);
+  const [results, setResults] = useState<ScenarioResult[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const calculateScenario = useCallback(
-    (params: ScenarioParams): ScenarioResult => {
-      const currentRevenue = summary.revenue || 0;
-      const currentExpenses = summary.expenses || 0;
-      const data: RunwayDataPoint[] = [];
-      let balance = cashBalance;
-      let runwayMonths = projectionMonths;
-      let zeroDate: string | null = null;
-      let revenue = currentRevenue;
-      let expenses = currentExpenses;
-
-      for (let m = 0; m <= projectionMonths; m++) {
-        const monthDate = new Date();
-        monthDate.setMonth(monthDate.getMonth() + m);
-        const label = monthDate.toLocaleDateString("pt-BR", {
-          month: "short",
-          year: "2-digit",
-        });
-
-        const burn = expenses - revenue;
-
-        data.push({
-          month: m,
-          label,
-          cashBalance: Math.max(balance, 0),
-          monthlyBurn: burn,
-          monthlyRevenue: revenue,
-        });
-
-        if (balance <= 0 && !zeroDate) {
-          runwayMonths = m;
-          zeroDate = monthDate.toLocaleDateString("pt-BR", {
-            month: "long",
-            year: "numeric",
-          });
-        }
-
-        balance -= burn;
-        revenue *= 1 + params.revenueGrowthRate;
-        expenses *= 1 - params.costReductionRate;
+  useEffect(() => {
+    const fetchRunway = async () => {
+      setLoading(true);
+      try {
+        const response = await apiClient<{ results: ScenarioResult[] }>(
+          "/api/finance/runway",
+          {
+            method: "POST",
+            body: JSON.stringify({ cashBalance, projectionMonths, scenarios }),
+          },
+        );
+        setResults(response.results);
+      } catch (error) {
+        console.error("Failed to fetch runway projection:", error);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      return {
-        params,
-        data,
-        runwayMonths,
-        monthlyBurn: currentExpenses - currentRevenue,
-        zeroDate,
-      };
-    },
-    [cashBalance, projectionMonths, summary],
-  );
-
-  const results = useMemo(
-    () => scenarios.map(calculateScenario),
-    [scenarios, calculateScenario],
-  );
+    const timer = setTimeout(fetchRunway, 300); // debounce API calls
+    return () => clearTimeout(timer);
+  }, [cashBalance, projectionMonths, scenarios]);
 
   const updateScenario = useCallback(
     (index: number, updates: Partial<ScenarioParams>) => {
@@ -132,6 +96,7 @@ export function useRunwayCalculator() {
     results,
     cashBalance,
     projectionMonths,
+    loading,
     setCashBalance,
     setProjectionMonths,
     updateScenario,

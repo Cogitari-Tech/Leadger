@@ -23,8 +23,10 @@ export function useProjects() {
     try {
       const data = await repository.listProjects(tenant.id);
       setProjects(data as unknown as Project[]);
-    } catch (err: any) {
-      setError(err.message || "Erro ao carregar projetos.");
+    } catch (err) {
+      const errorStr =
+        err instanceof Error ? err.message : "Erro ao carregar projetos.";
+      setError(errorStr);
     } finally {
       setLoading(false);
     }
@@ -35,11 +37,16 @@ export function useProjects() {
     setLoading(true);
     setError(null);
     try {
-      const newProject = await repository.createProject(tenant.id, data as any);
+      const newProject = await repository.createProject(
+        tenant.id,
+        data as unknown as import("@leadgers/core/repositories/IProjectRepository").CreateProjectInput,
+      );
       setProjects((prev) => [newProject as unknown as Project, ...prev]);
       return newProject;
-    } catch (err: any) {
-      setError(err.message || "Erro ao criar projeto.");
+    } catch (err) {
+      const errorStr =
+        err instanceof Error ? err.message : "Erro ao criar projeto.";
+      setError(errorStr);
       return null;
     } finally {
       setLoading(false);
@@ -50,15 +57,20 @@ export function useProjects() {
     setLoading(true);
     setError(null);
     try {
-      const updatedProject = await repository.updateProject(id, data as any);
+      const updatedProject = await repository.updateProject(
+        id,
+        data as unknown as import("@leadgers/core/repositories/IProjectRepository").CreateProjectInput,
+      );
       setProjects((prev) =>
         prev.map((p) =>
           p.id === id ? (updatedProject as unknown as Project) : p,
         ),
       );
       return updatedProject;
-    } catch (err: any) {
-      setError(err.message || "Erro ao atualizar projeto.");
+    } catch (err) {
+      const errorStr =
+        err instanceof Error ? err.message : "Erro ao atualizar projeto.";
+      setError(errorStr);
       return null;
     } finally {
       setLoading(false);
@@ -72,8 +84,10 @@ export function useProjects() {
       await repository.deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
       return true;
-    } catch (err: any) {
-      setError(err.message || "Erro ao excluir projeto.");
+    } catch (err) {
+      const errorStr =
+        err instanceof Error ? err.message : "Erro ao excluir projeto.";
+      setError(errorStr);
       return false;
     } finally {
       setLoading(false);
@@ -105,8 +119,12 @@ export function useProjectMembers(projectId: string) {
     try {
       const data = await repository.listProjectMembersWithDetails(projectId);
       setMembers((data as unknown as ProjectMemberDetails[]) || []);
-    } catch (err: any) {
-      setError(err.message || "Erro ao carregar membros do projeto.");
+    } catch (err) {
+      const errorStr =
+        err instanceof Error
+          ? err.message
+          : "Erro ao carregar membros do projeto.";
+      setError(errorStr);
     } finally {
       setLoading(false);
     }
@@ -119,8 +137,10 @@ export function useProjectMembers(projectId: string) {
       await repository.assignMember(projectId, memberId, role);
       await fetchMembers(); // Refresh to get relations
       return true;
-    } catch (err: any) {
-      setError(err.message || "Erro ao atribuir membro.");
+    } catch (err) {
+      const errorStr =
+        err instanceof Error ? err.message : "Erro ao atribuir membro.";
+      setError(errorStr);
       return false;
     } finally {
       setLoading(false);
@@ -134,8 +154,10 @@ export function useProjectMembers(projectId: string) {
       await repository.removeMember(projectId, memberId);
       setMembers((prev) => prev.filter((m) => m.memberId !== memberId));
       return true;
-    } catch (err: any) {
-      setError(err.message || "Erro ao remover membro.");
+    } catch (err) {
+      const errorStr =
+        err instanceof Error ? err.message : "Erro ao remover membro.";
+      setError(errorStr);
       return false;
     } finally {
       setLoading(false);

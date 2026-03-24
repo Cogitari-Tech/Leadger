@@ -79,8 +79,11 @@ export function useBurnRate() {
 
       // Cash remaining = Sum of "Ativo" liquid accounts (simplified as all Ativo analytical accounts for now)
       const totalCash = balances
-        .filter((b: any) => b.accountType === "Ativo" && b.isAnalytical)
-        .reduce((sum: number, b: any) => sum + b.balance, 0);
+        .filter(
+          (b: { accountType: string; isAnalytical: boolean }) =>
+            b.accountType === "Ativo" && b.isAnalytical,
+        )
+        .reduce((sum: number, b: { balance: number }) => sum + b.balance, 0);
 
       setCashBalance(totalCash);
     } catch (err) {

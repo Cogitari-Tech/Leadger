@@ -191,8 +191,10 @@ def main():
             print(f"  [{count}] {issue}")
         
         print(f"\nAffected files ({len(all_issues)}):")
-        for item in all_issues:
-            print(f"  - {item['file']}: {', '.join(item['issues'])}")
+        for item in all_issues[:5]:
+            print(f"  - {item['file']}")
+        if len(all_issues) > 5:
+            print(f"  ... and {len(all_issues) - 5} more")
     else:
         print("\n[OK] No SEO issues found!")
     
