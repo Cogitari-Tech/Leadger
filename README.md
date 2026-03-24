@@ -541,31 +541,38 @@ on:
 
 ---
 
-## 🗺️ Roadmap
+## 🗺️ Roadmap & Progresso
 
-### ✅ Q1 2026 (Concluído)
+### ✅ Q1 2026 (Fundação e Fase 1)
 
-- [x] Análise do sistema legado
-- [x] Definição de arquitetura
-- [x] Setup do monorepo
+- [x] Análise do sistema legado e definição de arquitetura
+- [x] Setup do monorepo, Turborepo, Supabase e Hono API
+- [x] Autenticação Multi-Tenant, Sistema de Permissões (RBAC)
+- [x] **Milestone Tracker**: Rastreamento de objetivos estratégicos e OKRs
+- [x] **Alertas Preditivos**: Job contínuo (Inngest) monitorando runway e anomalias
+- [x] **Weekly Digest**: Relatório executivo via IA (LLM) enviado semanalmente
+- [x] **Equity & Vesting (Cap Table)**: Controle de stock options, cliff period e pools ESOP
+- [x] **Roadmap Visual**: Board Kanban estratégico e Timeline com importação do GitHub
+- [x] **Dashboard Executivo**: Visão holística (Health Score, Auditorias, Compliance)
 
-### 🔄 Q2 2026 (Em Andamento)
+### 🔄 Q2 2026 (Expansão Fase 2)
 
-- [ ] Migração módulo Auditoria
-- [ ] Implementação módulo Financeiro
-- [ ] Testes automatizados
+- [ ] Integração Avançada de Inteligência Artificial para Compliance
+- [ ] Módulo completo de Folha de Pagamento e Integração Bancária (Open Finance)
+- [ ] Auditoria Automatizada Contínua
+- [ ] Testes automatizados refinados (Playwright & Vitest) para os novos módulos
 
 ### 📅 Q3 2026 (Planejado)
 
-- [ ] Implementação módulo Compliance
-- [ ] Dashboard executivo
-- [ ] Mobile app (React Native)
+- [ ] Mobile app (React Native / Expo)
+- [ ] Workflow Builder visual para políticas internas
+- [ ] Previsão de Churn e Forecast via Machine Learning Avançado
 
 ### 🔮 Q4 2026 (Futuro)
 
-- [ ] Integração com ERPs (SAP, TOTVS)
-- [ ] IA para análise de riscos
-- [ ] Multi-tenancy (SaaS)
+- [ ] Integração nativa com ERPs Enterprise (SAP, TOTVS)
+- [ ] Deploy multi-cloud e Infra as Code Refinada (Terraform)
+- [ ] White-label SaaS (Subdomínios customizados integrados à Vercel)
 
 ---
 
