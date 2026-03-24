@@ -7,6 +7,7 @@ const GitHubRepositories = lazy(() => import("./pages/GitHubRepositories"));
 const GitHubIssuesPRs = lazy(() => import("./pages/GitHubIssuesPRs"));
 const GitHubSecurity = lazy(() => import("./pages/GitHubSecurity"));
 const GitHubMetrics = lazy(() => import("./pages/GitHubMetrics"));
+const TechDebtTracker = lazy(() => import("./pages/TechDebtTracker"));
 
 export const githubModuleConfig: ModuleConfig = {
   id: "github",
@@ -49,6 +50,11 @@ export const githubModuleConfig: ModuleConfig = {
       element: <GitHubMetrics />,
       handle: { title: "Analisar Métricas" },
     },
+    {
+      path: "github/tech-debt",
+      element: <TechDebtTracker />,
+      handle: { title: "Tech Debt Tracker" },
+    },
   ],
 
   navigation: [
@@ -81,6 +87,11 @@ export const githubModuleConfig: ModuleConfig = {
       label: "Analisar Métricas",
       path: "github/metrics",
       icon: "BarChart3",
+    },
+    {
+      label: "Tech Debt",
+      path: "github/tech-debt",
+      icon: "Server",
     },
   ],
 

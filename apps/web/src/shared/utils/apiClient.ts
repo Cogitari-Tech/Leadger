@@ -11,16 +11,10 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiClient<T>(
-  path: string,
-  options?: RequestInit,
-): Promise<T> {
+async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-
-  // TODO: We need to get the tenant_id. For now, we will assume it's set or passed explicitly.
-  // Actually, the backend's tenancyMiddleware fetches it using the generic user id, or accepts x-tenant-id.
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -43,3 +37,34 @@ export async function apiClient<T>(
 
   return res.json();
 }
+
+/** Backwards-compatible default export (function call) */
+export async function apiClient<T>(
+  path: string,
+  options?: RequestInit,
+): Promise<T> {
+  return request<T>(path, options);
+}
+
+/** Convenience methods */
+apiClient.get = <T>(path: string) => request<T>(path, { method: "GET" });
+
+apiClient.post = <T>(path: string, body?: unknown) =>
+  request<T>(path, {
+    method: "POST",
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+apiClient.patch = <T>(path: string, body?: unknown) =>
+  request<T>(path, {
+    method: "PATCH",
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+apiClient.put = <T>(path: string, body?: unknown) =>
+  request<T>(path, {
+    method: "PUT",
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+apiClient.delete = <T>(path: string) => request<T>(path, { method: "DELETE" });
