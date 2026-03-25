@@ -28,7 +28,7 @@ export const calculateHealthScoreJob = inngest.createFunction(
 
     for (const tenantId of activeTenants) {
       await step.run(`process-health-score-for-${tenantId}`, async () => {
-        const alerts: Prisma.JsonArray = [];
+        const alerts: any[] = [];
 
         // --- FINANCIAL SCORE ---
         let financialScore = 50;
