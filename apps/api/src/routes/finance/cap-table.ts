@@ -18,33 +18,6 @@ interface CalculatedVesting {
   percentage: number;
 }
 
-interface ShareholderRow {
-  id: string;
-  tenant_id: string;
-  round_id: string | null;
-  shareholder_name: string;
-  shareholder_type: string;
-  shares_count: number | string;
-  share_price: number | string;
-  ownership_percentage: number;
-  investment_amount: number | string;
-  vesting_schedule: VestingScheduleInput | null;
-  notes: string | null;
-  created_at: string;
-}
-
-interface RoundRow {
-  id: string;
-  tenant_id: string;
-  round_name: string;
-  round_type: string;
-  pre_money_valuation: number | string;
-  amount_raised: number | string;
-  post_money_valuation: number | string;
-  round_date: string | null;
-  notes: string | null;
-  created_at: string;
-}
 
 /**
  * Calculates vested/unvested shares based on a vesting schedule.
