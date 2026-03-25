@@ -110,19 +110,26 @@ export function useFinance() {
    * Calcula resumo financeiro do mês
    */
   const getMonthSummary = useCallback(() => {
-    const revenue = transactions
-      .filter((t) => {
-        const account = accounts.find((a) => a.id === t.accountCreditId);
-        return account?.type === "Receita";
-      })
-      .reduce((sum, t) => sum + t.amount, 0);
+    // ⚡ Bolt: Consolidated multiple iterations into a single reduce pass
+    // Pre-calculated account map avoids O(n^2) lookups inside the loop
+    const accountMap = new Map(accounts.map((a) => [a.id, a]));
 
-    const expenses = transactions
-      .filter((t) => {
-        const account = accounts.find((a) => a.id === t.accountDebitId);
-        return account?.type === "Despesa";
-      })
-      .reduce((sum, t) => sum + t.amount, 0);
+    const { revenue, expenses } = transactions.reduce(
+      (acc, t) => {
+        const creditAccount = accountMap.get(t.accountCreditId);
+        if (creditAccount?.type === "Receita") {
+          acc.revenue += t.amount;
+        }
+
+        const debitAccount = accountMap.get(t.accountDebitId);
+        if (debitAccount?.type === "Despesa") {
+          acc.expenses += t.amount;
+        }
+
+        return acc;
+      },
+      { revenue: 0, expenses: 0 },
+    );
 
     return {
       revenue,
