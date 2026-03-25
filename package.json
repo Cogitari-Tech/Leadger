@@ -46,7 +46,7 @@
     "lint-staged": "^16.4.0",
     "pg": "^8.18.0",
     "prettier": "^3.2.4",
-    "prisma": "^6.19.2",
+    "prisma": "^6.4.1",
     "rimraf": "^5.0.5",
     "supabase": "^2.76.9",
     "ts-node": "^10.9.2",
@@ -63,16 +63,20 @@
   "author": "Leadgers Tech <devops@leadgers.com>",
   "license": "UNLICENSED",
   "dependencies": {
-    "@prisma/client": "^6.19.2",
+    "@prisma/client": "^6.4.1",
     "@supabase/supabase-js": "^2.98.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.7",
     "web-streams-polyfill": "^4.0.0-beta.3"
   },
   "overrides": {
     "tar": "^7.5.11",
     "minimatch": "^10.2.1",
-    "flatted": "^3.4.0"
+    "flatted": "^3.4.0",
+    "esbuild": "^0.25.0",
+    "effect": "^3.20.0"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.59.0"
