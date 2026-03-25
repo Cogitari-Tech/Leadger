@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
@@ -9,19 +9,19 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="space-y-1">
         {label && (
-          <label className="block text-sm font-medium text-slate-700">
+          <label className="block text-sm font-medium text-foreground">
             {label}
           </label>
         )}
         <select
           ref={ref}
-          className={`w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 ${className}`}
+          className={`w-full px-4 py-2 bg-background/50 backdrop-blur-sm border border-border/40 text-foreground outline-none transition-all rounded-xl font-medium focus:border-primary focus:ring-4 focus:ring-primary/10 ${className}`}
           {...props}
         >
           {children}
         </select>
       </div>
     );
-  }
+  },
 );
-Select.displayName = 'Select';
+Select.displayName = "Select";

@@ -1,13 +1,14 @@
 // apps/web/src/infrastructure/repositories/SupabaseFinanceRepository.ts
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { 
-  IFinanceRepository, 
-  TrialBalanceEntry, 
-  IncomeStatementData 
-} from '@cogitari-platform/core/repositories/IFinanceRepository';
-import { Transaction } from '@cogitari-platform/core/entities/Transaction';
-import { Account } from '@cogitari-platform/core/entities/Account';
+import { SupabaseClient } from "@supabase/supabase-js";
+import {
+  IFinanceRepository,
+  TrialBalanceEntry,
+  IncomeStatementData,
+  AccountBalanceDTO,
+} from "@leadgers/core/repositories/IFinanceRepository";
+import { Transaction } from "@leadgers/core/entities/Transaction";
+import { Account } from "@leadgers/core/entities/Account";
 
 /**
  * Implementação concreta do repositório usando Supabase
@@ -15,15 +16,15 @@ import { Account } from '@cogitari-platform/core/entities/Account';
 export class SupabaseFinanceRepository implements IFinanceRepository {
   private supabase: SupabaseClient;
 
-  constructor(supabaseUrl: string, supabaseKey: string) {
-    this.supabase = createClient(supabaseUrl, supabaseKey);
+  constructor(supabase: SupabaseClient) {
+    this.supabase = supabase;
   }
 
   // === TRANSACTIONS ===
 
   async saveTransaction(transaction: Transaction): Promise<void> {
     const { error } = await this.supabase
-      .from('transactions')
+      .from("transactions")
       .insert(transaction.toPersistence());
 
     if (error) {
@@ -33,13 +34,13 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
 
   async getTransactionById(id: string): Promise<Transaction | null> {
     const { data, error } = await this.supabase
-      .from('transactions')
-      .select('*')
-      .eq('id', id)
+      .from("transactions")
+      .select("*")
+      .eq("id", id)
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') return null; // Not found
+      if (error.code === "PGRST116") return null; // Not found
       throw new Error(`Failed to get transaction: ${error.message}`);
     }
 
@@ -47,15 +48,15 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
   }
 
   async getTransactionsByPeriod(
-    startDate: Date, 
-    endDate: Date
+    startDate: Date,
+    endDate: Date,
   ): Promise<Transaction[]> {
     const { data, error } = await this.supabase
-      .from('transactions')
-      .select('*')
-      .gte('date', startDate.toISOString().split('T')[0])
-      .lte('date', endDate.toISOString().split('T')[0])
-      .order('date', { ascending: false });
+      .from("transactions")
+      .select("*")
+      .gte("date", startDate.toISOString().split("T")[0])
+      .lte("date", endDate.toISOString().split("T")[0])
+      .order("date", { ascending: false });
 
     if (error) {
       throw new Error(`Failed to get transactions: ${error.message}`);
@@ -66,10 +67,10 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
 
   async getTransactionsByAccount(accountId: string): Promise<Transaction[]> {
     const { data, error } = await this.supabase
-      .from('transactions')
-      .select('*')
+      .from("transactions")
+      .select("*")
       .or(`account_debit_id.eq.${accountId},account_credit_id.eq.${accountId}`)
-      .order('date', { ascending: false });
+      .order("date", { ascending: false });
 
     if (error) {
       throw new Error(`Failed to get transactions: ${error.message}`);
@@ -80,9 +81,9 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
 
   async deleteTransaction(id: string): Promise<void> {
     const { error } = await this.supabase
-      .from('transactions')
+      .from("transactions")
       .delete()
-      .eq('id', id);
+      .eq("id", id);
 
     if (error) {
       throw new Error(`Failed to delete transaction: ${error.message}`);
@@ -93,13 +94,13 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
 
   async getAccountById(id: string): Promise<Account | null> {
     const { data, error } = await this.supabase
-      .from('accounts')
-      .select('*')
-      .eq('id', id)
+      .from("accounts")
+      .select("*")
+      .eq("id", id)
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') return null;
+      if (error.code === "PGRST116") return null;
       throw new Error(`Failed to get account: ${error.message}`);
     }
 
@@ -108,9 +109,9 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
 
   async getAllAccounts(): Promise<Account[]> {
     const { data, error } = await this.supabase
-      .from('accounts')
-      .select('*')
-      .order('code', { ascending: true });
+      .from("accounts")
+      .select("*")
+      .order("code", { ascending: true });
 
     if (error) {
       throw new Error(`Failed to get accounts: ${error.message}`);
@@ -121,7 +122,7 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
 
   async createAccount(account: Account): Promise<void> {
     const { error } = await this.supabase
-      .from('accounts')
+      .from("accounts")
       .insert(account.toPersistence());
 
     if (error) {
@@ -131,9 +132,9 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
 
   async updateAccount(account: Account): Promise<void> {
     const { error } = await this.supabase
-      .from('accounts')
+      .from("accounts")
       .update(account.toPersistence())
-      .eq('id', account.id);
+      .eq("id", account.id);
 
     if (error) {
       throw new Error(`Failed to update account: ${error.message}`);
@@ -143,18 +144,18 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
   async deleteAccount(id: string): Promise<void> {
     // Primeiro verifica se há transações
     const { count } = await this.supabase
-      .from('transactions')
-      .select('*', { count: 'exact', head: true })
+      .from("transactions")
+      .select("*", { count: "exact", head: true })
       .or(`account_debit_id.eq.${id},account_credit_id.eq.${id}`);
 
     if (count && count > 0) {
-      throw new Error('Cannot delete account with existing transactions');
+      throw new Error("Cannot delete account with existing transactions");
     }
 
     const { error } = await this.supabase
-      .from('accounts')
+      .from("accounts")
       .delete()
-      .eq('id', id);
+      .eq("id", id);
 
     if (error) {
       throw new Error(`Failed to delete account: ${error.message}`);
@@ -166,20 +167,24 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
   async getAccountBalance(accountId: string, date: Date): Promise<number> {
     // Busca todas as transações até a data especificada
     const transactions = await this.getTransactionsByAccount(accountId);
-    const filteredTransactions = transactions.filter(t => t.date <= date);
+    const filteredTransactions = transactions.filter((t) => t.date <= date);
 
     // Calcula saldo baseado no tipo de conta
     const account = await this.getAccountById(accountId);
-    if (!account) throw new Error('Account not found');
+    if (!account) throw new Error("Account not found");
 
     let balance = 0;
     for (const transaction of filteredTransactions) {
       if (transaction.accountDebitId === accountId) {
         // Natureza devedora: Ativo e Despesa
-        balance += account.isDebitNature() ? transaction.amount : -transaction.amount;
+        balance += account.isDebitNature()
+          ? transaction.amount
+          : -transaction.amount;
       } else {
         // Natureza credora: Passivo, Patrimônio e Receita
-        balance += account.isDebitNature() ? -transaction.amount : transaction.amount;
+        balance += account.isDebitNature()
+          ? -transaction.amount
+          : transaction.amount;
       }
     }
 
@@ -188,18 +193,18 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
 
   async getTrialBalance(date: Date): Promise<TrialBalanceEntry[]> {
     const accounts = await this.getAllAccounts();
-    const analyticalAccounts = accounts.filter(a => a.isAnalytical);
+    const analyticalAccounts = accounts.filter((a) => a.isAnalytical);
 
     const entries: TrialBalanceEntry[] = [];
 
     for (const account of analyticalAccounts) {
       const balance = await this.getAccountBalance(account.id, date);
-      
+
       entries.push({
         accountCode: account.code,
         accountName: account.name,
         debitBalance: balance >= 0 ? balance : 0,
-        creditBalance: balance < 0 ? Math.abs(balance) : 0
+        creditBalance: balance < 0 ? Math.abs(balance) : 0,
       });
     }
 
@@ -207,33 +212,31 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
   }
 
   async getIncomeStatement(
-    startDate: Date, 
-    endDate: Date
+    startDate: Date,
+    endDate: Date,
   ): Promise<IncomeStatementData> {
-    const transactions = await this.getTransactionsByPeriod(startDate, endDate);
-    const accounts = await this.getAllAccounts();
+    const balances = await this.getAccountBalances(startDate, endDate);
 
     let revenue = 0;
     let expenses = 0;
     const revenueByCategory: Record<string, number> = {};
     const expensesByCategory: Record<string, number> = {};
 
-    for (const transaction of transactions) {
-      const creditAccount = accounts.find(a => a.id === transaction.accountCreditId);
-      const debitAccount = accounts.find(a => a.id === transaction.accountDebitId);
+    for (const account of balances) {
+      const amount = account.balance;
 
-      // Receita (conta de receita no crédito)
-      if (creditAccount?.type === 'Receita') {
-        revenue += transaction.amount;
-        revenueByCategory[creditAccount.name] = 
-          (revenueByCategory[creditAccount.name] || 0) + transaction.amount;
+      // Receita
+      if (account.accountType === "Receita") {
+        revenue += amount;
+        revenueByCategory[account.accountName] =
+          (revenueByCategory[account.accountName] || 0) + amount;
       }
 
-      // Despesa (conta de despesa no débito)
-      if (debitAccount?.type === 'Despesa') {
-        expenses += transaction.amount;
-        expensesByCategory[debitAccount.name] = 
-          (expensesByCategory[debitAccount.name] || 0) + transaction.amount;
+      // Despesa
+      if (account.accountType === "Despesa") {
+        expenses += amount;
+        expensesByCategory[account.accountName] =
+          (expensesByCategory[account.accountName] || 0) + amount;
       }
     }
 
@@ -243,8 +246,33 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
       netIncome: revenue - expenses,
       details: {
         revenueByCategory,
-        expensesByCategory
-      }
+        expensesByCategory,
+      },
     };
+  }
+
+  async getAccountBalances(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<AccountBalanceDTO[]> {
+    const { data, error } = await this.supabase.rpc("get_account_balances", {
+      p_start_date: startDate.toISOString(),
+      p_end_date: endDate.toISOString(),
+    });
+
+    if (error) {
+      throw new Error(`Failed to get account balances: ${error.message}`);
+    }
+
+    return (data as Array<Record<string, unknown>>).map((item) => ({
+      accountId: item.account_id as string,
+      accountName: item.account_name as string,
+      accountCode: item.account_code as string,
+      accountType: item.account_type as string,
+      isAnalytical: Boolean(item.is_analytical),
+      debitTotal: Number(item.debit_total),
+      creditTotal: Number(item.credit_total),
+      balance: Number(item.balance),
+    }));
   }
 }

@@ -1,0 +1,85 @@
+# Architecture & Security Remediation
+
+## Overview
+
+We have successfully restructured the project into a Monorepo, configured the Prisma MCP Server, and remediated critical security vulnerabilities in both Beta and Production environments.
+
+## Achievements
+
+### 1. Architecture Refactoring
+
+- **Monorepo Structure**: Codebase organized into `apps/web` (Frontend) and `packages/core` (Business Logic).
+- **Build Success**: Verified `npm run build` for `apps/web`.
+
+### 2. MCP Configuration (Prisma)
+
+- **Prisma 7 Upgrade**: Updated Prisma to v7 to support modern configuration.
+- **Config Migration**: Converted `schema.prisma` configuration to `prisma.config.js`.
+- **Connectivity**: Verified `prisma-mcp-server` connection to the Beta database.
+
+### 3. Security Remediation (Critical)
+
+- **Schema Recovery**: Reconstructed missing database tables (`transactions`, `accounts`) from TypeScript entity definitions.
+- **Beta Fix**: Applied RLS policies to `audit-tool-beta`.
+- **Production Fix**: Pushed schema and applied RLS policies to `audit-tool-prod` (which was previously empty).
+- **Verification**: Validated table existance and RLS status using `scripts/verify_db_state.js`.
+
+### 4. GitHub Integration
+
+- **Branch**: Created `moredev` branch with all changes.
+- **Pull Request**: Opened **PR #2** (`feat: architecture restructuring & security fixes`) against `develop`.
+- **CI/CD**: Configured GitHub Actions workflow (`.github/workflows/ci.yml`) to run tests/builds **ONLY** on PRs targeting `develop` or `beta`.
+- **Release**: Created **PR #4** (`moredev` -> `beta`) to promote changes to the staging environment.
+- **Pre-commit**: Configured `husky` to block commits with secrets, `.env` files, or high-severity vulnerabilities (`npm audit`).
+
+## Documentation
+
+- **Development Workflow**: Created `docs/development-workflow.md` detailing CI/CD pipeline, security checks, and manual commands.
+- **Security Policy**: Updated `SECURITY.md` to reflect the new Architecture and Reporting process.
+- **Contributing**: Rewrote `CONTRIBUTING.md` to align with the Monorepo structure and Gitflow.
+- **Readme**: Updated `README.md` with correct links and CI triggers.
+
+## Deployment Strategy (Vercel)
+
+| Environment        | Branch    | Vercel Project    | Deploy Type      |
+| :----------------- | :-------- | :---------------- | :--------------- |
+| **Development**    | `develop` | `audit-tool-dev`  | Auto (Merge)     |
+| **Beta (Staging)** | `beta`    | `audit-tool-beta` | Auto (Hotfix)    |
+| **Production**     | `main`    | `audit-tool-prod` | Manual (Promote) |
+
+## Verification Results (Latest)
+
+- **White Screen Fix**: Vercel deployment `dpl_fpaHL8t6E5ib5KbmMgu2avs35HUQ` is `READY`. The alias `audit-tool-hazel.vercel.app` is pointing to this deployment (`develop` branch).
+- **Chunk Size**: `CashFlow` chunk reduced to **18.19 kB** (gzip: 5.36 kB).
+  - `ui` chunk: 385.35 kB (recharts, lucide)
+  - `vendor` chunk: 401.76 kB (react, supabase, etc)
+- **Security**: `npm audit` shows no High/Critical vulnerabilities. `tar` was overridden to `^7.5.9`.
+- **Pre-commit**: All hooks passed, including security checks.
+
+## Usage
+
+### Run Local Development
+
+```bash
+npm run dev
+```
+
+### Verify Database State
+
+```bash
+# Beta
+node scripts/verify_db_state.js
+
+# Production
+$env:DATABASE_URL='<PROD_URL>'; node scripts/verify_db_state.js
+```
+
+### Apply Migrations to Future Envs
+
+```bash
+# 1. Push Schema
+npx prisma db push
+
+# 2. Apply Security Policies
+node prisma/seed.js
+```

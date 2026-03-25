@@ -1,0 +1,84 @@
+{
+  "mcpServers": {
+    "prisma-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "prisma", "mcp"],
+      "env": {}
+    },
+    "redis": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-redis"],
+      "env": {
+        "REDIS_URL": "<SUA_UPSTASH_REDIS_URL_AQUI_OU_SOLICITE_A_EQUIPE>"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "<CAMINHO_ABSOLUTO_PARA_A_PASTA_DO_PROJETO>"]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "<SEU_GITHUB_PAT_AQUI_OU_SOLICITE_A_EQUIPE>"
+      }
+    },
+    "supabase-mcp-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "<SEU_SUPABASE_ACCESS_TOKEN_AQUI_OU_SOLICITE_A_EQUIPE>"
+      ],
+      "env": {}
+    },
+    "vercel": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://mcp.vercel.com"
+      ]
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-puppeteer"
+      ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp"
+      ]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp"
+      ]
+    },
+    "StitchMCP": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://stitch.googleapis.com/mcp",
+        "--header",
+        "X-Goog-Api-Key: <SUA_GOOGLE_API_KEY_AQUI_OU_SOLICITE_A_EQUIPE>"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    }
+  }
+}

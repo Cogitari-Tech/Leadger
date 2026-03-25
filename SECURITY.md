@@ -1,36 +1,38 @@
 # Política de Segurança
 
-A Cogitari Tech leva a segurança a sério. Como esta é uma ferramenta de auditoria interna ("Internal Tool"), ela foi desenhada com princípios de **Privacy by Design** e **Zero Trust**.
+A Cogitari Tech leva a segurança a sério. Nossa plataforma de auditoria foi desenhada com princípios de **Privacy by Design**, **Zero Trust** e **Defense in Depth**.
 
 ## 🔒 Arquitetura e Dados
 
-**Modelo Client-Side Only:**
+**Híbrida (Client + Supabase):**
 
-- Todos os dados inseridos, incluindo logs e evidências, são processados exclusivamente na memória do navegador do auditor.
-- **Sem Backend:** Não existe base de dados central ou servidor intermediário a recolher os relatórios, exceto quando o auditor opta explicitamente pela integração com o Google Drive.
-- **Persistência:** O recurso "Auto-Save" utiliza o localStorage do navegador. Recomenda-se limpar o cache ou usar o botão "Limpar Rascunho" após auditar dados sensíveis em máquinas partilhadas.
+- **Frontend (Web)**: Processamento local e interface segura via React/Vite.
+- **Backend (Supabase)**: Banco de dados PostgreSQL com isolamento rigoroso de tenants via **Row Level Security (RLS)**.
+- **Autenticação**: Gerenciada pelo Supabase Auth (JWT), garantindo que cada requisição seja verificada.
 
-## ☁️ Integrações de Terceiros
+## 🛡️ Medidas de Proteção
 
-**Google Drive API:**
+Implementamos diversas camadas de segurança no ciclo de desenvolvimento:
 
-- A ferramenta utiliza o escopo `https://www.googleapis.com/auth/drive.file`.
-- Isso garante que a aplicação só tem acesso aos ficheiros que ela mesma criou. Não temos acesso a outros documentos do seu Google Drive.
+1.  **Row Level Security (RLS)**:
+    - Cada transação, conta ou auditoria é estritamente isolada.
+    - Usuários só acessam dados que possuem permissão explícita.
 
-**Bibliotecas Externas (CDN):**
+2.  **Pre-commit Hooks (Husky)**:
+    - **Secret Scanning**: Bloqueio automático de commits contendo chaves de API ou segredos.
+    - **Arquivos .env**: Bloqueio de arquivos de ambiente.
+    - **Auditoria de Dependências**: Verificação automática de vulnerabilidades (`npm audit`) antes de cada commit.
 
-- Utilizamos versões fixas de bibliotecas confiáveis para evitar ataques de Supply Chain:
-  - tailwindcss
-  - html2pdf.js
-  - Google Identity Services
+3.  **Integrações Seguras**:
+    - **Google Drive**: Escopo restrito (`drive.file`) - acesso apenas a arquivos criados pela própria ferramenta.
 
 ## 🐛 Reportar uma Vulnerabilidade
 
-Se descobrir uma falha de segurança nesta ferramenta, **NÃO** abra uma Issue pública no GitHub.
+Se descobrir uma falha de segurança, **NÃO** abra uma Issue pública.
 
-Envie um e-mail criptografado ou direto para nossa equipe de segurança:
+Envie um e-mail para nossa equipe de segurança:
 
-- **E-mail:** devops@amuri.app
+- **E-mail:** devops@leadgers.com
 - **Assunto:** [SECURITY] Audit Tool Vulnerability
 
 Tentaremos responder em até 24 horas úteis.

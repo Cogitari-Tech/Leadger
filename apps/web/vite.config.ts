@@ -1,16 +1,37 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@cogitari-platform/core': path.resolve(__dirname, '../../packages/core/src'),
+      "@": path.resolve(__dirname, "./src"),
+      "@leadgers/core": path.resolve(__dirname, "../../packages/core/src"),
     },
   },
+  css: {
+    devSourcemap: false,
+  },
   build: {
-    target: 'esnext'
-  }
+    target: "esnext",
+    sourcemap: "hidden",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: [
+            "react",
+            "react-dom",
+            "react-router-dom",
+            "zustand",
+            "@supabase/supabase-js",
+          ],
+          ui: ["lucide-react", "recharts"],
+        },
+      },
+    },
+  },
 });

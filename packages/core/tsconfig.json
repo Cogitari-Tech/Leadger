@@ -15,8 +15,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
+    "types": ["node"],
     "paths": {
-      "@cogitari-platform/core/*": ["./src/*"]
+      "@leadgers/core/*": ["./src/*"]
     }
   },
   "include": ["src"]
