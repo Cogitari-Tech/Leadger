@@ -231,13 +231,27 @@ export class SupabaseAuditRepository implements IAuditRepository {
       status: string;
       risk_level: string;
     }>;
-    return {
-      total: findings.length,
-      open: findings.filter((f) => f.status === "open").length,
-      inProgress: findings.filter((f) => f.status === "in_progress").length,
-      resolved: findings.filter((f) => f.status === "resolved").length,
-      critical: findings.filter((f) => f.risk_level === "critical").length,
-      high: findings.filter((f) => f.risk_level === "high").length,
-    };
+
+    // ⚡ Bolt: Single pass reduction to avoid iterating the array 5 times
+    return findings.reduce(
+      (acc, f) => {
+        if (f.status === "open") acc.open++;
+        else if (f.status === "in_progress") acc.inProgress++;
+        else if (f.status === "resolved") acc.resolved++;
+
+        if (f.risk_level === "critical") acc.critical++;
+        else if (f.risk_level === "high") acc.high++;
+
+        return acc;
+      },
+      {
+        total: findings.length,
+        open: 0,
+        inProgress: 0,
+        resolved: 0,
+        critical: 0,
+        high: 0,
+      },
+    );
   }
 }
