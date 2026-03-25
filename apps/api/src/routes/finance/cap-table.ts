@@ -235,7 +235,7 @@ capTableRoutes.get("/shareholders", async (c) => {
       orderBy: { ownership_percentage: "desc" },
     });
 
-    const enrichedShareholders = shareholders.map((s: ShareholderRow) => {
+    const enrichedShareholders = shareholders.map((s: any) => {
       const schedule =
         typeof s.vesting_schedule === "object" && s.vesting_schedule !== null
           ? (s.vesting_schedule as VestingScheduleInput)
@@ -332,11 +332,11 @@ capTableRoutes.get("/summary", async (c) => {
     ]);
 
     const totalShares = shareholders.reduce(
-      (sum: number, s: ShareholderRow) => sum + Number(s.shares_count),
+      (sum: number, s: any) => sum + Number(s.shares_count),
       0,
     );
     const totalInvested = rounds.reduce(
-      (sum: number, r: RoundRow) => sum + Number(r.amount_raised),
+      (sum: number, r: any) => sum + Number(r.amount_raised),
       0,
     );
     const latestValuation =
