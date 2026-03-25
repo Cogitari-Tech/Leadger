@@ -3,35 +3,206 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["public", "auth"]
 }
 
 model accounts {
-  id            String   @id @default(uuid())
+  id            String  @id @db.Uuid
+  tenant_id     String  @db.Uuid
   name          String
   code          String
   type          String
-  is_analytical Boolean  @map("is_analytical")
-  balance       Decimal  @default(0)
-  currency      String   @default("BRL")
-  created_at    DateTime @default(now())
+  is_analytical Boolean @default(false)
+  balance       Decimal @db.Decimal(10, 2)
+  currency      String  @default("BRL")
+  company_id    String? @db.Uuid
 
-  // Relations
-  debit_transactions  transactions[] @relation("DebitAccount")
-  credit_transactions transactions[] @relation("CreditAccount")
+  transactions_credit transactions[] @relation("account_credit")
+  transactions_debit  transactions[] @relation("account_debit")
+
+  @@schema("public")
 }
 
 model transactions {
-  id                String   @id @default(uuid())
-  date              DateTime @db.Date // Only date part as per code split('T')[0]
+  id                String   @id @db.Uuid
+  tenant_id         String   @db.Uuid
+  date              DateTime @db.Date
   description       String
-  account_debit_id  String
-  account_credit_id String
-  amount            Decimal
-  created_by        String
-  created_at        DateTime @default(now())
+  amount            Decimal  @db.Decimal(10, 2)
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  account_credit_id String   @db.Uuid
+  account_debit_id  String   @db.Uuid
+  created_by        String   @db.Uuid
 
-  // Relations
-  debit_account  accounts @relation("DebitAccount", fields: [account_debit_id], references: [id])
-  credit_account accounts @relation("CreditAccount", fields: [account_credit_id], references: [id])
+  account_credit accounts @relation("account_credit", fields: [account_credit_id], references: [id])
+  account_debit  accounts @relation("account_debit", fields: [account_debit_id], references: [id])
+
+  @@schema("public")
+}
+
+model health_scores {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenant_id String   @db.Uuid
+  date      DateTime @default(now()) @db.Timestamptz(6)
+
+  total_score Int // 0 a 100
+  financial   Int // 0 a 100 (Runway, Burn rate, etc)
+  product     Int // 0 a 100 (Tech debt, bugs, GitHub PRs)
+  compliance  Int // 0 a 100 (SWOT, audit)
+  team        Int // Placeholder (Engajamento, 1:1s)
+  commercial  Int // Placeholder (MRR, Churn)
+
+  alerts Json // Array of { type: 'red'|'yellow'|'green', message: string, component: string }
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model north_star_metrics {
+  id            String  @id @default(uuid()) @db.Uuid
+  tenant_id     String  @db.Uuid
+  name          String
+  target_value  Decimal @db.Decimal(10, 2)
+  current_value Decimal @db.Decimal(10, 2)
+  unit          String
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model business_model_canvas {
+  id        String @id @default(uuid()) @db.Uuid
+  tenant_id String @db.Uuid
+
+  key_partners    Json // Array of strings
+  key_activities  Json
+  key_resources   Json
+  value_props     Json
+  customer_rels   Json
+  channels        Json
+  customer_segs   Json
+  cost_structure  Json
+  revenue_streams Json
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model objectives {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenant_id   String   @db.Uuid
+  title       String
+  description String?
+  status      String   @default("active") // active, completed, at_risk
+  progress    Decimal  @default(0) @db.Decimal(5, 2)
+  target_date DateTime @db.Date
+
+  key_results key_results[]
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model key_results {
+  id           String  @id @default(uuid()) @db.Uuid
+  objective_id String  @db.Uuid
+  tenant_id    String  @db.Uuid
+  title        String
+  current_val  Decimal @default(0) @db.Decimal(10, 2)
+  target_val   Decimal @db.Decimal(10, 2)
+  unit         String
+  weight       Decimal @default(1) @db.Decimal(5, 2)
+
+  objective objectives @relation(fields: [objective_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model cap_table_rounds {
+  id                   String    @id @default(uuid()) @db.Uuid
+  tenant_id            String    @db.Uuid
+  round_name           String
+  round_type           String
+  pre_money_valuation  Decimal   @db.Decimal
+  amount_raised        Decimal   @db.Decimal
+  post_money_valuation Decimal?  @db.Decimal
+  round_date           DateTime? @db.Date
+  notes                String?
+  created_by           String?   @db.Uuid
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  shareholders cap_table_shareholders[]
+
+  @@schema("public")
+}
+
+model cap_table_shareholders {
+  id                   String  @id @default(uuid()) @db.Uuid
+  tenant_id            String  @db.Uuid
+  round_id             String? @db.Uuid
+  shareholder_name     String
+  shareholder_type     String
+  shares_count         Decimal @db.Decimal
+  share_price          Decimal @db.Decimal
+  ownership_percentage Decimal @db.Decimal
+  investment_amount    Decimal @db.Decimal
+  vesting_schedule     Json?
+  notes                String?
+
+  round cap_table_rounds? @relation(fields: [round_id], references: [id])
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model milestones {
+  id            String    @id @default(uuid()) @db.Uuid
+  tenant_id     String    @db.Uuid
+  title         String
+  description   String?
+  target_date   DateTime? @db.Date
+  completed_at  DateTime? @db.Timestamptz(6)
+  status        String    @default("planned")
+  category      String    @default("product")
+  linked_okr_id String?   @db.Uuid
+  created_by    String?   @db.Uuid
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model headcount_plans {
+  id                  String   @id @default(uuid()) @db.Uuid
+  tenant_id           String   @db.Uuid
+  role_title          String
+  department          String
+  monthly_salary      Decimal  @db.Decimal(15, 2)
+  expected_start_date DateTime @db.Date
+  status              String   @default("planned") // planned, hired, cancelled
+  notes               String?
+  created_by          String?  @db.Uuid
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
 }

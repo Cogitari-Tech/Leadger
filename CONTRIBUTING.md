@@ -1,138 +1,96 @@
-git clone [https://github.com/cogitari-tech/Audit-Tool.git](https://github.com/cogitari-tech/Audit-Tool.git)
+# Guia de Contribuição - Cogitari Governance Tool
 
-# Guia de Contribuição - Cogitari Audit Tool
+Obrigado por ajudar a manter as ferramentas da **Cogitari Tech** (CNPJ: 64.460.886/0001-39).
 
-Obrigado por contribuir para a manutenção das ferramentas internas da **Cogitari Tech** (CNPJ: 64.460.886/0001-39). Como somos uma equipe enxuta focada em Cybersecurity e Eficiência, seguimos diretrizes rígidas para manter este projeto estável.
+Este guia cobre o básico para começar. Para detalhes avançados de CI/CD e testes, consulte [Workflow de Desenvolvimento](https://github.com/Cogitari-Tech/Audit-Tool/blob/develop/docs/development-workflow.md).
 
 ---
 
-## 💻 Configuração do Ambiente Local
+## 💻 Configuração do Ambiente
 
-Para baixar o código e começar a desenvolver na sua máquina:
+**Pré-requisitos:** Node.js v20+ e npm v10+.
 
-**Clone o Repositório:**
-
-```sh
+```bash
+# 1. Clone o Repositório
 git clone https://github.com/cogitari-tech/Audit-Tool.git
 cd Audit-Tool
+
+# 2. Instale Dependências (Monorepo)
+npm install
+
+# 3. Configure Ambiente
+cp .env.example .env
+# Preencha com credenciais do Supabase (Beta)
 ```
 
 ---
 
-## 🔑 Configuração de Credenciais (Google Drive)
+## 🚀 Execução Local
 
-Para testar a funcionalidade de sincronização com a nuvem, é necessário configurar o `CLIENT_ID`.
-
-1. Abra o arquivo principal (`src/index.html` ou `auditoria_editor.html`).
-2. Localize a linha:
-   ```js
-   const CLIENT_ID = "";
-   ```
-3. Insira o ID do projeto amuri-platform (GCP) ou solicite uma credencial de desenvolvimento ao Tech Lead.
-
-> **Nota:** Sem isso, o botão "Salvar no Drive" emitirá um alerta, mas a geração de PDF continuará funcionando normalmente.
-
----
-
-## 🚀 Execução
-
-Como o projeto é uma SPA (Single Page Application) sem dependências de build (Node.js/Webpack), você pode simplesmente abrir o arquivo `.html` no seu navegador.
-
-**Recomendado:** Utilize a extensão Live Server no VS Code para ter hot-reload (atualização automática) enquanto edita o código.
-
----
-
-## 🛠️ Fluxo de Desenvolvimento
-
-Utilizamos um pipeline de branches rigoroso para garantir a estabilidade do produto. Siga a esteira abaixo para promover seu código:
-
-### Desenvolvimento (Local & Remoto)
-
-```sh
-git checkout -b <seu-nick>/nome-da-feature
-# (Faça suas alterações)
-git add .
-git commit -m "feat: descrição da feature"
-git push origin <seu-nick>/nome-da-feature
-```
-
-### Integração Contínua (Develop)
-
-Abra um Pull Request (PR) da sua branch para a `develop`.
-
-> **Objetivo:** Execução de testes automatizados e linting. O merge só ocorre se o CI passar.
-
-### Homologação (Beta)
-
-Após o merge na `develop`, abra um PR para a branch `beta`.
-
-> **Objetivo:** Testes manuais e validação de QA.
-
-### Correção de Bugs (Hotfix Loop)
-
-Se houver bugs em Beta:
-
-```sh
-# Corrija na branch hotfix e faça PR de volta para beta
+```bash
+# Rodar Frontend (Web)
+npm run dev
 ```
 
 ---
 
-## 🚢 Lançamento (Release/Main)
+## 🛠️ Fluxo de Branches (Gitflow)
 
-Se a versão em beta estiver estável, abra o PR para `release` (pré-lançamento) ou `main` (produção).
+Siga este fluxo rigorosamente:
 
----
+1.  **Develop** (`develop`): Branch base para integração.
+2.  **Beta** (`beta`): Branch de homologação (Deploy automático para staging).
+3.  **Main** (`main`): Branch de produção (Deploy manual/promote).
 
-## 📝 Padrão de Commits
+### Criando uma Feature
 
-Utilizamos [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/). Mantenha o histórico limpo.
+```bash
+git checkout develop
+git pull
+git checkout -b feature/minha-nova-funcionalidade
 
-Exemplos:
+# ... desenvolvimento ...
 
-```sh
-feat: adiciona campo de data de correção
-fix: corrige alinhamento do checkbox no mobile
-docs: atualiza readme com novo client_id
-security: atualiza escopos do google drive
+# O Husky validará seus commits (segurança e lint)
+git commit -m "feat: adiciona nova funcionalidade"
+git push origin feature/minha-nova-funcionalidade
 ```
 
+Abra um **Pull Request** para a branch `develop`.
+
 ---
 
-## 🎨 Padrões de Código
+## 🔑 Usuários de Teste
 
-Como o projeto é um Single File Component (HTML + JS + CSS em um arquivo):
+Para facilitar os testes locais e E2E, utilize as seguintes credenciais de teste (ambientes Beta/Local):
 
-- **Organização:** Mantenha o CSS no `<head>`, o HTML no `<body>` e o JS no final do `<body>`.
-- **Nomenclatura:**
-  - Variáveis JS: `camelCase` (ex: `findingCount`).
-  - Classes CSS: Utilitários do Tailwind.
+- **Usuário Padrão (Fixo):** `teste@leadgers.com` / `Cogitari@2026!Dev`
+- **Usuário Secundário (Removível):** `test_removivel@leadgers.com` / `Cogitari@2026!Dev`
+  _(Nota: O segundo usuário é deletado automaticamente do banco de dados ao fazer logout, ideal para testar fluxos de cadastro e onboarding!)_
+
+---
+
+## 📝 Padrões de Código
+
+- **Commits**: Utilizamos [Conventional Commits](https://www.conventionalcommits.org/).
+- **Linting**: O projeto usa ESLint + Prettier. Rode `npm run lint` para verificar.
+- **Testes**: Novas funcionalidades devem incluir testes unitários (`npm test`).
 
 ---
 
 ## 🔒 Segurança
 
-- 🚫 **NUNCA** commite o CLIENT_ID de produção se o repositório for público (atualmente é privado, mas mantenha a higiene).
-- 🚫 **NUNCA** utilize `innerHTML` com dados não sanitizados vindos de inputs externos (**XSS Prevention**).
+- 🚫 **Nunca commite chaves de API ou segredos.**
+- 🚫 **Nunca commite arquivos .env.**
+
+O pre-commit hook bloqueará tentativas de commit inseguro.
 
 ---
 
-## 🧪 Testes
+## 🐛 Reportar Bugs
 
-Antes de abrir um Pull Request (PR):
-
-- **Teste de Impressão:** Gere um PDF e verifique se as quebras de página não cortaram nenhum achado ao meio.
-- **Teste de API:** Verifique se a integração com o Google Drive está autenticando e criando o arquivo corretamente.
-- **Responsividade:** O editor deve ser utilizável em telas menores (tablets), embora o foco seja Desktop.
+Use as [Issues do GitHub](https://github.com/Cogitari-Tech/Audit-Tool/issues) para reportar problemas, anexando passos para reprodução.
 
 ---
 
-## 📝 Pull Requests
-
-- Descreva claramente o "Porquê" da mudança, não apenas o "O que".
-- Vincule a Issue ou a Task do Notion/Jira correspondente.
-- Solicite review do @xXYoungMoreXx (CTO) ou do Tech Lead responsável.
-
----
-
-Cogitari Tech - Ship fast, audit faster.
+Cogitari Tech - Audit Faster.

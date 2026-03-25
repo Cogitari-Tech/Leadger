@@ -1,7 +1,7 @@
 {
-  "name": "cogitari-platform",
-  "version": "1.0.0",
-  "description": "Sistema de Auditoria, Compliance e Gestão Financeira - Cogitari Tech",
+  "name": "leadgers-platform",
+  "version": "1.1.0",
+  "description": "Sistema de Auditoria, Compliance e Gestão Financeira - Leadgers Governance",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -9,9 +9,10 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace=apps/web",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:all": "npm run dev:api & npm run dev",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "test:coverage": "npm run test:coverage --workspaces --if-present",
     "test:watch": "npm run test:watch --workspace=packages/core",
     "test:e2e": "npm run test:e2e --workspace=apps/web",
     "test:integration": "npm run test:integration --workspaces --if-present",
@@ -19,15 +20,34 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/dist packages/*/dist"
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/dist packages/*/dist",
+    "prepare": "husky",
+    "security-check": "node scripts/security-scan.js",
+    "mcp:setup": "cd tools/mcp && npm install"
+  },
+  "lint-staged": {
+    "*": [
+      "npm run security-check"
+    ],
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write --ignore-unknown"
+    ]
   },
   "devDependencies": {
-    "@prisma/config": "^7.4.0",
+    "@prisma/config": "^6.19.2",
+    "@types/babel__traverse": "^7.28.0",
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-shape": "^3.1.8",
     "@types/node": "^20.11.0",
+    "commander": "^14.0.3",
     "dotenv": "^17.3.1",
     "eslint": "^8.56.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "pg": "^8.18.0",
     "prettier": "^3.2.4",
-    "prisma": "^7.4.0",
+    "prisma": "^6.19.2",
+    "rimraf": "^5.0.5",
     "supabase": "^2.76.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
@@ -38,11 +58,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Cogitari-Tech/Audit-Tool.git"
+    "url": "https://github.com/Cogitari-Tech/Leadgers-Platform.git"
   },
-  "author": "Cogitari Tech <devops@amuri.app>",
+  "author": "Leadgers Tech <devops@leadgers.com>",
   "license": "UNLICENSED",
   "dependencies": {
-    "@prisma/client": "^6.19.2"
+    "@prisma/client": "^6.19.2",
+    "@supabase/supabase-js": "^2.98.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "web-streams-polyfill": "^4.0.0-beta.3"
+  },
+  "overrides": {
+    "tar": "^7.5.11",
+    "minimatch": "^10.2.1",
+    "flatted": "^3.4.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.59.0"
   }
 }
