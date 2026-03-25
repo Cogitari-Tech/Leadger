@@ -128,7 +128,7 @@ export function useFinance() {
 
         return acc;
       },
-      { revenue: 0, expenses: 0 }
+      { revenue: 0, expenses: 0 },
     );
 
     return {

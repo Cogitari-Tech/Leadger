@@ -81,9 +81,18 @@ export default function BalanceSheet() {
   const processData = () => {
     // ⚡ Bolt: Consolidated multiple array filters and reductions into a single pass
     // Reduces multiple iterations over the balances array (O(5n)) to a single pass O(n)
-    const { assetsList, liabilitiesList, revenue, expenses, assetsTotal, liabilitiesTotal } = balances.reduce(
+    const {
+      assetsList,
+      liabilitiesList,
+      revenue,
+      expenses,
+      assetsTotal,
+      liabilitiesTotal,
+    } = balances.reduce(
       (acc, b) => {
-        if (["checking", "savings", "investment", "cash"].includes(b.accountType)) {
+        if (
+          ["checking", "savings", "investment", "cash"].includes(b.accountType)
+        ) {
           acc.assetsList.push(b);
           acc.assetsTotal += b.balance;
         } else if (["credit_card"].includes(b.accountType)) {
@@ -103,7 +112,7 @@ export default function BalanceSheet() {
         expenses: 0,
         assetsTotal: 0,
         liabilitiesTotal: 0,
-      }
+      },
     );
 
     // Equity? Currently usually empty in our seed, but let's separate Revenue/Expense?

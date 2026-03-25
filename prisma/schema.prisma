@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["multiSchema"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -125,6 +124,82 @@ model key_results {
   weight       Decimal @default(1) @db.Decimal(5, 2)
 
   objective objectives @relation(fields: [objective_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model cap_table_rounds {
+  id                   String    @id @default(uuid()) @db.Uuid
+  tenant_id            String    @db.Uuid
+  round_name           String
+  round_type           String
+  pre_money_valuation  Decimal   @db.Decimal
+  amount_raised        Decimal   @db.Decimal
+  post_money_valuation Decimal?  @db.Decimal
+  round_date           DateTime? @db.Date
+  notes                String?
+  created_by           String?   @db.Uuid
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  shareholders cap_table_shareholders[]
+
+  @@schema("public")
+}
+
+model cap_table_shareholders {
+  id                   String  @id @default(uuid()) @db.Uuid
+  tenant_id            String  @db.Uuid
+  round_id             String? @db.Uuid
+  shareholder_name     String
+  shareholder_type     String
+  shares_count         Decimal @db.Decimal
+  share_price          Decimal @db.Decimal
+  ownership_percentage Decimal @db.Decimal
+  investment_amount    Decimal @db.Decimal
+  vesting_schedule     Json?
+  notes                String?
+
+  round cap_table_rounds? @relation(fields: [round_id], references: [id])
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model milestones {
+  id            String    @id @default(uuid()) @db.Uuid
+  tenant_id     String    @db.Uuid
+  title         String
+  description   String?
+  target_date   DateTime? @db.Date
+  completed_at  DateTime? @db.Timestamptz(6)
+  status        String    @default("planned")
+  category      String    @default("product")
+  linked_okr_id String?   @db.Uuid
+  created_by    String?   @db.Uuid
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model headcount_plans {
+  id                  String   @id @default(uuid()) @db.Uuid
+  tenant_id           String   @db.Uuid
+  role_title          String
+  department          String
+  monthly_salary      Decimal  @db.Decimal(15, 2)
+  expected_start_date DateTime @db.Date
+  status              String   @default("planned") // planned, hired, cancelled
+  notes               String?
+  created_by          String?  @db.Uuid
 
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @default(now()) @db.Timestamptz(6)

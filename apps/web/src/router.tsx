@@ -36,6 +36,9 @@ const BusinessModelCanvas = lazy(
   () => import("./modules/dashboard/pages/BusinessModelCanvas"),
 );
 const OkrsPage = lazy(() => import("./modules/dashboard/pages/OkrsPage"));
+const MilestonesPage = lazy(
+  () => import("./modules/dashboard/pages/MilestonesPage"),
+);
 const ProfilePage = lazy(() => import("./modules/profile/pages/ProfilePage"));
 const OnboardingWizard = lazy(
   () => import("./modules/admin/pages/OnboardingWizard"),
@@ -189,6 +192,10 @@ export const createAppRouter = () =>
         {
           path: "okrs",
           element: <OkrsPage />,
+        },
+        {
+          path: "milestones",
+          element: <MilestonesPage />,
         },
         {
           path: "profile",

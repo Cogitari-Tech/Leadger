@@ -55,6 +55,14 @@ runwayRoutes.post("/", async (c) => {
   const currentRevenue = incomeStatement.revenue || 0;
   const currentExpenses = incomeStatement.expenses || 0;
 
+  // Fetch headcount plans to add extra expenses over time
+  const headcountPlans = await prisma.headcount_plans.findMany({
+    where: {
+      tenant_id: tenantId,
+      status: { in: ["planned", "hired"] },
+    },
+  });
+
   const results = scenarios.map((params: any) => {
     const data = [];
     let balance = cashBalance;
@@ -92,6 +100,25 @@ runwayRoutes.post("/", async (c) => {
       balance -= burn;
       revenue *= 1 + params.revenueGrowthRate;
       expenses *= 1 - params.costReductionRate;
+
+      // Add new headcount salaries if they start in the upcoming month
+      const nextMonthDate = new Date();
+      nextMonthDate.setMonth(nextMonthDate.getMonth() + m + 1);
+
+      const newHeadcountMonthlyCost = headcountPlans
+        .filter((plan: any) => {
+          const startDate = new Date(plan.expected_start_date);
+          return (
+            startDate.getMonth() === nextMonthDate.getMonth() &&
+            startDate.getFullYear() === nextMonthDate.getFullYear()
+          );
+        })
+        .reduce(
+          (sum: number, plan: any) => sum + Number(plan.monthly_salary),
+          0,
+        );
+
+      expenses += newHeadcountMonthlyCost;
     }
 
     return {
