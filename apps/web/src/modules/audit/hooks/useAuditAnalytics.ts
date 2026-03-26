@@ -112,30 +112,45 @@ export function useAuditAnalytics() {
       (p) => p.status === "in_progress" || p.status === "under_review",
     ).length;
 
-    const resolvedFindings = findings.filter(
-      (f) => f.status === "resolved" && f.resolved_at && f.created_at,
+    // ⚡ Bolt: Single pass reduction to optimize multiple O(N) array iterations into one
+    const stats = findings.reduce(
+      (acc, f) => {
+        const isResolved = f.status === "resolved";
+        const isAccepted = f.status === "accepted";
+
+        if (isResolved || isAccepted) {
+          acc.resolvedAndAccepted++;
+        }
+
+        if (isResolved && f.resolved_at && f.created_at) {
+          acc.resolvedFindingsCount++;
+          const created = new Date(f.created_at).getTime();
+          const resolved = new Date(f.resolved_at).getTime();
+          acc.mttrTotalHours += (resolved - created) / (1000 * 60 * 60);
+        }
+
+        return acc;
+      },
+      {
+        total: 0,
+        resolvedAndAccepted: 0,
+        resolvedFindingsCount: 0,
+        mttrTotalHours: 0,
+      },
     );
 
     const mttrHours =
-      resolvedFindings.length > 0
-        ? Math.round(
-            resolvedFindings.reduce((acc, f) => {
-              const created = new Date(f.created_at).getTime();
-              const resolved = new Date(f.resolved_at!).getTime();
-              return acc + (resolved - created) / (1000 * 60 * 60);
-            }, 0) / resolvedFindings.length,
-          )
+      stats.resolvedFindingsCount > 0
+        ? Math.round(stats.mttrTotalHours / stats.resolvedFindingsCount)
         : 0;
 
-    const total = findings.length;
-    const resolved = findings.filter(
-      (f) => f.status === "resolved" || f.status === "accepted",
-    ).length;
     const complianceRate =
-      total > 0 ? Math.round((resolved / total) * 100) : 100;
+      stats.total > 0
+        ? Math.round((stats.resolvedAndAccepted / stats.total) * 100)
+        : 100;
 
     return {
-      totalFindings: total,
+      totalFindings: stats.total,
       mttrHours,
       activePrograms,
       complianceRate,
