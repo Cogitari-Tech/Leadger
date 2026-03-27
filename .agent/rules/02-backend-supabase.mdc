@@ -49,37 +49,36 @@ const { data, error } = await supabase
 ````prisma
 // ✅ CORRETO: Usar snake_case e relations explícitas
 model UserProfile {
-  id              String   @id @default(uuid())
-  email           String   @unique
-  credits_balance Int      @default(0)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  id               String   @id @default(uuid())
+  email            String   @unique
+  compliance_score Int      @default(100)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
   
   // Relations
-  transactions    CoinTransaction[]
+  logs             AuditLog[]
   
   @@map("user_profiles")
 }
 
-model CoinTransaction {
+model AuditLog {
   id                String   @id @default(uuid())
   user_id           String
-  amount            Int
-  type              TransactionType
-  stripe_session_id String?
+  severity          SeverityLevel
+  event_details     String?
   created_at        DateTime @default(now())
   
   // Relations
   user              UserProfile @relation(fields: [user_id], references: [id], onDelete: Cascade)
   
-  @@map("coin_transactions")
+  @@map("audit_logs")
   @@index([user_id])
 }
 
-enum TransactionType {
-  purchase
-  usage
-  refund
+enum SeverityLevel {
+  low
+  medium
+  critical
 }
 ````
 
@@ -153,7 +152,7 @@ const posts = await prisma.post.findMany({
 ## Migrations (SEMPRE)
 ````bash
 # ✅ Criar migration antes de alterar schema
-npx prisma migrate dev --name add_youtube_credentials
+npx prisma migrate dev --name add_github_integration
 
 # ✅ Aplicar em produção
 npx prisma migrate deploy

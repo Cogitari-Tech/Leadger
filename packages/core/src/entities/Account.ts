@@ -3,10 +3,17 @@ export class Account {
     public id: string,
     public name: string,
     public code: string,
-    public type: 'checking' | 'savings' | 'investment' | 'credit_card' | 'cash' | 'Receita' | 'Despesa',
+    public type:
+      | "checking"
+      | "savings"
+      | "investment"
+      | "credit_card"
+      | "cash"
+      | "Receita"
+      | "Despesa",
     public isAnalytical: boolean,
     public balance: number,
-    public currency: string = 'BRL'
+    public currency: string = "BRL",
   ) {}
 
   public updateBalance(amount: number): void {
@@ -15,7 +22,9 @@ export class Account {
 
   isDebitNature(): boolean {
     // Ativo e Despesa são devedoras
-    return ['checking', 'savings', 'investment', 'cash', 'Despesa'].includes(this.type);
+    return ["checking", "savings", "investment", "cash", "Despesa"].includes(
+      this.type,
+    );
   }
 
   static fromPersistence(data: any): Account {
@@ -26,7 +35,7 @@ export class Account {
       data.type as any,
       data.is_analytical,
       Number(data.balance),
-      data.currency || 'BRL'
+      data.currency || "BRL",
     );
   }
 
@@ -38,7 +47,7 @@ export class Account {
       type: this.type,
       is_analytical: this.isAnalytical,
       balance: this.balance,
-      currency: this.currency
+      currency: this.currency,
     };
   }
 }

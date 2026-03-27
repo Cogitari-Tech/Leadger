@@ -29,29 +29,41 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
     const { data: programsData } = await this.supabase
       .from("audit_programs")
       .select("id, framework_id")
-      .eq("tenant_id", tenantId);
+      .eq("tenant_id", tenantId)
+      .in(
+        "framework_id",
+        fwData.map((f: any) => f.id),
+      );
 
-    const { data: checklistData } = await this.supabase
-      .from("audit_program_checklists")
-      .select("status, audit_program_id")
-      .eq("tenant_id", tenantId);
+    const programIds = programsData?.map((p: any) => p.id) || [];
+    let checklistData: any[] = [];
+
+    if (programIds.length > 0) {
+      const { data } = await this.supabase
+        .from("audit_program_checklists")
+        .select("status, program_id, control_id")
+        .in("program_id", programIds);
+      if (data) checklistData = data;
+    }
 
     return fwData.map((f: any) => {
       const fwPrograms =
-        programsData?.filter((p) => p.framework_id === f.id) || [];
-      const programIds = fwPrograms.map((p) => p.id);
+        programsData?.filter((p: any) => p.framework_id === f.id) || [];
+      const fProgramIds = fwPrograms.map((p: any) => p.id);
 
       const fwChecklists =
-        checklistData?.filter((c) => programIds.includes(c.audit_program_id)) ||
+        checklistData?.filter((c: any) => fProgramIds.includes(c.program_id)) ||
         [];
       const total = fwChecklists.length;
       const compliant = fwChecklists.filter(
-        (c) => c.status === "compliant",
+        (c: any) => c.status === "compliant",
       ).length;
       const progress = total > 0 ? Math.round((compliant / total) * 100) : 0;
       let status = "pending";
       if (progress >= 100) status = "compliant";
       else if (progress > 0) status = "partial";
+
+      if (total > 0 && status === "pending") status = "active";
 
       return {
         id: f.id,
@@ -67,12 +79,46 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
     });
   }
 
+  async listControls(frameworkIds: string[]): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from("audit_framework_controls")
+      .select("*")
+      .in("framework_id", frameworkIds);
+    if (error) throw error;
+    return data || [];
+  }
+
+  // Helper method to fetch checklists for computation in hook
+  async listChecklistsForPrograms(programIds: string[]): Promise<any[]> {
+    if (programIds.length === 0) return [];
+    const { data, error } = await this.supabase
+      .from("audit_program_checklists")
+      .select("status, program_id, control_id")
+      .in("program_id", programIds);
+    if (error) throw error;
+    return data || [];
+  }
+
+  async listProgramsForFrameworks(
+    tenantId: string,
+    frameworkIds: string[],
+  ): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from("audit_programs")
+      .select("id, framework_id")
+      .eq("tenant_id", tenantId)
+      .in("framework_id", frameworkIds);
+    if (error) throw error;
+    return data || [];
+  }
+
   // ─── Risks ──────────────────────────────────────────────
 
-  async listRisks(_tenantId: string): Promise<RiskDTO[]> {
+  async listRisks(tenantId: string): Promise<RiskDTO[]> {
     const { data, error } = await this.supabase
       .from("risks")
       .select("*")
+      .eq("tenant_id", tenantId)
       .order("score", { ascending: false });
 
     if (error || !data) return [];
@@ -104,10 +150,11 @@ export class SupabaseComplianceRepository implements IComplianceRepository {
 
   // ─── SWOT ───────────────────────────────────────────────
 
-  async listItems(_tenantId: string): Promise<SwotDTO[]> {
+  async listItems(tenantId: string): Promise<SwotDTO[]> {
     const { data, error } = await this.supabase
       .from("swot_items")
       .select("*")
+      .eq("tenant_id", tenantId)
       .order("impact", { ascending: false });
 
     if (error || !data) return [];

@@ -19,8 +19,8 @@ export function ProjectFormModal({
     name: "",
     description: "",
     status: "active",
-    start_date: "",
-    end_date: "",
+    startDate: "",
+    endDate: "",
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -30,16 +30,16 @@ export function ProjectFormModal({
         name: initialData.name,
         description: initialData.description || "",
         status: initialData.status,
-        start_date: initialData.start_date || "",
-        end_date: initialData.end_date || "",
+        startDate: initialData.startDate || "",
+        endDate: initialData.endDate || "",
       });
     } else {
       setFormData({
         name: "",
         description: "",
         status: "active",
-        start_date: "",
-        end_date: "",
+        startDate: "",
+        endDate: "",
       });
     }
   }, [initialData, isOpen]);
@@ -123,9 +123,9 @@ export function ProjectFormModal({
               </label>
               <input
                 type="date"
-                value={formData.start_date}
+                value={formData.startDate}
                 onChange={(e) =>
-                  setFormData({ ...formData, start_date: e.target.value })
+                  setFormData({ ...formData, startDate: e.target.value })
                 }
                 className="w-full bg-background/50 border border-border/40 rounded-2xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 dark:[color-scheme:dark] transition-all"
               />
@@ -136,9 +136,9 @@ export function ProjectFormModal({
               </label>
               <input
                 type="date"
-                value={formData.end_date}
+                value={formData.endDate}
                 onChange={(e) =>
-                  setFormData({ ...formData, end_date: e.target.value })
+                  setFormData({ ...formData, endDate: e.target.value })
                 }
                 className="w-full bg-background/50 border border-border/40 rounded-2xl px-5 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 dark:[color-scheme:dark] transition-all"
               />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   FileOutput,
   Plus,
@@ -36,7 +36,7 @@ export default function ReportBuilder() {
   const [showExport, setShowExport] = useState(false);
   const [showReset, setShowReset] = useState(false);
 
-  const validation = validate();
+  const validation = useMemo(() => validate(), [validate]);
 
   return (
     <div className="min-h-screen bg-transparent transition-colors">

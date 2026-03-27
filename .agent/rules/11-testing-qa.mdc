@@ -34,16 +34,16 @@ test('usuário deve conseguir criar um post rascunho', async ({ page }) => {
 ### Teste Unitário (Vitest)
 ```typescript
 // ✅ CORRETO: Testando regra de negócio isolada
-import { calculatePostCost } from './billing';
+import { calculateRiskScore } from './risk';
 
-describe('Billing Logic', () => {
-  it('should charge 1 credit for text posts', () => {
-    const cost = calculatePostCost({ type: 'text' });
+describe('Risk Logic', () => {
+  it('should increase risk strictly by 1 for low threats', () => {
+    const cost = calculateRiskScore({ threat: 'low' });
     expect(cost).toBe(1);
   });
 
-  it('should charge 10 credits for video generation', () => {
-    const cost = calculatePostCost({ type: 'video_ai' });
+  it('should increase risk heavily by 10 for critical vulnerabilities', () => {
+    const cost = calculateRiskScore({ threat: 'critical' });
     expect(cost).toBe(10);
   });
 });
@@ -51,9 +51,9 @@ describe('Billing Logic', () => {
 
 ### Mocking Externos
 ```typescript
-// ✅ CORRETO: Mockar API externa para não gastar cota/dinheiro
-vi.mock('@/lib/integrations/youtube', () => ({
-  uploadVideo: vi.fn().mockResolvedValue(Result.ok('video_id_123'))
+// ✅ CORRETO: Mockar API externa para não atingir Rate Limit
+vi.mock('@/lib/integrations/github', () => ({
+  getOrganizationHealth: vi.fn().mockResolvedValue(Result.ok({ score: 100 }))
 }));
 ```
 

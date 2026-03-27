@@ -20,7 +20,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/dist packages/*/dist",
     "prepare": "husky",
-    "security-check": "node scripts/security-scan.js"
+    "security-check": "node scripts/security-scan.js",
+    "mcp:setup": "cd tools/mcp && npm install"
   },
   "lint-staged": {
     "*": [
@@ -33,10 +34,11 @@
   "devDependencies": {
     "@prisma/config": "^6.19.2",
     "@types/node": "^20.11.0",
+    "commander": "^14.0.3",
     "dotenv": "^17.3.1",
     "eslint": "^8.56.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
+    "lint-staged": "^16.4.0",
     "pg": "^8.18.0",
     "prettier": "^3.2.4",
     "prisma": "^6.19.2",
@@ -51,17 +53,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/leadgers-tech/Audit-Tool.git"
+    "url": "https://github.com/Cogitari-Tech/Leadgers-Platform.git"
   },
   "author": "Leadgers Tech <devops@leadgers.com>",
   "license": "UNLICENSED",
   "dependencies": {
     "@prisma/client": "^6.19.2",
-    "@supabase/supabase-js": "^2.98.0"
+    "@supabase/supabase-js": "^2.98.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "overrides": {
-    "tar": "^7.5.9",
-    "minimatch": "^10.2.1"
+    "tar": "^7.5.11",
+    "minimatch": "^10.2.1",
+    "flatted": "^3.4.0"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.59.0"

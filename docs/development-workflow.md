@@ -1,6 +1,6 @@
 # Development Workflow & CI/CD Guide
 
-This document outlines the automated workflows, security checks, and deployment strategies for the Audit Tool project.
+This document outlines the automated workflows, security checks, and deployment strategies for the Leadgers Platform project.
 
 ## 1. Security & Pre-commit Hooks
 
@@ -25,8 +25,6 @@ If you must bypass these checks (e.g., false positive), use:
 git commit -m "msg" --no-verify
 ```
 
-_⚠️ Use with extreme caution._
-
 ---
 
 ## 2. CI Pipelines (GitHub Actions)
@@ -35,22 +33,10 @@ Our Continuous Integration (CI) pipeline runs on GitHub Actions to verify code i
 
 ### Triggers/Rules
 
-The pipeline defined in `.github/workflows/ci.yml` runs **ONLY** on:
+The pipeline runs on:
 
 - **Pull Requests** targeting `develop` (Feature merge).
 - **Pull Requests** targeting `beta` (Hotfixes).
-
-_Note: Direct pushes to branches do NOT trigger the pipeline to save resources._
-
-### Stages
-
-The pipeline executes the following steps in parallel/sequence:
-
-1.  **Install**: `npm ci`
-2.  **Type Check**: `npm run typecheck` (TypeScript validation)
-3.  **Lint**: `npm run lint` (ESLint)
-4.  **Test**: `npm run test` (Unit/Integration tests)
-5.  **Build**: `npm run build` (Production build verification)
 
 ---
 
@@ -58,18 +44,17 @@ The pipeline executes the following steps in parallel/sequence:
 
 We follow a Gitflow-based deployment strategy targeting **Vercel**.
 
-| Environment        | Branch    | URL (Example)    | Deployment Trigger               | Purpose                                  |
-| :----------------- | :-------- | :--------------- | :------------------------------- | :--------------------------------------- |
-| **Development**    | `develop` | `dev.amuri.app`  | **Automatic** (Merge to develop) | Integration testing, internal review.    |
-| **Beta (Staging)** | `beta`    | `beta.amuri.app` | **Automatic** (PR/Merge to beta) | User Acceptance Testing (UAT), Hotfixes. |
-| **Production**     | `main`    | `amuri.app`      | **Manual** (Promotion)           | Stable release for end-users.            |
+| Environment        | Branch    | URL (Example)       | Deployment Trigger               | Purpose                                  |
+| :----------------- | :-------- | :------------------ | :------------------------------- | :--------------------------------------- |
+| **Development**    | `develop` | `dev.leadgers.com`  | **Automatic** (Merge to develop) | Integration testing, internal review.    |
+| **Beta (Staging)** | `beta`    | `beta.leadgers.com` | **Automatic** (PR/Merge to beta) | User Acceptance Testing (UAT), Hotfixes. |
+| **Production**     | `main`    | `leadgers.com`      | **Manual** (Promotion)           | Stable release for end-users.            |
 
 ### Configuration Requirements
 
-- **Vercel Project**: Connect to the GitHub repository.
-- **Root Directory**: Set to `apps/web`.
+- **Vercel Project**: Connect to the GitHub repository `Leadgers-Platform`.
 - **Build Command**: `npm run build`.
-- **Environment Variables**: Must be configured in Vercel Project Settings for each environment (Development, Preview, Production).
+- **Environment Variables**: Must be configured in Vercel Project Settings for each environment.
 
 ---
 
@@ -90,8 +75,8 @@ npm run build
 
 ## 5. E2E Testing (Playwright) & Bypasses
 
-When running automated End-to-End tests via Playwright, the Cloudflare Turnstile CAPTCHA will block automated Chromium/Firefox browsers. To bypass this during testing:
+When running automated End-to-End tests via Playwright:
 
 1. Use the **Dummy Site Key** in `.env`: `VITE_TURNSTILE_SITE_KEY=1x00000000000000000000AA`.
 2. Ensure you have test tenant accounts mapped correctly.
-3. If necessary, inject `amuri_session_type` in the browser context `localStorage` to bypass MFA timeout or test persistent sessions.
+3. If necessary, inject `leadgers_session_type` in the browser context `localStorage` to bypass MFA timeout.
