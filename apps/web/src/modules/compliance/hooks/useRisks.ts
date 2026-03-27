@@ -1,31 +1,32 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../../auth/context/AuthContext";
 import type { RiskEntry } from "../types/compliance.types";
+import { SupabaseComplianceRepository } from "../repositories/SupabaseComplianceRepository";
 
 export function useRisks() {
   const { tenant } = useAuth();
   const [risks, setRisks] = useState<RiskEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const repository = useMemo(
+    () => new SupabaseComplianceRepository(supabase),
+    [],
+  );
+
   const fetchRisks = useCallback(async () => {
     if (!tenant) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("risks")
-      .select("*")
-      .order("score", { ascending: false });
 
-    if (!error && data) {
-      setRisks(
-        data.map((item: any) => ({
-          ...item,
-          createdAt: item.created_at,
-        })) as RiskEntry[],
-      );
+    try {
+      const data = await repository.listRisks(tenant.id);
+      setRisks(data as unknown as RiskEntry[]);
+    } catch (error) {
+      console.error("Error fetching risks:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, [tenant]);
+  }, [tenant, repository]);
 
   useEffect(() => {
     fetchRisks();
@@ -35,34 +36,21 @@ export function useRisks() {
     item: Omit<RiskEntry, "id" | "createdAt" | "tenant_id">,
   ) => {
     if (!tenant) return;
-    const { data, error } = await supabase
-      .from("risks")
-      .insert({
-        tenant_id: tenant.id,
-        title: item.title,
-        description: item.description,
-        category: item.category,
-        likelihood: item.likelihood,
-        impact: item.impact,
-        score: item.score,
-        status: item.status,
-        owner: item.owner,
-      })
-      .select()
-      .single();
 
-    if (!error && data) {
-      setRisks((prev) => [
-        ...prev,
-        { ...data, createdAt: data.created_at } as unknown as RiskEntry,
-      ]);
+    try {
+      const data = await repository.addRisk(tenant.id, item as any);
+      setRisks((prev) => [...prev, data as unknown as RiskEntry]);
+    } catch (error) {
+      console.error("Error adding risk:", error);
     }
   };
 
   const removeRisk = async (id: string) => {
-    const { error } = await supabase.from("risks").delete().eq("id", id);
-    if (!error) {
+    try {
+      await repository.removeRisk(id);
       setRisks((prev) => prev.filter((i) => i.id !== id));
+    } catch (error) {
+      console.error("Error removing risk:", error);
     }
   };
 

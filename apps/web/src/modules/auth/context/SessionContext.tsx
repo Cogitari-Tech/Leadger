@@ -209,10 +209,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     const userEmail = state.supabaseUser?.email;
     if (
       userEmail === "qa_vibe_test@leadgers.com" ||
-      userEmail === "test_removivel@leadgers.com"
+      userEmail === "test_removivel@leadgers.com" ||
+      (userEmail?.startsWith("onboarding-test") &&
+        userEmail?.endsWith("@leadgers.com"))
     ) {
       try {
         await supabase.rpc("cleanup_test_user", { p_email: userEmail });
+        // Removed agent log for stability
       } catch (err) {
         console.error("Failed to cleanup test user", err);
       }

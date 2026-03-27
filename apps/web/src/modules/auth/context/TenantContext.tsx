@@ -134,7 +134,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
           }
 
           if (role && (role.name === "admin" || role.name === "owner")) {
-            permissions = allPermsRes.data?.map((p) => p.code) ?? [];
+            permissions = allPermsRes.data?.map((p: any) => p.code) ?? [];
           } else if (role) {
             const { data: rolePerms } = await supabase
               .from("role_permissions")
@@ -168,6 +168,8 @@ export function TenantProvider({ children }: { children: ReactNode }) {
         permissions,
         tenantLoading: false,
       });
+
+      // Removed agent log for stability
     } catch (error) {
       console.error("Failed to load user profile:", error);
       setState((prev) => ({ ...prev, tenantLoading: false }));

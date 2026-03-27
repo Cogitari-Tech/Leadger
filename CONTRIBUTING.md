@@ -60,6 +60,16 @@ Abra um **Pull Request** para a branch `develop`.
 
 ---
 
+## 🔑 Usuários de Teste
+
+Para facilitar os testes locais e E2E, utilize as seguintes credenciais de teste (ambientes Beta/Local):
+
+- **Usuário Padrão (Fixo):** `teste@leadgers.com` / `Cogitari@2026!Dev`
+- **Usuário Secundário (Removível):** `test_removivel@leadgers.com` / `Cogitari@2026!Dev`
+  _(Nota: O segundo usuário é deletado automaticamente do banco de dados ao fazer logout, ideal para testar fluxos de cadastro e onboarding!)_
+
+---
+
 ## 📝 Padrões de Código
 
 - **Commits**: Utilizamos [Conventional Commits](https://www.conventionalcommits.org/).

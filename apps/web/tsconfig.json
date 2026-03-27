@@ -16,6 +16,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
+    "types": ["node", "react", "react-dom"],
     "paths": {
       "@/*": ["./src/*"],
       "@leadgers/core/*": ["../../packages/core/src/*"]

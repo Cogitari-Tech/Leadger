@@ -152,7 +152,7 @@ export default function ExecutiveDashboard() {
           subtitle="Auditoria"
           icon={FileSearch}
           color="primary"
-          onClick={() => navigate("/audit/programs")}
+          onClick={() => navigate("/dashboard/audit/programs")}
         />
         <KPICard
           title="Findings Abertos"
@@ -160,7 +160,7 @@ export default function ExecutiveDashboard() {
           subtitle="Risco"
           icon={AlertTriangle}
           color={kpis.audit.openFindings > 0 ? "amber" : "emerald"}
-          onClick={() => navigate("/audit/findings")}
+          onClick={() => navigate("/dashboard/audit/findings")}
         />
         <KPICard
           title="Findings Críticos"
@@ -168,7 +168,7 @@ export default function ExecutiveDashboard() {
           subtitle="Urgente"
           icon={ShieldAlert}
           color={kpis.audit.criticalFindings > 0 ? "red" : "emerald"}
-          onClick={() => navigate("/audit/findings")}
+          onClick={() => navigate("/dashboard/audit/findings")}
         />
         <KPICard
           title="Compliance Score"
@@ -182,7 +182,7 @@ export default function ExecutiveDashboard() {
                 ? "amber"
                 : "red"
           }
-          onClick={() => navigate("/compliance")}
+          onClick={() => navigate("/dashboard/compliance")}
         />
       </div>
 
@@ -382,9 +382,9 @@ export default function ExecutiveDashboard() {
                       key={d.id}
                       onClick={() => {
                         if (d.type === "approval")
-                          navigate(`/audit/programs/${d.id}/approve`);
+                          navigate(`/dashboard/audit/programs/${d.id}/approve`);
                         else if (d.type === "finding")
-                          navigate("/audit/findings");
+                          navigate("/dashboard/audit/findings");
                       }}
                       className="w-full flex items-start gap-3 p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors text-left"
                     >
@@ -481,7 +481,7 @@ export default function ExecutiveDashboard() {
             </div>
             <button
               type="button"
-              onClick={() => navigate("/finance")}
+              onClick={() => navigate("/dashboard/finance")}
               className="w-full mt-4 px-3 py-2 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-xl transition-colors text-center"
             >
               Ver módulo financeiro →

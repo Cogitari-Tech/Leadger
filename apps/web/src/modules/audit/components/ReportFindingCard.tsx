@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import {
   Trash2,
   ChevronDown,
@@ -170,6 +170,26 @@ export default function ReportFindingCard({
 }: ReportFindingCardProps) {
   const [search, setSearch] = React.useState("");
   const [isOpen, setIsOpen] = React.useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const closeDropdown = useCallback(() => {
+    setIsOpen(false);
+    setSearch("");
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        closeDropdown();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen, closeDropdown]);
 
   const filteredTasks = TASK_TYPES.filter(
     (t) =>
@@ -234,7 +254,7 @@ export default function ReportFindingCard({
         {/* Risk + Status + Task Type row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Task Type Searchable Selection */}
-          <div className="relative">
+          <div className="relative" ref={dropdownRef}>
             <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1">
               Tipo de Tarefa
             </label>
@@ -282,8 +302,7 @@ export default function ReportFindingCard({
                           }`}
                           onClick={() => {
                             onUpdate(finding.id, { task_type: t.value });
-                            setIsOpen(false);
-                            setSearch("");
+                            closeDropdown();
                           }}
                         >
                           {t.label}
@@ -301,15 +320,6 @@ export default function ReportFindingCard({
                 </div>
               )}
             </div>
-            {isOpen && (
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => {
-                  setIsOpen(false);
-                  setSearch("");
-                }}
-              />
-            )}
           </div>
 
           {/* Risk Level */}

@@ -152,7 +152,7 @@ When user's prompt is NOT in English:
 | Project Type                           | Primary Agent         | Skills                        |
 | -------------------------------------- | --------------------- | ----------------------------- |
 | **MOBILE** (iOS, Android, RN, Flutter) | `mobile-developer`    | mobile-design                 |
-| **WEB** (Next.js, React web)           | `frontend-specialist` | frontend-design               |
+| **WEB** (Vite, React web)              | `frontend-specialist` | frontend-design               |
 | **BACKEND** (API, server, DB)          | `backend-specialist`  | api-patterns, database-design |
 
 > 🔴 **Mobile + frontend-specialist = WRONG.** Mobile = mobile-developer ONLY.

@@ -20,6 +20,7 @@ export interface IProjectRepository {
 
   // Members
   listProjectMembers(projectId: string): Promise<ProjectMemberDTO[]>;
+  listProjectMembersWithDetails(projectId: string): Promise<any[]>;
   assignMember(
     projectId: string,
     memberId: string,

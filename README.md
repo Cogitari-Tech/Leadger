@@ -17,6 +17,7 @@ Este repositório contém toda a especificação técnica para evolução da pla
 | **Estrutura do Projeto**               | Organização completa de pastas, módulos e pacotes               | `docs/project-structure.md`            |
 | **Guia de Migração**                   | Passo a passo para migrar do sistema legado                     | `docs/migration-guide.md`              |
 | **Workflow de Desenvolvimento**        | CI/CD, Testes e Segurança (Pre-commit)                          | `docs/development-workflow.md`         |
+| **Developer Experience (DX)**          | Usuários de teste, bypasses e shortcuts de Vibe Coding          | `docs/developer-experience.md`          |
 
 ### 💻 Exemplos de Código
 
@@ -123,8 +124,8 @@ git --version
 
 ```bash
 # 1. Clonar repositório
-git clone https://github.com/Cogitari-Tech/Audit-Tool.git
-cd Audit-Tool
+git clone https://github.com/Cogitari-Tech/Leadgers-Platform.git
+cd Leadgers-Platform
 
 # 2. Instalar dependências
 npm install
@@ -170,7 +171,7 @@ npm run build
 ## 📁 Estrutura do Projeto
 
 ```
-Audit-Tool/                     # ⚠️ Repositório: https://github.com/Cogitari-Tech/Audit-Tool
+Leadgers-Platform/              # ⚠️ Repositório: https://github.com/Cogitari-Tech/Leadgers-Platform
 │
 ├── apps/
 │   └── web/                    # Frontend React
@@ -581,7 +582,7 @@ on:
 
 ### Bugs e Issues
 
-🐛 GitHub Issues: https://github.com/Cogitari-Tech/Audit-Tool/issues
+🐛 GitHub Issues: https://github.com/Cogitari-Tech/Leadgers-Platform/issues
 
 ### Emergências
 
@@ -628,4 +629,4 @@ Para testes rápidos em ambiente de produção ou homologação:
 
 **Cogitari Tech** - Construindo o futuro da auditoria e gestão empresarial. 🚀
 
-_Última atualização: 11 de Março de 2026_
+_Última atualização: 12 de Março de 2026_
