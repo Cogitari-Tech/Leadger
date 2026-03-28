@@ -235,6 +235,12 @@ export default function AuditApprovalView() {
     );
   }
 
+  // ⚡ Bolt: Calculate conforme count once instead of filtering the array 3 times during render.
+  // Impact: Reduces time complexity from O(3N) to O(N) for the responses array.
+  const conformeCount = responses.filter(
+    (r) => r.status === "conforme",
+  ).length;
+
   return (
     <div className="space-y-10 pb-20">
       {/* Header */}
@@ -295,11 +301,7 @@ export default function AuditApprovalView() {
             </span>
             <span className="text-xl font-bold text-emerald-500">
               {responses.length > 0
-                ? Math.round(
-                    (responses.filter((r) => r.status === "conforme").length /
-                      responses.length) *
-                      100,
-                  )
+                ? Math.round((conformeCount / responses.length) * 100)
                 : 0}
               %
             </span>
@@ -308,13 +310,12 @@ export default function AuditApprovalView() {
             <div
               className="h-full bg-emerald-500 transition-all duration-500 ease-out"
               style={{
-                width: `${responses.length > 0 ? (responses.filter((r) => r.status === "conforme").length / responses.length) * 100 : 0}%`,
+                width: `${responses.length > 0 ? (conformeCount / responses.length) * 100 : 0}%`,
               }}
             />
           </div>
           <p className="text-xs text-muted-foreground/60 font-medium mt-4">
-            {responses.filter((r) => r.status === "conforme").length} conformes
-            de {responses.length} itens avaliados.
+            {conformeCount} conformes de {responses.length} itens avaliados.
           </p>
         </div>
 
