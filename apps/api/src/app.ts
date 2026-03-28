@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { secureHeaders } from "hono/secure-headers";
 import runwayRoutes from "./routes/finance/runway";
 import unitEconomicsRoutes from "./routes/finance/unit-economics";
 import burnRateRoutes from "./routes/finance/burn-rate";
@@ -20,6 +21,7 @@ import headcountRoutes from "./routes/people/headcount";
 const app = new Hono();
 
 app.use("*", logger());
+app.use("*", secureHeaders());
 app.use(
   "*",
   cors({
