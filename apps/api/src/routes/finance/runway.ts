@@ -63,6 +63,14 @@ runwayRoutes.post("/", async (c) => {
     },
   });
 
+  // ⚡ Bolt: Pre-calculate headcount costs by month to avoid O(N*M) recalculations in the projection loop
+  const headcountCostsByMonth = headcountPlans.reduce((acc: Record<string, number>, plan: any) => {
+    const startDate = new Date(plan.expected_start_date);
+    const key = `${startDate.getFullYear()}-${startDate.getMonth()}`;
+    acc[key] = (acc[key] || 0) + Number(plan.monthly_salary);
+    return acc;
+  }, {} as Record<string, number>);
+
   const results = scenarios.map((params: any) => {
     const data = [];
     let balance = cashBalance;
@@ -105,18 +113,8 @@ runwayRoutes.post("/", async (c) => {
       const nextMonthDate = new Date();
       nextMonthDate.setMonth(nextMonthDate.getMonth() + m + 1);
 
-      const newHeadcountMonthlyCost = headcountPlans
-        .filter((plan: any) => {
-          const startDate = new Date(plan.expected_start_date);
-          return (
-            startDate.getMonth() === nextMonthDate.getMonth() &&
-            startDate.getFullYear() === nextMonthDate.getFullYear()
-          );
-        })
-        .reduce(
-          (sum: number, plan: any) => sum + Number(plan.monthly_salary),
-          0,
-        );
+      // ⚡ Bolt: O(1) dictionary lookup instead of filtering and reducing the entire array on every iteration
+      const newHeadcountMonthlyCost = headcountCostsByMonth[`${nextMonthDate.getFullYear()}-${nextMonthDate.getMonth()}`] || 0;
 
       expenses += newHeadcountMonthlyCost;
     }
