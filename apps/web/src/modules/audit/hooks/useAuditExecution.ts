@@ -89,13 +89,21 @@ export function useAuditExecution() {
 
         if (!controls?.length) return;
 
-        const items = controls.map((c: any) => ({
-          program_id: programId,
-          control_id: c.id,
-          title: `${c.code} — ${c.title}`,
-          description: c.description,
-          sort_order: c.sort_order,
-        }));
+        const items = controls.map(
+          (c: {
+            id: string;
+            code: string;
+            title: string;
+            description: string | null;
+            sort_order: number;
+          }) => ({
+            program_id: programId,
+            control_id: c.id,
+            title: `${c.code} — ${c.title}`,
+            description: c.description,
+            sort_order: c.sort_order,
+          }),
+        );
 
         const { error: err } = await supabase
           .from("audit_program_checklists")

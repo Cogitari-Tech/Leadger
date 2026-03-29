@@ -73,7 +73,7 @@ export function useProfile() {
       const { data: factors } = await supabase.auth.mfa.listFactors();
       const mfaEnabled =
         (factors?.all?.length ?? 0) > 0 &&
-        factors?.all?.some((f: any) => f.status === "verified");
+        factors?.all?.some((f: { status: string }) => f.status === "verified");
 
       const tenantInfo = memberData?.tenants as unknown as {
         name: string;
@@ -95,18 +95,27 @@ export function useProfile() {
         roleName: roleInfo?.display_name || memberData?.role || "",
         tenantName: tenantInfo?.name || "",
         tenantId: memberData?.tenant_id || "",
-        projects: (projectMemberships || []).map((pm: any) => ({
-          id: pm.projects?.id || "",
-          name: pm.projects?.name || "",
-          status: pm.projects?.status || "",
-          role: pm.project_role || "member",
-        })),
+        projects: (projectMemberships || []).map(
+          (pm: {
+            projects?: Array<{ id: string; name: string; status: string }>;
+            project_role?: string;
+          }) => {
+            const project = pm.projects?.[0];
+
+            return {
+              id: project?.id || "",
+              name: project?.name || "",
+              status: project?.status || "",
+              role: pm.project_role || "member",
+            };
+          },
+        ),
         mfaEnabled: mfaEnabled || false,
         emailConfirmedAt: authUser?.email_confirmed_at || null,
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error("Profile fetch error:", err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
@@ -124,8 +133,8 @@ export function useProfile() {
       });
       if (updateError) throw updateError;
       setProfile((prev) => (prev ? { ...prev, fullName } : null));
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
       throw err;
     } finally {
       setSaving(false);
@@ -155,8 +164,8 @@ export function useProfile() {
         if (updateError) throw updateError;
 
         setProfile((prev) => (prev ? { ...prev, avatarUrl: publicUrl } : null));
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
         throw err;
       } finally {
         setSaving(false);
@@ -173,8 +182,8 @@ export function useProfile() {
       );
       if (resetError) throw resetError;
       return true;
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
       throw err;
     }
   }, [profile?.email]);
@@ -187,8 +196,8 @@ export function useProfile() {
       });
       if (updateError) throw updateError;
       setProfile((prev) => (prev ? { ...prev, secondaryEmail } : null));
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
       throw err;
     } finally {
       setSaving(false);
@@ -203,8 +212,8 @@ export function useProfile() {
       });
       if (updateError) throw updateError;
       // User will need to verify email, profile will reflect after refresh/re-login
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
       throw err;
     } finally {
       setSaving(false);

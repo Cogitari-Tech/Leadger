@@ -264,12 +264,12 @@ export class SupabaseFinanceRepository implements IFinanceRepository {
       throw new Error(`Failed to get account balances: ${error.message}`);
     }
 
-    return (data as any[]).map((item) => ({
-      accountId: item.account_id,
-      accountName: item.account_name,
-      accountCode: item.account_code,
-      accountType: item.account_type,
-      isAnalytical: item.is_analytical,
+    return (data as Array<Record<string, unknown>>).map((item) => ({
+      accountId: item.account_id as string,
+      accountName: item.account_name as string,
+      accountCode: item.account_code as string,
+      accountType: item.account_type as string,
+      isAnalytical: Boolean(item.is_analytical),
       debitTotal: Number(item.debit_total),
       creditTotal: Number(item.credit_total),
       balance: Number(item.balance),

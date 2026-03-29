@@ -8,10 +8,15 @@ import {
   X,
   Layers,
   ArrowRight,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import { Select } from "@/shared/components/ui/Select";
-import { useCapTable, SimulationInput } from "../hooks/useCapTable";
+import {
+  useCapTable,
+  SimulationInput,
+  VestingSchedule,
+} from "../hooks/useCapTable";
 
 const COLORS = [
   "#3b82f6",
@@ -74,9 +79,10 @@ export default function CapTable() {
     share_price: 0,
     ownership_percentage: 0,
     investment_amount: 0,
-    vesting_schedule: {},
+    vesting_schedule: {} as VestingSchedule,
     notes: "",
   });
+  const [vestingError, setVestingError] = useState<string | null>(null);
 
   const pieData = shareholders.map((s) => ({
     name: s.shareholder_name,
@@ -256,6 +262,7 @@ export default function CapTable() {
                   <tr className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] border-b border-border/10">
                     <th className="px-8 py-5 text-left">Nome</th>
                     <th className="px-8 py-5 text-left">Tipo</th>
+                    <th className="px-8 py-5 text-center">Vesting</th>
                     <th className="px-8 py-5 text-right">Ações</th>
                     <th className="px-8 py-5 text-right">%</th>
                     <th className="px-8 py-5 text-right">Investido</th>
@@ -276,14 +283,35 @@ export default function CapTable() {
                           {s.shareholder_type}
                         </span>
                       </td>
+                      <td className="px-8 py-6 text-sm text-center">
+                        {s.calculated_vesting ? (
+                          <div className="flex flex-col items-center gap-1">
+                            <div className="w-full bg-border/40 h-1.5 rounded-full overflow-hidden">
+                              <div
+                                className="bg-primary h-full rounded-full transition-all duration-500"
+                                style={{
+                                  width: `${s.calculated_vesting.percentage}%`,
+                                }}
+                              />
+                            </div>
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                              {s.calculated_vesting.percentage}% Vested
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground uppercase tracking-widest opacity-50">
+                            N/A
+                          </span>
+                        )}
+                      </td>
                       <td className="px-8 py-6 text-sm font-bold text-right">
-                        {s.shares_count.toLocaleString("pt-BR")}
+                        {Number(s.shares_count).toLocaleString("pt-BR")}
                       </td>
                       <td className="px-8 py-6 text-sm font-bold text-right text-primary">
-                        {s.ownership_percentage.toFixed(2)}%
+                        {Number(s.ownership_percentage).toFixed(2)}%
                       </td>
                       <td className="px-8 py-6 text-sm font-bold text-right">
-                        {formatCurrency(s.investment_amount)}
+                        {formatCurrency(Number(s.investment_amount))}
                       </td>
                       <td className="px-8 py-6 text-center">
                         <button
@@ -332,15 +360,15 @@ export default function CapTable() {
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                Novas Ações
+                Valor Levantado (R$)
               </label>
               <input
                 type="number"
-                value={simInput.newInvestorShares}
+                value={simInput.amountRaised}
                 onChange={(e) =>
                   setSimInput({
                     ...simInput,
-                    newInvestorShares: Number(e.target.value),
+                    amountRaised: Number(e.target.value),
                   })
                 }
                 className="glass-input w-full px-4 py-3 rounded-xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
@@ -605,8 +633,34 @@ export default function CapTable() {
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
+                setVestingError(null);
+
+                const vs = shareholderForm.vesting_schedule;
+                if (vs?.start_date || vs?.cliff_months || vs?.duration_months) {
+                  if (!vs.start_date) {
+                    setVestingError(
+                      "Data de início é obrigatória quando vesting é definido.",
+                    );
+                    return;
+                  }
+                  if (!vs.duration_months || vs.duration_months <= 0) {
+                    setVestingError("Duração deve ser maior que 0.");
+                    return;
+                  }
+                  if (
+                    vs.cliff_months &&
+                    vs.cliff_months >= vs.duration_months
+                  ) {
+                    setVestingError(
+                      "Cliff deve ser menor que a duração total.",
+                    );
+                    return;
+                  }
+                }
+
                 await addShareholder(shareholderForm as any);
                 setShowShareholderModal(false);
+                setVestingError(null);
               }}
               className="space-y-6"
             >
@@ -726,6 +780,87 @@ export default function CapTable() {
                   />
                 </div>
               </div>
+
+              {/* Vesting Schedule */}
+              <div className="p-6 rounded-2xl bg-foreground/5 border border-border/10 space-y-4">
+                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">
+                  Vesting Schedule (Opcional)
+                </h4>
+                {vestingError && (
+                  <div className="flex items-center gap-2 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-medium">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    {vestingError}
+                  </div>
+                )}
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                      Data Início
+                    </label>
+                    <input
+                      type="date"
+                      value={shareholderForm.vesting_schedule?.start_date || ""}
+                      onChange={(e) =>
+                        setShareholderForm({
+                          ...shareholderForm,
+                          vesting_schedule: {
+                            ...shareholderForm.vesting_schedule,
+                            start_date: e.target.value,
+                          },
+                        })
+                      }
+                      className="glass-input w-full px-4 py-3 rounded-xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                      Cliff (Meses)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={
+                        shareholderForm.vesting_schedule?.cliff_months || ""
+                      }
+                      onChange={(e) =>
+                        setShareholderForm({
+                          ...shareholderForm,
+                          vesting_schedule: {
+                            ...shareholderForm.vesting_schedule,
+                            cliff_months: Number(e.target.value),
+                          },
+                        })
+                      }
+                      className="glass-input w-full px-4 py-3 rounded-xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
+                      placeholder="Ex: 12"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                      Duração (Meses)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={
+                        shareholderForm.vesting_schedule?.duration_months || ""
+                      }
+                      onChange={(e) =>
+                        setShareholderForm({
+                          ...shareholderForm,
+                          vesting_schedule: {
+                            ...shareholderForm.vesting_schedule,
+                            duration_months: Number(e.target.value),
+                          },
+                        })
+                      }
+                      className="glass-input w-full px-4 py-3 rounded-xl bg-muted/40 border border-border/40 text-foreground text-sm outline-none"
+                      placeholder="Ex: 48"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="flex gap-4 pt-4">
                 <Button
                   type="button"

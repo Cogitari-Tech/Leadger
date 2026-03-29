@@ -16,19 +16,17 @@ import sys
 import json
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List, Optional
 
 # Fix Windows console encoding
-if hasattr(sys.stdout, 'reconfigure'):
-    try:
-        sys.stdout.reconfigure(encoding='utf-8', errors='replace') # type: ignore
-    except Exception:
-        pass
+try:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+except:
+    pass
 
 
-def detect_test_framework(project_path: Path) -> Dict[str, Any]:
+def detect_test_framework(project_path: Path) -> dict:
     """Detect test framework and commands."""
-    result: Dict[str, Any] = {
+    result = {
         "type": "unknown",
         "framework": None,
         "cmd": None,
@@ -78,9 +76,9 @@ def detect_test_framework(project_path: Path) -> Dict[str, Any]:
     return result
 
 
-def run_tests(cmd: list, cwd: Path) -> Dict[str, Any]:
+def run_tests(cmd: list, cwd: Path) -> dict:
     """Run tests and return results."""
-    result: Dict[str, Any] = {
+    result = {
         "passed": False,
         "output": "",
         "error": "",
@@ -97,13 +95,12 @@ def run_tests(cmd: list, cwd: Path) -> Dict[str, Any]:
             text=True,
             encoding='utf-8',
             errors='replace',
-            timeout=300,  # 5 min timeout for tests
-            shell=sys.platform == "win32"
+            timeout=300  # 5 min timeout for tests
         )
         
-        result["output"] = str(proc.stdout[:3000]) if proc.stdout else ""
-        result["error"] = str(proc.stderr[:500]) if proc.stderr else ""
-        result["passed"] = bool(proc.returncode == 0)
+        result["output"] = proc.stdout[:3000] if proc.stdout else ""
+        result["error"] = proc.stderr[:500] if proc.stderr else ""
+        result["passed"] = proc.returncode == 0
         
         # Try to parse test counts from output
         output = proc.stdout or ""
@@ -117,7 +114,7 @@ def run_tests(cmd: list, cwd: Path) -> Dict[str, Any]:
             match = re.search(r'(\d+)\s+failed', output, re.IGNORECASE)
             if match:
                 result["tests_failed"] = int(match.group(1))
-            result["tests_run"] = int(result["tests_passed"]) + int(result["tests_failed"])
+            result["tests_run"] = result["tests_passed"] + result["tests_failed"]
         
         # Pytest pattern: "X passed, Y failed"
         if "pytest" in str(cmd):
@@ -128,7 +125,7 @@ def run_tests(cmd: list, cwd: Path) -> Dict[str, Any]:
             match = re.search(r'(\d+)\s+failed', output)
             if match:
                 result["tests_failed"] = int(match.group(1))
-            result["tests_run"] = int(result["tests_passed"]) + int(result["tests_failed"])
+            result["tests_run"] = result["tests_passed"] + result["tests_failed"]
         
     except FileNotFoundError:
         result["error"] = f"Command not found: {cmd[0]}"

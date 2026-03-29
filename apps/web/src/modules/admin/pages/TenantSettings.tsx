@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, type FormEvent } from "react";
 import { supabase } from "../../../config/supabase";
+import { apiClient } from "../../../shared/utils/apiClient";
 import { useAuth } from "../../auth/context/AuthContext";
 import {
   Building2,
@@ -13,11 +14,40 @@ import {
   Globe,
   Link2,
   Camera,
+  Brain,
+  Sparkles,
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
 import { TwoFactorSetup } from "../../auth/components/TwoFactorSetup";
 import { GitHubConnect } from "../../github/components/GitHubConnect";
+
+interface AiSettings {
+  proactivity_level: string;
+  tone: string;
+  insight_focus: string[];
+}
+
+const PROACTIVITY_LEVELS = [
+  { value: "low", label: "Discreto", desc: "Apenas quando solicitado" },
+  { value: "medium", label: "Moderado", desc: "Alertas relevantes" },
+  { value: "high", label: "Proativo", desc: "Insights frequentes" },
+];
+
+const TONE_OPTIONS = [
+  { value: "professional", label: "Profissional" },
+  { value: "casual", label: "Conversacional" },
+  { value: "executive", label: "Executivo" },
+];
+
+const FOCUS_AREAS = [
+  { value: "finance", label: "Financeiro" },
+  { value: "burn_rate", label: "Burn Rate" },
+  { value: "product", label: "Produto" },
+  { value: "compliance", label: "Compliance" },
+  { value: "team", label: "Equipe" },
+  { value: "commercial", label: "Comercial" },
+];
 
 export function TenantSettings() {
   const { tenant } = useAuth();
@@ -29,6 +59,24 @@ export function TenantSettings() {
   const [uploading, setUploading] = useState(false);
   const [saved, setSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // AI Settings state
+  const [aiSettings, setAiSettings] = useState<AiSettings>({
+    proactivity_level: "medium",
+    tone: "professional",
+    insight_focus: ["finance", "burn_rate"],
+  });
+  const [aiSaving, setAiSaving] = useState(false);
+  const [aiSaved, setAiSaved] = useState(false);
+
+  useEffect(() => {
+    apiClient
+      .get<AiSettings>("/ai/config")
+      .then((data) => {
+        if (data) setAiSettings(data);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!tenant) return;
@@ -58,7 +106,7 @@ export function TenantSettings() {
       } = supabase.storage.from("audit-evidences").getPublicUrl(path);
 
       setLogoUrl(publicUrl);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Logo upload error:", err);
     } finally {
       setUploading(false);
@@ -289,6 +337,154 @@ export function TenantSettings() {
           </div>
           <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden min-h-[400px]">
             <GitHubConnect />
+          </div>
+        </div>
+      </div>
+
+      {/* AI Intelligence Configuration */}
+      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+        <div className="space-y-1 px-4">
+          <h2 className="text-3xl font-black text-foreground font-display flex items-center gap-4">
+            <Brain className="w-8 h-8 text-primary" /> Inteligência Artificial
+          </h2>
+          <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest opacity-60">
+            Configuração Granular de IA — Proatividade, Tom e Foco
+          </p>
+        </div>
+
+        <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden p-8 md:p-12 space-y-10">
+          {/* Proactivity Level */}
+          <div className="space-y-4">
+            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2 flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5" /> Nível de Proatividade
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {PROACTIVITY_LEVELS.map((level) => (
+                <button
+                  key={level.value}
+                  type="button"
+                  onClick={() =>
+                    setAiSettings((prev) => ({
+                      ...prev,
+                      proactivity_level: level.value,
+                    }))
+                  }
+                  className={`group relative flex flex-col p-6 rounded-2xl border transition-all duration-300 text-left ${
+                    aiSettings.proactivity_level === level.value
+                      ? "border-primary bg-primary/5 ring-4 ring-primary/10 shadow-lg"
+                      : "border-border/40 bg-background/30 hover:border-primary/30 hover:bg-background/50"
+                  }`}
+                >
+                  <span
+                    className={`text-sm font-black ${
+                      aiSettings.proactivity_level === level.value
+                        ? "text-primary"
+                        : "text-foreground"
+                    }`}
+                  >
+                    {level.label}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground mt-1 opacity-70">
+                    {level.desc}
+                  </span>
+                  {aiSettings.proactivity_level === level.value && (
+                    <div className="absolute top-3 right-3 w-2.5 h-2.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tone */}
+          <div className="space-y-4">
+            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2">
+              Tom de Comunicação
+            </label>
+            <div className="flex flex-wrap gap-3">
+              {TONE_OPTIONS.map((tone) => (
+                <button
+                  key={tone.value}
+                  type="button"
+                  onClick={() =>
+                    setAiSettings((prev) => ({ ...prev, tone: tone.value }))
+                  }
+                  className={`px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${
+                    aiSettings.tone === tone.value
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                      : "border border-border/40 bg-background/30 text-muted-foreground hover:border-primary/30"
+                  }`}
+                >
+                  {tone.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Focus Areas */}
+          <div className="space-y-4">
+            <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2">
+              Áreas de Foco dos Insights
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {FOCUS_AREAS.map((area) => {
+                const isActive = aiSettings.insight_focus.includes(area.value);
+                return (
+                  <button
+                    key={area.value}
+                    type="button"
+                    onClick={() => {
+                      setAiSettings((prev) => ({
+                        ...prev,
+                        insight_focus: isActive
+                          ? prev.insight_focus.filter((f) => f !== area.value)
+                          : [...prev.insight_focus, area.value],
+                      }));
+                    }}
+                    className={`px-5 py-4 rounded-2xl text-xs font-bold transition-all duration-300 ${
+                      isActive
+                        ? "bg-primary/10 text-primary border border-primary/30 shadow-sm"
+                        : "border border-border/30 text-muted-foreground hover:border-primary/20 bg-background/20"
+                    }`}
+                  >
+                    {area.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Save AI Settings */}
+          <div className="flex items-center justify-end gap-4 pt-6 border-t border-border/30">
+            {aiSaved && (
+              <span className="text-[10px] text-primary font-black uppercase tracking-widest animate-in fade-in slide-in-from-right-4">
+                ✓ Configuração de IA Salva
+              </span>
+            )}
+            <button
+              type="button"
+              disabled={aiSaving}
+              onClick={async () => {
+                setAiSaving(true);
+                setAiSaved(false);
+                try {
+                  await apiClient.patch("/ai/config", aiSettings);
+                  setAiSaved(true);
+                  setTimeout(() => setAiSaved(false), 3000);
+                } catch (err) {
+                  console.error("Error saving AI config:", err);
+                } finally {
+                  setAiSaving(false);
+                }
+              }}
+              className="flex items-center gap-3 rounded-2xl bg-primary px-8 py-4 text-[11px] font-black uppercase tracking-[0.2em] text-primary-foreground shadow-xl shadow-primary/20 transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 ring-4 ring-primary/5"
+            >
+              {aiSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Brain className="h-4 w-4" />
+              )}
+              {aiSaving ? "Salvando..." : "Salvar Configuração IA"}
+            </button>
           </div>
         </div>
       </div>

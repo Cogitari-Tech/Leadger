@@ -47,7 +47,9 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("tenant_id", tenantId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Failed to list programs: ${error.message}`);
-    return (data ?? []).map((row: any) => AuditProgram.fromPersistence(row));
+    return (data ?? []).map((row: Record<string, unknown>) =>
+      AuditProgram.fromPersistence(row as Record<string, unknown>),
+    );
   }
 
   async updateProgram(program: AuditProgram): Promise<void> {
@@ -96,7 +98,9 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("program_id", programId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Failed to list findings: ${error.message}`);
-    return (data ?? []).map((row: any) => AuditFinding.fromPersistence(row));
+    return (data ?? []).map((row: Record<string, unknown>) =>
+      AuditFinding.fromPersistence(row as Record<string, unknown>),
+    );
   }
 
   async listFindings(tenantId: string): Promise<AuditFinding[]> {
@@ -106,7 +110,9 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("tenant_id", tenantId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Failed to list findings: ${error.message}`);
-    return (data ?? []).map((row: any) => AuditFinding.fromPersistence(row));
+    return (data ?? []).map((row: Record<string, unknown>) =>
+      AuditFinding.fromPersistence(row as Record<string, unknown>),
+    );
   }
 
   async updateFinding(finding: AuditFinding): Promise<void> {
@@ -148,7 +154,9 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("finding_id", findingId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Failed to list action plans: ${error.message}`);
-    return (data ?? []).map((row: any) => AuditActionPlan.fromPersistence(row));
+    return (data ?? []).map((row: Record<string, unknown>) =>
+      AuditActionPlan.fromPersistence(row as Record<string, unknown>),
+    );
   }
 
   async listActionPlans(tenantId: string): Promise<AuditActionPlan[]> {
@@ -158,7 +166,9 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("tenant_id", tenantId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Failed to list action plans: ${error.message}`);
-    return (data ?? []).map((row: any) => AuditActionPlan.fromPersistence(row));
+    return (data ?? []).map((row: Record<string, unknown>) =>
+      AuditActionPlan.fromPersistence(row as Record<string, unknown>),
+    );
   }
 
   async updateActionPlan(plan: AuditActionPlan): Promise<void> {
@@ -217,15 +227,31 @@ export class SupabaseAuditRepository implements IAuditRepository {
       .eq("tenant_id", tenantId);
     if (error) throw new Error(`Failed to count findings: ${error.message}`);
 
-    const findings = data ?? [];
-    return {
-      total: findings.length,
-      open: findings.filter((f: any) => f.status === "open").length,
-      inProgress: findings.filter((f: any) => f.status === "in_progress")
-        .length,
-      resolved: findings.filter((f: any) => f.status === "resolved").length,
-      critical: findings.filter((f: any) => f.risk_level === "critical").length,
-      high: findings.filter((f: any) => f.risk_level === "high").length,
-    };
+    const findings = (data ?? []) as Array<{
+      status: string;
+      risk_level: string;
+    }>;
+
+    // ⚡ Bolt: Single pass reduction to avoid iterating the array 5 times
+    return findings.reduce(
+      (acc, f) => {
+        if (f.status === "open") acc.open++;
+        else if (f.status === "in_progress") acc.inProgress++;
+        else if (f.status === "resolved") acc.resolved++;
+
+        if (f.risk_level === "critical") acc.critical++;
+        else if (f.risk_level === "high") acc.high++;
+
+        return acc;
+      },
+      {
+        total: findings.length,
+        open: 0,
+        inProgress: 0,
+        resolved: 0,
+        critical: 0,
+        high: 0,
+      },
+    );
   }
 }

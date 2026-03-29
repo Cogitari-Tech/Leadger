@@ -37,9 +37,15 @@ export default function ComplianceDashboard() {
 
       if (data) {
         setComplianceStats({
-          compliant: data.filter((d: any) => d.status === "compliant").length,
-          partial: data.filter((d: any) => d.status === "non_compliant").length,
-          pending: data.filter((d: any) => d.status === "pending").length,
+          compliant: data.filter(
+            (d: { status: string }) => d.status === "compliant",
+          ).length,
+          partial: data.filter(
+            (d: { status: string }) => d.status === "non_compliant",
+          ).length,
+          pending: data.filter(
+            (d: { status: string }) => d.status === "pending",
+          ).length,
           total: data.length,
         });
       }
@@ -77,7 +83,7 @@ export default function ComplianceDashboard() {
   }));
 
   const actionItems = risks
-    .filter((r: any) => r.status === "open")
+    .filter((r) => r.status === "open")
     .map((r) => ({
       id: r.id,
       title: r.title,

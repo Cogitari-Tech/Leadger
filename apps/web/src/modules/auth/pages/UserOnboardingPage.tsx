@@ -96,7 +96,7 @@ export function UserOnboardingPage() {
 
       // 2. Clear state and navigate allowing AuthGuard re-render
       setTimeout(() => navigate("/dashboard", { replace: true }), 0);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setError("Erro ao finalizar configuração. Tente novamente.");
       setLoading(false);

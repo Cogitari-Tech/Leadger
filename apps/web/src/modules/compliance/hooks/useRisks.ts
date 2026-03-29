@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../../auth/context/AuthContext";
 import type { RiskEntry } from "../types/compliance.types";
+import type { CreateRiskInput } from "@leadgers/core/repositories/IComplianceRepository";
 import { SupabaseComplianceRepository } from "../repositories/SupabaseComplianceRepository";
 
 export function useRisks() {
@@ -38,7 +39,10 @@ export function useRisks() {
     if (!tenant) return;
 
     try {
-      const data = await repository.addRisk(tenant.id, item as any);
+      const data = await repository.addRisk(
+        tenant.id,
+        item as unknown as CreateRiskInput,
+      );
       setRisks((prev) => [...prev, data as unknown as RiskEntry]);
     } catch (error) {
       console.error("Error adding risk:", error);

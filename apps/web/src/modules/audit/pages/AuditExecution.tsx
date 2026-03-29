@@ -26,7 +26,7 @@ import type {
 const STATUS_OPTIONS: {
   value: AuditResponseStatus;
   label: string;
-  icon: any;
+  icon: React.ElementType;
   color: string;
 }[] = [
   {
@@ -186,8 +186,8 @@ export default function AuditExecution() {
     try {
       await submitAuditForReview(programId);
       navigate("/audit/programs");
-    } catch (err: any) {
-      alert(err.message || "Erro ao consolidar.");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao consolidar.");
     }
   };
 
