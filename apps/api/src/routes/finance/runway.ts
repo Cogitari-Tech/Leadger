@@ -63,6 +63,20 @@ runwayRoutes.post("/", async (c) => {
     },
   });
 
+  // ⚡ Bolt: Pre-calculate headcount costs by month to avoid O(N*M) lookups inside projection loop
+  const headcountCostByMonth = new Map<string, number>();
+  for (const plan of headcountPlans) {
+    if (plan.expected_start_date) {
+      const startDate = new Date(plan.expected_start_date);
+      const key = `${startDate.getFullYear()}-${startDate.getMonth()}`;
+      const currentCost = headcountCostByMonth.get(key) || 0;
+      headcountCostByMonth.set(
+        key,
+        currentCost + Number(plan.monthly_salary || 0),
+      );
+    }
+  }
+
   const results = scenarios.map((params: any) => {
     const data = [];
     let balance = cashBalance;
@@ -105,18 +119,9 @@ runwayRoutes.post("/", async (c) => {
       const nextMonthDate = new Date();
       nextMonthDate.setMonth(nextMonthDate.getMonth() + m + 1);
 
-      const newHeadcountMonthlyCost = headcountPlans
-        .filter((plan: any) => {
-          const startDate = new Date(plan.expected_start_date);
-          return (
-            startDate.getMonth() === nextMonthDate.getMonth() &&
-            startDate.getFullYear() === nextMonthDate.getFullYear()
-          );
-        })
-        .reduce(
-          (sum: number, plan: any) => sum + Number(plan.monthly_salary),
-          0,
-        );
+      const nextMonthKey = `${nextMonthDate.getFullYear()}-${nextMonthDate.getMonth()}`;
+      const newHeadcountMonthlyCost =
+        headcountCostByMonth.get(nextMonthKey) || 0;
 
       expenses += newHeadcountMonthlyCost;
     }
