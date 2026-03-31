@@ -47,6 +47,8 @@ export default function CashFlow() {
   const summary = getMonthSummary();
 
   // Prepara dados para o gráfico
+  // ⚡ Bolt: Use O(1) Map lookup instead of O(N) Array.find inside O(M) loop
+  const accountMap = new Map(accounts.map((a) => [a.id, a]));
   const chartData = transactions.reduce(
     (acc, transaction) => {
       const dateKey = formatDate(transaction.date);
@@ -55,12 +57,8 @@ export default function CashFlow() {
         acc[dateKey] = { date: dateKey, inflow: 0, outflow: 0 };
       }
 
-      const creditAccount = accounts.find(
-        (a) => a.id === transaction.accountCreditId,
-      );
-      const debitAccount = accounts.find(
-        (a) => a.id === transaction.accountDebitId,
-      );
+      const creditAccount = accountMap.get(transaction.accountCreditId);
+      const debitAccount = accountMap.get(transaction.accountDebitId);
 
       if (creditAccount?.type === "Receita") {
         acc[dateKey].inflow += transaction.amount;
@@ -336,12 +334,8 @@ export default function CashFlow() {
             </thead>
             <tbody className="divide-y divide-white/5">
               {transactions.map((transaction) => {
-                const debitAccount = accounts.find(
-                  (a) => a.id === transaction.accountDebitId,
-                );
-                const creditAccount = accounts.find(
-                  (a) => a.id === transaction.accountCreditId,
-                );
+                const debitAccount = accountMap.get(transaction.accountDebitId);
+                const creditAccount = accountMap.get(transaction.accountCreditId);
 
                 return (
                   <tr
