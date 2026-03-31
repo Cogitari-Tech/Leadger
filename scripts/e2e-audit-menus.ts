@@ -15,11 +15,6 @@ async function runTest() {
     viewport: { width: 1280, height: 800 },
   });
 
-  // Bypass Turnstile
-  await context.addInitScript(() => {
-    localStorage.setItem("LEADGERS_AUTOMATION_BYPASS", "true");
-  });
-
   const page = await context.newPage();
 
   page.on("console", (msg) => {

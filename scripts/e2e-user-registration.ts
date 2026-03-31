@@ -191,11 +191,6 @@ async function main() {
       timezoneId: "America/Sao_Paulo",
     });
 
-    // Set automation bypass for Turnstile
-    await context.addInitScript(() => {
-      localStorage.setItem("LEADGERS_AUTOMATION_BYPASS", "true");
-    });
-
     const page = await context.newPage();
 
     // ── Step 1: Landing Page ──────────────────────────────

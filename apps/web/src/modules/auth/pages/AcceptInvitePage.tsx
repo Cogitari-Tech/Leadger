@@ -99,10 +99,8 @@ export function AcceptInvitePage() {
     // Captcha validation check
     const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
     const isTestKey = siteKey === "1x00000000000000000000AA";
-    const automationBypass =
-      localStorage.getItem("LEADGERS_AUTOMATION_BYPASS") === "true";
 
-    if (siteKey && !turnstileToken && !isTestKey && !automationBypass) {
+    if (siteKey && !turnstileToken && !isTestKey) {
       setError("Por favor, confirme que você não é um robô.");
       return;
     }
@@ -401,9 +399,7 @@ export function AcceptInvitePage() {
                       (!!import.meta.env.VITE_TURNSTILE_SITE_KEY &&
                         !turnstileToken &&
                         import.meta.env.VITE_TURNSTILE_SITE_KEY !==
-                          "1x00000000000000000000AA" &&
-                        localStorage.getItem("LEADGERS_AUTOMATION_BYPASS") !==
-                          "true")
+                          "1x00000000000000000000AA")
                     }
                     className={
                       btnPrimary +
