@@ -63,6 +63,16 @@ runwayRoutes.post("/", async (c) => {
     },
   });
 
+  // ⚡ Bolt: Pre-calculate headcount costs by month/year to convert O(N*M*P) nested loop to O(1) lookup
+  const headcountCostsByMonthYear: Record<string, number> = {};
+  for (const plan of headcountPlans) {
+    if (plan.expected_start_date) {
+      const startDate = new Date(plan.expected_start_date);
+      const key = `${startDate.getFullYear()}-${startDate.getMonth()}`;
+      headcountCostsByMonthYear[key] = (headcountCostsByMonthYear[key] || 0) + Number(plan.monthly_salary || 0);
+    }
+  }
+
   const results = scenarios.map((params: any) => {
     const data = [];
     let balance = cashBalance;
@@ -105,18 +115,9 @@ runwayRoutes.post("/", async (c) => {
       const nextMonthDate = new Date();
       nextMonthDate.setMonth(nextMonthDate.getMonth() + m + 1);
 
-      const newHeadcountMonthlyCost = headcountPlans
-        .filter((plan: any) => {
-          const startDate = new Date(plan.expected_start_date);
-          return (
-            startDate.getMonth() === nextMonthDate.getMonth() &&
-            startDate.getFullYear() === nextMonthDate.getFullYear()
-          );
-        })
-        .reduce(
-          (sum: number, plan: any) => sum + Number(plan.monthly_salary),
-          0,
-        );
+      // ⚡ Bolt: Replaced expensive O(N) array iteration and Date parsing with O(1) dictionary lookup
+      const lookupKey = `${nextMonthDate.getFullYear()}-${nextMonthDate.getMonth()}`;
+      const newHeadcountMonthlyCost = headcountCostsByMonthYear[lookupKey] || 0;
 
       expenses += newHeadcountMonthlyCost;
     }
