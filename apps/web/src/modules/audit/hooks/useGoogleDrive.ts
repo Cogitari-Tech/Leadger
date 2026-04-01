@@ -10,7 +10,6 @@ import type { AuditReport } from "../types/audit.types";
  */
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
-const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY ?? "";
 const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
 const DRIVE_UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3/files";
 const DRIVE_FOLDER_NAME = "Leadgers Governance Reports";
@@ -88,7 +87,7 @@ export function useGoogleDrive() {
     async (token: string): Promise<string> => {
       // Search for existing folder
       const searchRes = await fetch(
-        `https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false&key=${GOOGLE_API_KEY}`,
+        `https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       const searchData = await searchRes.json();
