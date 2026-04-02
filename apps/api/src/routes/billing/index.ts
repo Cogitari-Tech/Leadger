@@ -1,11 +1,11 @@
 import { Hono } from "hono";
 import Stripe from "stripe";
-import { supabase } from "../../config/supabase";
+import { supabaseAdmin as supabase } from "../../config/supabase";
 
 const billingRoutes = new Hono();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2024-12-18.acacia", 
+  apiVersion: "2026-03-25.dahlia",
 });
 
 // Endpoint to create a checkout session for a specific tenant
@@ -49,7 +49,7 @@ billingRoutes.post("/checkout-session", async (c) => {
     ) {
       return c.json(
         { error: "Insufficient permissions to manage billing" },
-        403
+        403,
       );
     }
 
@@ -147,7 +147,7 @@ billingRoutes.post("/webhook", async (c) => {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         const tenantId = session.metadata?.tenant_id;
-        
+
         if (tenantId && session.mode === "subscription") {
           await supabase
             .from("tenants")
@@ -163,7 +163,7 @@ billingRoutes.post("/webhook", async (c) => {
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
-        
+
         const status = subscription.status; // past_due, active, canceled...
 
         await supabase
@@ -171,7 +171,9 @@ billingRoutes.post("/webhook", async (c) => {
           .update({
             plan_status: status,
             plan: "paid",
-            plan_expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+            plan_expires_at: new Date(
+              (subscription as any).current_period_end * 1000,
+            ).toISOString(),
           })
           .eq("stripe_customer_id", customerId);
         break;
@@ -191,7 +193,7 @@ billingRoutes.post("/webhook", async (c) => {
         break;
       }
     }
-    
+
     return c.json({ received: true });
   } catch (error: any) {
     console.error("Error processing webhook:", error);
