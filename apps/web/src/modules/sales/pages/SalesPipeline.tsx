@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDeals, Deal, PIPELINE_STAGES } from "../hooks/useDeals";
+import { useDeals, PIPELINE_STAGES } from "../hooks/useDeals";
 import {
   TrendingUp,
   Plus,
@@ -85,7 +85,6 @@ export default function SalesPipeline() {
   };
 
   const handleStageMove = async (dealId: string, newStage: string) => {
-    const stage = PIPELINE_STAGES.find((s) => s.key === newStage);
     const prob =
       newStage === "won"
         ? 100
