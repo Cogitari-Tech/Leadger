@@ -1,7 +1,9 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma";
 import { authMiddleware } from "../../middleware/auth";
 import { tenancyMiddleware } from "../../middleware/tenancy";
+import { validateBody } from "../../middleware/validate";
+import { updateBmcSchema } from "../../schemas";
 import { AppEnv } from "../../types/env";
 
 const bmcRoutes = new Hono<AppEnv>();
@@ -11,17 +13,14 @@ bmcRoutes.use("*", tenancyMiddleware);
 
 bmcRoutes.get("/", async (c) => {
   const tenantId = c.get("tenantId");
-  const prisma = new PrismaClient();
 
   try {
     const canvas = await prisma.business_model_canvas.findFirst({
       where: { tenant_id: tenantId },
       orderBy: { updated_at: "desc" },
     });
-    await prisma.$disconnect();
 
     if (!canvas) {
-      // Default empty structure
       return c.json({
         key_partners: [],
         key_activities: [],
@@ -36,16 +35,15 @@ bmcRoutes.get("/", async (c) => {
     }
 
     return c.json(canvas);
-  } catch (err: any) {
-    await prisma.$disconnect();
-    return c.json({ error: err.message }, 500);
+  } catch (err) {
+    console.error("Error fetching BMC:", err);
+    return c.json({ error: "Failed to fetch Business Model Canvas" }, 500);
   }
 });
 
-bmcRoutes.put("/", async (c) => {
+bmcRoutes.put("/", validateBody(updateBmcSchema), async (c) => {
   const tenantId = c.get("tenantId");
-  const body = await c.req.json();
-  const prisma = new PrismaClient();
+  const body = c.get("validatedBody");
 
   try {
     const current = await prisma.business_model_canvas.findFirst({
@@ -86,11 +84,10 @@ bmcRoutes.put("/", async (c) => {
       });
     }
 
-    await prisma.$disconnect();
     return c.json(result);
-  } catch (err: any) {
-    await prisma.$disconnect();
-    return c.json({ error: err.message }, 500);
+  } catch (err) {
+    console.error("Error updating BMC:", err);
+    return c.json({ error: "Failed to update Business Model Canvas" }, 500);
   }
 });
 

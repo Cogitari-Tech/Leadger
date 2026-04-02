@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import milestonesRoutes from "./milestones";
 
-const mockFindMany = vi.fn();
-const mockCreate = vi.fn();
-const mockUpdate = vi.fn();
-const mockDelete = vi.fn();
+const { mockFindMany, mockCreate, mockUpdate, mockDelete } = vi.hoisted(() => ({
+  mockFindMany: vi.fn(),
+  mockCreate: vi.fn(),
+  mockUpdate: vi.fn(),
+  mockDelete: vi.fn(),
+}));
 
 // Mock dependencies
 vi.mock("@prisma/client", () => ({
@@ -21,6 +22,8 @@ vi.mock("@prisma/client", () => ({
     }
   },
 }));
+
+import milestonesRoutes from "./milestones";
 
 vi.mock("../../middleware/auth", () => ({
   authMiddleware: async (c: any, next: any) => {

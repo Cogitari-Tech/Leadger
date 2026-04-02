@@ -17,6 +17,9 @@ vi.mock("../../middleware/tenancy", () => ({
 // Mock PrismaClient as a class (fixes "not a constructor" error)
 vi.mock("@prisma/client", () => ({
   PrismaClient: class MockPrismaClient {
+    headcount_plans = {
+      findMany: vi.fn().mockResolvedValue([]),
+    };
     $disconnect() {
       return Promise.resolve();
     }

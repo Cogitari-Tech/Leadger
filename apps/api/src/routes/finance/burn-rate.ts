@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma";
 import { PrismaFinanceRepository } from "../../adapters/PrismaFinanceRepository";
 import { authMiddleware } from "../../middleware/auth";
 import { tenancyMiddleware } from "../../middleware/tenancy";
@@ -12,7 +12,6 @@ burnRateRoutes.use("*", tenancyMiddleware);
 
 burnRateRoutes.get("/", async (c) => {
   const tenantId = c.get("tenantId");
-  const prisma = new PrismaClient();
   const repo = new PrismaFinanceRepository(prisma, tenantId);
 
   const months = Number(c.req.query("months")) || 6;
@@ -43,8 +42,6 @@ burnRateRoutes.get("/", async (c) => {
       net: netBurn / (months + 1),
     });
   }
-
-  await prisma.$disconnect();
 
   return c.json({
     grossBurn,

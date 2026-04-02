@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma";
 import { PrismaFinanceRepository } from "../../adapters/PrismaFinanceRepository";
 import { authMiddleware } from "../../middleware/auth";
 import { tenancyMiddleware } from "../../middleware/tenancy";
@@ -39,7 +39,6 @@ runwayRoutes.post("/", async (c) => {
   const scenarios = body.scenarios || DEFAULT_SCENARIOS;
 
   const tenantId = c.get("tenantId");
-  const prisma = new PrismaClient();
   const repo = new PrismaFinanceRepository(prisma, tenantId);
 
   // Get current month's income statement
@@ -129,8 +128,6 @@ runwayRoutes.post("/", async (c) => {
       zeroDate,
     };
   });
-
-  await prisma.$disconnect();
 
   return c.json({ results });
 });

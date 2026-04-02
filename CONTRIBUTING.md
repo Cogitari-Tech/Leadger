@@ -1,8 +1,8 @@
-# Guia de Contribuição - Cogitari Governance Tool
+# Guia de Contribuição - Leadgers Platform
 
 Obrigado por ajudar a manter as ferramentas da **Cogitari Tech** (CNPJ: 64.460.886/0001-39).
 
-Este guia cobre o básico para começar. Para detalhes avançados de CI/CD e testes, consulte [Workflow de Desenvolvimento](https://github.com/Cogitari-Tech/Audit-Tool/blob/develop/docs/development-workflow.md).
+Este guia cobre o básico para começar. Para detalhes avançados de CI/CD e testes, consulte [Workflow de Desenvolvimento](docs/03_development-workflow.md).
 
 ---
 
@@ -12,8 +12,8 @@ Este guia cobre o básico para começar. Para detalhes avançados de CI/CD e tes
 
 ```bash
 # 1. Clone o Repositório
-git clone https://github.com/cogitari-tech/Audit-Tool.git
-cd Audit-Tool
+git clone https://github.com/Cogitari-Tech/Leadgers-Platform.git
+cd Leadgers-Platform
 
 # 2. Instale Dependências (Monorepo)
 npm install
@@ -30,6 +30,12 @@ cp .env.example .env
 ```bash
 # Rodar Frontend (Web)
 npm run dev
+
+# Rodar Backend (API Hono)
+npm run dev:api
+
+# Rodar Frontend + Backend simultaneamente
+npm run dev:all
 ```
 
 ---
@@ -64,9 +70,13 @@ Abra um **Pull Request** para a branch `develop`.
 
 Para facilitar os testes locais e E2E, utilize as seguintes credenciais de teste (ambientes Beta/Local):
 
-- **Usuário Padrão (Fixo):** `teste@leadgers.com` / `Cogitari@2026!Dev`
-- **Usuário Secundário (Removível):** `test_removivel@leadgers.com` / `Cogitari@2026!Dev`
-  _(Nota: O segundo usuário é deletado automaticamente do banco de dados ao fazer logout, ideal para testar fluxos de cadastro e onboarding!)_
+| Usuário | Senha | Tipo | Comportamento |
+| :--- | :--- | :--- | :--- |
+| `teste@leadgers.com` | `Cogitari@2026!Dev` | Admin (Auditoria) | Persistente |
+| `qa_vibe_test@leadgers.com` | `Cogitari@2026!Dev` | Novo Registro | **Auto-Removível** (Limpa ao Sair) |
+| `test_removivel@leadgers.com` | `Cogitari@2026!Dev` | Teste de Cadastro | **Auto-Removível** (Limpa ao Sair) |
+
+> 💡 **Dica:** Use `qa_vibe_test@leadgers.com` para testar fluxos de registro e onboarding do zero. O sistema apaga os dados deste usuário e organização ao clicar em "Sair".
 
 ---
 
@@ -89,8 +99,8 @@ O pre-commit hook bloqueará tentativas de commit inseguro.
 
 ## 🐛 Reportar Bugs
 
-Use as [Issues do GitHub](https://github.com/Cogitari-Tech/Audit-Tool/issues) para reportar problemas, anexando passos para reprodução.
+Use as [Issues do GitHub](https://github.com/Cogitari-Tech/Leadgers-Platform/issues) para reportar problemas, anexando passos para reprodução.
 
 ---
 
-Cogitari Tech - Audit Faster.
+Cogitari Tech — Leadgers Governance Platform 🚀
