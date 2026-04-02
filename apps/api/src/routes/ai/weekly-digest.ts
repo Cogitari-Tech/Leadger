@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma";
 import { AnthropicAdapter, GoogleAdapter, IAIService } from "@leadgers/ai";
 import { PrismaFinanceRepository } from "../../adapters/PrismaFinanceRepository";
 import { authMiddleware } from "../../middleware/auth";
@@ -27,7 +27,6 @@ weeklyDigestRoutes.post("/", async (c) => {
     : new AnthropicAdapter(anthropicKey!);
 
   const tenantId = c.get("tenantId");
-  const prisma = new PrismaClient();
   const repo = new PrismaFinanceRepository(prisma, tenantId);
 
   const today = new Date();
@@ -63,12 +62,10 @@ Produza um pequeno resumo (Weekly Digest) focado em insights acionáveis sobre o
       maxTokens: 1000,
     });
 
-    await prisma.$disconnect();
-
     return c.json({ digest: response.text, metrics: context });
-  } catch (error: any) {
-    await prisma.$disconnect();
-    return c.json({ error: error.message }, 500);
+  } catch (err) {
+    console.error("Weekly digest error:", err);
+    return c.json({ error: "Failed to generate weekly digest" }, 500);
   }
 });
 

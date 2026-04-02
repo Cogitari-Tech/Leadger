@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma";
 import { authMiddleware } from "../../middleware/auth";
 import { tenancyMiddleware } from "../../middleware/tenancy";
 import { AppEnv } from "../../types/env";
@@ -11,7 +11,6 @@ healthScoreRoutes.use("*", tenancyMiddleware);
 
 healthScoreRoutes.get("/", async (c) => {
   const tenantId = c.get("tenantId");
-  const prisma = new PrismaClient();
 
   try {
     const latestScore = await prisma.health_scores.findFirst({
@@ -19,10 +18,7 @@ healthScoreRoutes.get("/", async (c) => {
       orderBy: { created_at: "desc" },
     });
 
-    await prisma.$disconnect();
-
     if (!latestScore) {
-      // Retorna vazio amigável caso seja o "Dia Zero" e o Cron ainda não tiver rodado
       return c.json({
         total_score: 0,
         financial: 0,
@@ -41,9 +37,9 @@ healthScoreRoutes.get("/", async (c) => {
     }
 
     return c.json(latestScore);
-  } catch (err: any) {
-    await prisma.$disconnect();
-    return c.json({ error: err.message }, 500);
+  } catch (err) {
+    console.error("Error fetching health score:", err);
+    return c.json({ error: "Failed to fetch health score" }, 500);
   }
 });
 

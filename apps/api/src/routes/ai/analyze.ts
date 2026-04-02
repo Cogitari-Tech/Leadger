@@ -45,9 +45,9 @@ analyzeRoutes.post("/", async (c) => {
     });
 
     return c.json(response);
-  } catch (error: any) {
+  } catch (error) {
     console.error("AI Analyze Error:", error);
-    return c.json({ error: error.message || "AI processing failed" }, 500);
+    return c.json({ error: "AI processing failed" }, 500);
   }
 });
 

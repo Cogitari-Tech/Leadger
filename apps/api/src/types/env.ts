@@ -4,5 +4,6 @@ export type AppEnv = {
     accessToken: string;
     tenantId: string;
     userRole: "owner" | "admin" | "manager" | "member" | "viewer";
+    validatedBody: any;
   };
 };
