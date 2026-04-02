@@ -5,7 +5,7 @@ import { supabaseAdmin as supabase } from "../../config/supabase";
 const billingRoutes = new Hono();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2026-03-25.dahlia",
+  apiVersion: "2024-12-18.acacia" as any,
 });
 
 // Endpoint to create a checkout session for a specific tenant
@@ -161,7 +161,7 @@ billingRoutes.post("/webhook", async (c) => {
       }
 
       case "customer.subscription.updated": {
-        const subscription = event.data.object as Stripe.Subscription;
+        const subscription = event.data.object as any;
         const customerId = subscription.customer as string;
 
         const status = subscription.status; // past_due, active, canceled...
@@ -172,7 +172,7 @@ billingRoutes.post("/webhook", async (c) => {
             plan_status: status,
             plan: "paid",
             plan_expires_at: new Date(
-              (subscription as any).current_period_end * 1000,
+              subscription.current_period_end * 1000,
             ).toISOString(),
           })
           .eq("stripe_customer_id", customerId);
@@ -180,7 +180,7 @@ billingRoutes.post("/webhook", async (c) => {
       }
 
       case "customer.subscription.deleted": {
-        const subscription = event.data.object as Stripe.Subscription;
+        const subscription = event.data.object as any;
         const customerId = subscription.customer as string;
 
         await supabase
