@@ -4,7 +4,7 @@ Este documento descreve como configurar o GitHub App e os webhooks associados pa
 
 ## 1. Configuração do GitHub App
 
-Para integrar o Cogitari Governance com sua organização no GitHub, você precisa criar um GitHub App.
+Para integrar o Leadgers Governance com sua organização no GitHub, você precisa criar um GitHub App.
 
 ### Permissões Necessárias (Repository Permissions)
 

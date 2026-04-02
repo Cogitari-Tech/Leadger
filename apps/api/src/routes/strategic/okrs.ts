@@ -1,7 +1,9 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma";
 import { authMiddleware } from "../../middleware/auth";
 import { tenancyMiddleware } from "../../middleware/tenancy";
+import { validateBody } from "../../middleware/validate";
+import { createOkrSchema, updateKeyResultSchema } from "../../schemas";
 import { AppEnv } from "../../types/env";
 
 const okrsRoutes = new Hono<AppEnv>();
@@ -11,7 +13,6 @@ okrsRoutes.use("*", tenancyMiddleware);
 
 okrsRoutes.get("/", async (c) => {
   const tenantId = c.get("tenantId");
-  const prisma = new PrismaClient();
 
   try {
     const objectives = await prisma.objectives.findMany({
@@ -22,7 +23,6 @@ okrsRoutes.get("/", async (c) => {
       orderBy: { target_date: "asc" },
     });
 
-    // Auto calculate progress wrapper
     const data = objectives.map((obj: any) => {
       let totalProgress = 0;
       if (obj.key_results && obj.key_results.length > 0) {
@@ -42,18 +42,16 @@ okrsRoutes.get("/", async (c) => {
       return { ...obj, progress: Math.round(totalProgress) };
     });
 
-    await prisma.$disconnect();
     return c.json(data);
-  } catch (err: any) {
-    await prisma.$disconnect();
-    return c.json({ error: err.message }, 500);
+  } catch (err) {
+    console.error("Error fetching OKRs:", err);
+    return c.json({ error: "Failed to fetch OKRs" }, 500);
   }
 });
 
-okrsRoutes.post("/", async (c) => {
+okrsRoutes.post("/", validateBody(createOkrSchema), async (c) => {
   const tenantId = c.get("tenantId");
-  const body = await c.req.json();
-  const prisma = new PrismaClient();
+  const body = c.get("validatedBody");
 
   try {
     const objective = await prisma.objectives.create({
@@ -75,35 +73,36 @@ okrsRoutes.post("/", async (c) => {
       include: { key_results: true },
     });
 
-    await prisma.$disconnect();
     return c.json(objective, 201);
-  } catch (err: any) {
-    await prisma.$disconnect();
-    return c.json({ error: err.message }, 500);
+  } catch (err) {
+    console.error("Error creating OKR:", err);
+    return c.json({ error: "Failed to create OKR" }, 500);
   }
 });
 
-okrsRoutes.put("/:objectiveId/kr/:krId", async (c) => {
-  const tenantId = c.get("tenantId");
-  const krId = c.req.param("krId");
-  const body = await c.req.json();
-  const prisma = new PrismaClient();
+okrsRoutes.put(
+  "/:objectiveId/kr/:krId",
+  validateBody(updateKeyResultSchema),
+  async (c) => {
+    const tenantId = c.get("tenantId");
+    const krId = c.req.param("krId");
+    const body = c.get("validatedBody");
 
-  try {
-    const updated = await prisma.key_results.updateMany({
-      where: { id: krId, tenant_id: tenantId },
-      data: {
-        current_val: body.current_val,
-        updated_at: new Date(),
-      },
-    });
+    try {
+      const updated = await prisma.key_results.updateMany({
+        where: { id: krId, tenant_id: tenantId },
+        data: {
+          current_val: body.current_val,
+          updated_at: new Date(),
+        },
+      });
 
-    await prisma.$disconnect();
-    return c.json({ success: true, updated: updated.count });
-  } catch (err: any) {
-    await prisma.$disconnect();
-    return c.json({ error: err.message }, 500);
-  }
-});
+      return c.json({ success: true, updated: updated.count });
+    } catch (err) {
+      console.error("Error updating key result:", err);
+      return c.json({ error: "Failed to update key result" }, 500);
+    }
+  },
+);
 
 export default okrsRoutes;

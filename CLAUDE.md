@@ -112,6 +112,7 @@ Módulos se registram em `apps/web/src/modules/registry.ts` via `ModuleRegistry`
 | `admin`         | `/dashboard/admin/*`        | Tenant Settings, Team, Roles, Onboarding Wizard          |
 | `projects`      | `/dashboard/projects/*`     | Gestão de projetos e ciclo de vida                       |
 | `auth`          | `/login`, `/register`, etc. | Auth, SSO, MFA, Convites                                 |
+| `sales`         | `/dashboard/sales/*`        | CRM Comercial & Marketing                                |
 | `public`        | `/`, `/termos`, etc.        | Landing Page, Termos, Privacidade, Disclaimer            |
 | `profile`       | `/dashboard/profile`        | Perfil de usuário                                        |
 | `notifications` | -                           | Hook de notificações                                     |

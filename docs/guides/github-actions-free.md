@@ -290,7 +290,7 @@ jobs:
 
     environment:
       name: production
-      url: https://app.cogitari.com.br
+      url: https://app.leadgers.com
 
     steps:
       - uses: actions/checkout@v4
@@ -316,7 +316,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: "--prod"
-          alias-domains: "app.cogitari.com.br"
+          alias-domains: "app.leadgers.com"
           working-directory: ./apps/web
 
   notify-team:
@@ -329,7 +329,7 @@ jobs:
       - name: Send notification
         run: |
           echo "🎉 Deploy para produção concluído!"
-          echo "URL: https://app.cogitari.com.br"
+          echo "URL: https://app.leadgers.com"
 ```
 
 ---

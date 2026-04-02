@@ -35,12 +35,14 @@ if (envFiles.length > 0) {
 
 // 2. Secret patterns to detect
 const secretPatterns = [
-  { name: "Stripe/OpenAI Key", regex: /sk_[live|test]_\w{10,}/ },
+  { name: "Stripe/OpenAI Key", regex: /sk_(live|test)_\w{10,}/ },
   { name: "GitHub Token", regex: /ghp_\w{10,}/ },
+  { name: "GitHub PAT (Fine-grained)", regex: /github_pat_\w{10,}/ },
   { name: "GitHub OAuth Secret", regex: /gho_\w{10,}/ },
   { name: "JWT Token", regex: /eyJ[a-zA-Z0-9_-]{20,}\.eyJ/ },
   { name: "AWS Access Key", regex: /AKIA[0-9A-Z]{16}/ },
-  { name: "Supabase Service Key", regex: /sbp_[a-f0-9]{40,}/ },
+  { name: "Supabase Access Token", regex: /sbp_[a-f0-9]{30,}/ },
+  { name: "Upstash Redis URL", regex: /rediss?:\/\/default:[A-Za-z0-9]+@/ },
   {
     name: "Private Key Block",
     regex: new RegExp("-----BEGIN " + "(RSA |EC )?PRIVATE KEY-----"),
