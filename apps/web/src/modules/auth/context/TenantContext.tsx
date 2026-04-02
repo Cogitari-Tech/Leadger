@@ -17,6 +17,7 @@ import { useSession } from "./SessionContext";
 export interface TenantState {
   user: AuthUser | null;
   tenant: Tenant | null;
+  availableTenants: Tenant[];
   permissions: string[];
   tenantLoading: boolean;
 }
@@ -27,6 +28,7 @@ export interface TenantActions {
     tenantId: string,
     message?: string,
   ) => Promise<{ error: Error | null }>;
+  switchTenant: (tenantId: string) => Promise<{ error: Error | null }>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -58,6 +60,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<TenantState>({
     user: null,
     tenant: null,
+    availableTenants: [],
     permissions: [],
     tenantLoading: true,
   });
@@ -69,6 +72,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
       setState({
         user: null,
         tenant: null,
+        availableTenants: [],
         permissions: [],
         tenantLoading: false,
       });
@@ -79,6 +83,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
       let actualTenantId = supabaseUser.app_metadata?.tenant_id;
 
       let tenant: Tenant | null = null;
+      let availableTenants: Tenant[] = [];
       let role: Role | null = null;
       let permissions: string[] = [];
       let userOnboardingCompleted = false;
@@ -108,8 +113,8 @@ export function TenantProvider({ children }: { children: ReactNode }) {
       }
 
       if (actualTenantId) {
-        // Parallel batch 1: Fetch tenant + member simultaneously
-        const [tenantRes, memberRes] = await Promise.all([
+        // Parallel batch 1: Fetch tenant + member simultaneously + all user tenants
+        const [tenantRes, memberRes, allMembershipsRes] = await Promise.all([
           supabase
             .from("tenants")
             .select("*")
@@ -122,10 +127,21 @@ export function TenantProvider({ children }: { children: ReactNode }) {
             .eq("user_id", supabaseUser.id)
             .eq("status", "active")
             .single(),
+          supabase
+            .from("tenant_members")
+            .select("tenant:tenants(*)")
+            .eq("user_id", supabaseUser.id)
+            .eq("status", "active")
         ]);
 
         tenant = tenantRes.data;
         const memberData = memberRes.data;
+        
+        if (allMembershipsRes.data) {
+          availableTenants = allMembershipsRes.data
+            .map((m: any) => m.tenant as Tenant)
+            .filter(Boolean);
+        }
 
         if (memberData) {
           userOnboardingCompleted =
@@ -179,6 +195,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
       setState({
         user: authUser,
         tenant,
+        availableTenants,
         permissions,
         tenantLoading: false,
       });
@@ -228,12 +245,52 @@ export function TenantProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const switchTenant = useCallback(
+    async (tenantId: string) => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (!session) return { error: new Error("Não autenticado") };
+
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/switch-tenant`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({ tenant_id: tenantId }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Erro ao trocar de conta");
+        }
+
+        // Force auth session refresh to get new JWT with new app_metadata
+        await supabase.auth.refreshSession();
+        
+        // This refresh will trigger loadUserProfile via useEffect
+        return { error: null };
+      } catch (err: any) {
+        console.error("Failed to switch tenant:", err);
+        return { error: err as Error };
+      }
+    },
+    []
+  );
+
   return (
     <TenantContext.Provider
       value={{
         ...state,
         searchTenants,
         requestAccess,
+        switchTenant,
         refreshProfile: loadUserProfile,
       }}
     >

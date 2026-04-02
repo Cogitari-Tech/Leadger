@@ -1,181 +1,43 @@
-# Cogitari Platform - Arquitetura Modular
+# Leadgers Platform - Arquitetura Modular
 
 ## 📁 Estrutura Completa do Projeto
 
 ```
-cogitari-platform/
+Leadgers-Platform/
 │
 ├── apps/
-│   └── web/                                    # Frontend React
+│   ├── api/                                    # Backend Hono (Vercel) (Fase 1 - OK)
+│   └── web/                                    # Frontend React (Vite) (Fase 1 - OK)
 │       ├── src/
-│       │   ├── main.tsx                       # Entry point
-│       │   ├── App.tsx                        # Root component
-│       │   ├── router.tsx                     # Lazy loading routes
-│       │   │
-│       │   ├── modules/                       # 🔥 MÓDULOS ISOLADOS
-│       │   │   ├── auth/                      # 🔐 Gestão Auth & Multi-Tenant
-│       │   │   │   ├── pages/
-│       │   │   │   │   ├── RegisterPage.tsx
-│       │   │   │   │   └── TeamManagement.tsx
-│       │   │   │   ├── components/
-│       │   │   │   │   └── OnboardingWizard.tsx
-│       │   │   ├── audit/                     # Auditoria
-│       │   │   │   ├── pages/
-│       │   │   │   │   ├── AuditEditor.tsx
-│       │   │   │   │   └── AuditList.tsx
-│       │   │   │   ├── components/
-│       │   │   │   │   ├── FindingCard.tsx
-│       │   │   │   │   └── SignaturePanel.tsx
-│       │   │   │   ├── hooks/
-│       │   │   │   │   └── useAudit.ts
-│       │   │   │   ├── services/
-│       │   │   │   │   ├── auditService.ts
-│       │   │   │   │   └── pdfGenerator.ts
-│       │   │   │   ├── types/
-│       │   │   │   │   └── audit.types.ts
-│       │   │   │   └── module.config.ts       # ⚙️ Configuração do módulo
-│       │   │   │
-│       │   │   ├── finance/                   # 💰 NOVO: Módulo Financeiro
-│       │   │   │   ├── pages/
-│       │   │   │   │   ├── CashFlow.tsx
-│       │   │   │   │   ├── BalanceSheet.tsx
-│       │   │   │   │   └── FinanceDashboard.tsx
-│       │   │   │   ├── components/
-│       │   │   │   │   ├── TransactionTable.tsx
-│       │   │   │   │   ├── ChartRevenue.tsx
-│       │   │   │   │   └── AccountsTree.tsx
-│       │   │   │   ├── hooks/
-│       │   │   │   │   └── useFinance.ts
-│       │   │   │   ├── services/
-│       │   │   │   │   ├── financeService.ts
-│       │   │   │   │   └── reportGenerator.ts
-│       │   │   │   ├── types/
-│       │   │   │   │   └── finance.types.ts
-│       │   │   │   └── module.config.ts
-│       │   │   │
-│       │   │   ├── compliance/                # 📋 NOVO: Compliance/SWOT
-│       │   │   │   ├── pages/
-│       │   │   │   │   ├── SwotAnalysis.tsx
-│       │   │   │   │   ├── RiskMatrix.tsx
-│       │   │   │   │   └── PolicyManager.tsx
-│       │   │   │   ├── components/
-│       │   │   │   │   ├── SwotQuadrant.tsx
-│       │   │   │   │   └── RiskHeatmap.tsx
-│       │   │   │   └── module.config.ts
-│       │   │   │
-│       │   │   └── registry.ts                # 🔌 Plugin Registry
-│       │   │
-│       │   ├── shared/                        # Código compartilhado
-│       │   │   ├── components/
-│       │   │   │   ├── layout/
-│       │   │   │   │   ├── Sidebar.tsx
-│       │   │   │   │   ├── Header.tsx
-│       │   │   │   │   └── ModuleNav.tsx
-│       │   │   │   └── ui/                   # shadcn/ui components
-│       │   │   ├── hooks/
-│       │   │   │   ├── useAuth.ts
-│       │   │   │   ├── useLocalStorage.ts
-│       │   │   │   └── useSignature.ts
-│       │   │   ├── utils/
-│       │   │   │   ├── validators.ts
-│       │   │   │   ├── formatters.ts
-│       │   │   │   └── security.ts
-│       │   │   └── types/
-│       │   │       └── global.types.ts
-│       │   │
-│       │   ├── store/                         # Estado Global (Zustand)
-│       │   │   ├── authStore.ts
-│       │   │   ├── auditStore.ts
-│       │   │   ├── financeStore.ts
-│       │   │   └── index.ts
-│       │   │
-│       │   └── config/
-│       │       ├── supabase.ts
-│       │       └── constants.ts
-│       │
-│       ├── public/
-│       │   └── logo-cogitari.svg
-│       ├── index.html
-│       ├── vite.config.ts
-│       ├── tailwind.config.js
-│       └── tsconfig.json
-│
-├── packages/
-│   ├── core/                                  # Business Logic (Framework Agnostic)
-│   │   ├── src/
-│   │   │   ├── entities/                     # Domain Models
-│   │   │   │   ├── Audit.ts
-│   │   │   │   ├── Finding.ts
-│   │   │   │   ├── Transaction.ts
-│   │   │   │   └── Account.ts
-│   │   │   ├── usecases/                     # Business Rules
-│   │   │   │   ├── audit/
-│   │   │   │   │   ├── CreateAudit.ts
-│   │   │   │   │   ├── ValidateSignatures.ts
-│   │   │   │   │   └── GeneratePDF.ts
-│   │   │   │   └── finance/
-│   │   │   │       ├── RecordTransaction.ts
-│   │   │   │       ├── CalculateBalance.ts
-│   │   │   │       └── GenerateBalanceSheet.ts
-│   │   │   ├── repositories/                 # Interfaces (Ports)
-│   │   │   │   ├── IAuditRepository.ts
-│   │   │   │   └── IFinanceRepository.ts
-│   │   │   └── errors/
-│   │   │       └── DomainErrors.ts
-│   │   └── package.json
-│   │
-│   ├── ui/                                    # Design System
-│   │   ├── src/
-│   │   │   ├── components/
-│   │   │   │   ├── Button.tsx
-│   │   │   │   ├── Input.tsx
-│   │   │   │   ├── Modal.tsx
-│   │   │   │   └── DataTable.tsx
-│   │   │   └── theme/
-│   │   │       └── colors.ts
-│   │   └── package.json
-│   │
-│   └── shared/                                # Utils
-│       ├── src/
-│       │   ├── validators/
-│       │   │   ├── cpfValidator.ts
-│       │   │   └── cnpjValidator.ts
-│       │   ├── formatters/
-│       │   │   ├── currency.ts
-│       │   │   └── date.ts
-│       │   └── security/
-│       │       └── sanitizer.ts
+│       │   ├── main.tsx
+│       │   ├── modules/                       # 🔥 MÓDULOS (Plugin System)
+│       │   │   ├── admin/                      # Painel Administrativo
+│       │   │   ├── audit/                      # Auditoria
+│       │   │   ├── auth/                       # Auth & Multi-Tenant
+│       │   │   ├── compliance/                 # Riscos e SWOT
+│       │   │   ├── dashboard/                  # Dashboards e Roadmaps
+│       │   │   ├── finance/                    # Financeiro Core
+│       │   │   ├── github/                     # Sync GitHub
+│       │   │   ├── notifications/              # Alertas
+│       │   │   ├── profile/                    # Conta
+│       │   │   ├── projects/                   # Projetos e OKRs
+│       │   │   ├── public/                     # Landing/Auth
+│       │   │   ├── sales/                      # CRM
+│       │   │   └── registry.ts                 # Registry
+│       │   ├── infrastructure/                # Supabase Adapters
+│       │   └── shared/                        # UI Kit
 │       └── package.json
 │
-├── supabase/                                  # Backend as a Service
-│   ├── migrations/
-│   │   ├── 20250101000000_create_audits.sql
-│   │   ├── 20250101000001_create_findings.sql
-│   │   ├── 20250101000002_create_transactions.sql
-│   │   ├── 20250101000003_create_accounts.sql
-│   │   └── 20250101000004_rls_policies.sql
-│   ├── functions/                            # Edge Functions
-│   │   ├── generate-pdf/
-│   │   │   └── index.ts
-│   │   └── send-notification/
-│   │       └── index.ts
+├── packages/
+│   ├── ai/                                    # AI Services & LLM Adapters
+│   └── core/                                  # Domain Logic
+│
+├── supabase/                                  # Database
+│   ├── migrations/                            # SQL
 │   └── config.toml
 │
-├── e2e/                                       # Testes E2E
-│   ├── audit.spec.ts
-│   ├── finance.spec.ts
-│   └── playwright.config.ts
-│
-├── .github/
-│   └── workflows/
-│       ├── ci.yml
-│       └── deploy.yml
-│
-├── package.json                               # Monorepo root
-├── turbo.json                                 # Turborepo config
-├── pnpm-workspace.yaml
+├── package.json                               # npm workspaces
 ├── .env.example
-├── .gitignore
 └── README.md
 ```
 
@@ -487,25 +349,26 @@ export function SwotAnalysis() {
 ## 🚀 Comandos para Início Rápido
 
 ```bash
-# 1. Inicializar Monorepo (Turborepo)
-npx create-turbo@latest cogitari-platform
-cd cogitari-platform
+# 1. Inicializar Monorepo
+# (Projeto já inicializado com Workspaces e Turbo)
+# git clone https://github.com/Cogitari-Tech/Leadgers-Platform.git
+# cd Leadgers-Platform
 
 # 2. Instalar dependências
-pnpm install
+npm install
 
-# 3. Configurar Supabase
+# 3. Configurar Supabase CLI
 npx supabase init
 npx supabase start
 
 # 4. Rodar ambiente de desenvolvimento
-pnpm dev
+npm run dev
 
 # 5. Rodar testes
-pnpm test
+npm run test
 
 # 6. Build para produção
-pnpm build
+npm run build
 ```
 
 ---

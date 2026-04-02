@@ -1,13 +1,20 @@
 echo "🛡️  Running Pre-Push Verification..."
 
-echo "Analyzing types..."
+echo "📝 Analyzing types..."
 npm run typecheck
 if [ $? -ne 0 ]; then
   echo "🚨 Push rejected due to failing type checks."
   exit 1
 fi
 
-echo "Running security scan..."
+echo "🧪 Running tests..."
+npm run test -- --run 2>/dev/null
+if [ $? -ne 0 ]; then
+  echo "🚨 Push rejected due to failing tests."
+  exit 1
+fi
+
+echo "🔒 Running security scan..."
 node scripts/security-scan.js
 if [ $? -ne 0 ]; then
   echo "🚨 Push rejected due to failing security scan."

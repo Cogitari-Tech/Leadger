@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { authMiddleware } from "../../middleware/auth";
 import { tenancyMiddleware } from "../../middleware/tenancy";
+import { validateBody } from "../../middleware/validate";
+import { updateAiConfigSchema } from "../../schemas";
 import { AppEnv } from "../../types/env";
 import { createScopedClient } from "../../config/supabase";
 
@@ -38,7 +40,7 @@ aiConfigRoutes.get("/", async (c) => {
 });
 
 /** PATCH /  — Updates ai_settings JSONB for the tenant */
-aiConfigRoutes.patch("/", async (c) => {
+aiConfigRoutes.patch("/", validateBody(updateAiConfigSchema), async (c) => {
   const tenantId = c.get("tenantId");
   const userRole = c.get("userRole");
   const token = c.get("accessToken");
@@ -50,8 +52,7 @@ aiConfigRoutes.patch("/", async (c) => {
   const supabase = createScopedClient(token);
 
   try {
-    const body = await c.req.json();
-
+    const body = c.get("validatedBody");
     const allowedKeys = ["proactivity_level", "tone", "insight_focus"];
     const sanitized: Record<string, unknown> = {};
     for (const key of allowedKeys) {

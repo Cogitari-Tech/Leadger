@@ -1,11 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import capTableRoutes, { calculateVesting } from "./cap-table";
 import { AppEnv } from "../../types/env";
 
-const mockFindManyRounds = vi.fn();
-const mockFindManyShareholders = vi.fn();
-const mockCreateShareholder = vi.fn();
+const { mockFindManyRounds, mockFindManyShareholders, mockCreateShareholder } =
+  vi.hoisted(() => ({
+    mockFindManyRounds: vi.fn(),
+    mockFindManyShareholders: vi.fn(),
+    mockCreateShareholder: vi.fn(),
+  }));
 
 vi.mock("../../middleware/auth", () => ({
   authMiddleware: async (c: any, next: any) => {
@@ -38,6 +40,8 @@ vi.mock("@prisma/client", () => ({
     }
   },
 }));
+
+import capTableRoutes, { calculateVesting } from "./cap-table";
 
 describe("Cap Table API", () => {
   let app: Hono<AppEnv>;
