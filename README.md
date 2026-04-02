@@ -7,7 +7,7 @@
 
 ## 📚 Índice de Documentação
 
-Este repositório contém toda a especificação técnica para evolução da plataforma Cogitari de um SPA monolítico para uma arquitetura modular empresarial.
+Este repositório contém toda a especificação técnica para evolução da plataforma Leadgers de um SPA monolítico para uma arquitetura modular empresarial.
 
 ### 📖 Documentos Principais
 
@@ -501,7 +501,7 @@ git push origin hotfix/corrige-validacao
 
 **Ambiente Produção:**
 
-- 🌐 URL: `https://app.cogitari.com.br` (Vercel Free + domínio custom)
+- 🌐 URL: `https://app.leadgers.com` (Vercel Free + domínio custom)
 - 🗄️ Database: Supabase produção (Free Tier)
 
 ### Comandos Git Úteis

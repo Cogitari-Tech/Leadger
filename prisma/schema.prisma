@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
@@ -124,6 +125,7 @@ model key_results {
   weight       Decimal @default(1) @db.Decimal(5, 2)
 
   objective objectives @relation(fields: [objective_id], references: [id], onDelete: Cascade)
+  roadmap_items roadmap_items[]
 
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @default(now()) @db.Timestamptz(6)
@@ -187,6 +189,8 @@ model milestones {
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @default(now()) @db.Timestamptz(6)
 
+  roadmap_items roadmap_items[]
+
   @@schema("public")
 }
 
@@ -203,6 +207,67 @@ model headcount_plans {
 
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+
+model sales_opportunities {
+  id                  String    @id @default(uuid()) @db.Uuid
+  tenant_id           String    @db.Uuid
+  title               String
+  client_name         String
+  value               Decimal   @db.Decimal
+  mrr_amount          Decimal?  @db.Decimal
+  stage               String    @default("lead")
+  expected_close_date DateTime? @db.Date
+  probability         Int       @default(0)
+  type                String    @default("new_business")
+  recurrence          String    @default("one_time")
+  notes               String?
+  
+  created_at          DateTime @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model mrr_snapshots {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenant_id       String   @db.Uuid
+  month_date      DateTime @db.Date
+  total_mrr       Decimal  @db.Decimal
+  total_arr       Decimal  @db.Decimal
+  new_mrr         Decimal  @default(0) @db.Decimal
+  expansion_mrr   Decimal  @default(0) @db.Decimal
+  churn_mrr       Decimal  @default(0) @db.Decimal
+  contraction_mrr Decimal  @default(0) @db.Decimal
+  
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model roadmap_items {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenant_id       String   @db.Uuid
+  title           String
+  description     String?
+  status          String   @default("planned")
+  quarter         String   
+  github_issue_id Int?
+  github_issue_url String?
+  key_result_id   String?  @db.Uuid
+  milestone_id    String?  @db.Uuid
+  start_date      DateTime? @db.Date
+  end_date        DateTime? @db.Date
+
+  milestone       milestones? @relation(fields: [milestone_id], references: [id])
+  key_result      key_results? @relation(fields: [key_result_id], references: [id])
+  
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @db.Timestamptz(6)
 
   @@schema("public")
 }

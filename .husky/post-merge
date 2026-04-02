@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# Post-merge hook: auto-install dependencies when package-lock.json changes
+CHANGED_FILES="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
+
+check_run() {
+  echo "$CHANGED_FILES" | grep --quiet "$1" && eval "$2"
+}
+
+check_run package-lock.json "echo '📦 package-lock.json changed. Running npm ci...' && npm ci"

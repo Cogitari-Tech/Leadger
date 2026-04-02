@@ -100,6 +100,7 @@ export function AcceptInvitePage() {
     const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
     const isTestKey = siteKey === "1x00000000000000000000AA";
     const automationBypass =
+      import.meta.env.DEV &&
       localStorage.getItem("LEADGERS_AUTOMATION_BYPASS") === "true";
 
     if (siteKey && !turnstileToken && !isTestKey && !automationBypass) {
@@ -402,6 +403,7 @@ export function AcceptInvitePage() {
                         !turnstileToken &&
                         import.meta.env.VITE_TURNSTILE_SITE_KEY !==
                           "1x00000000000000000000AA" &&
+                        import.meta.env.DEV &&
                         localStorage.getItem("LEADGERS_AUTOMATION_BYPASS") !==
                           "true")
                     }

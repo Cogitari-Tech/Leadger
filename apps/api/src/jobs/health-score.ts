@@ -1,5 +1,5 @@
 import { inngest } from "./queue";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 export const calculateHealthScoreJob = inngest.createFunction(
   { id: "calculate-health-score" },
@@ -28,7 +28,7 @@ export const calculateHealthScoreJob = inngest.createFunction(
 
     for (const tenantId of activeTenants) {
       await step.run(`process-health-score-for-${tenantId}`, async () => {
-        const alerts: Prisma.JsonArray = [];
+        const alerts: any[] = [];
 
         // --- FINANCIAL SCORE ---
         let financialScore = 50;

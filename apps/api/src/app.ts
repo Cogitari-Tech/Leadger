@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { rateLimiter } from "./middleware/rate-limiter";
 import runwayRoutes from "./routes/finance/runway";
 import unitEconomicsRoutes from "./routes/finance/unit-economics";
 import burnRateRoutes from "./routes/finance/burn-rate";
@@ -15,19 +16,33 @@ import bmcRoutes from "./routes/strategic/bmc";
 import okrsRoutes from "./routes/strategic/okrs";
 import milestonesRoutes from "./routes/strategic/milestones";
 import techDebtRoutes from "./routes/product/tech-debt";
+import roadmapRoutes from "./routes/product/roadmap";
 import headcountRoutes from "./routes/people/headcount";
+import salesRoutes from "./routes/sales/deals";
 
 const app = new Hono();
 
 app.use("*", logger());
+const allowedOrigins = (
+  process.env.ALLOWED_ORIGINS || "http://localhost:5173,http://127.0.0.1:5173"
+)
+  .split(",")
+  .map((o) => o.trim());
+
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"], // Permitir do Vite frontend locamente, depois ajustar pra prod
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
+    origin: allowedOrigins,
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization", "x-tenant-id"],
   }),
 );
+
+// Global rate limit: 60 requests per minute per IP
+app.use("/api/*", rateLimiter({ max: 60, windowMs: 60_000 }));
+
+// Strict rate limit on AI routes: 10 requests per minute
+app.use("/api/ai/*", rateLimiter({ max: 10, windowMs: 60_000 }));
 
 app.get("/health", (c) => {
   return c.json({ status: "ok", timestamp: new Date().toISOString() });
@@ -46,7 +61,9 @@ app.route("/api/strategic/bmc", bmcRoutes);
 app.route("/api/strategic/okrs", okrsRoutes);
 app.route("/api/strategic/milestones", milestonesRoutes);
 app.route("/api/product/tech-debt", techDebtRoutes);
+app.route("/api/product/roadmap", roadmapRoutes);
 app.route("/api/people/headcount", headcountRoutes);
+app.route("/api/sales", salesRoutes);
 
 app.on(["GET", "POST", "PUT"], "/api/inngest", (c) => inngestRoutes(c));
 
