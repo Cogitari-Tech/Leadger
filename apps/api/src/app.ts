@@ -19,6 +19,7 @@ import techDebtRoutes from "./routes/product/tech-debt";
 import roadmapRoutes from "./routes/product/roadmap";
 import headcountRoutes from "./routes/people/headcount";
 import salesRoutes from "./routes/sales/deals";
+import billingRoutes from "./routes/billing";
 
 const app = new Hono();
 
@@ -64,6 +65,7 @@ app.route("/api/product/tech-debt", techDebtRoutes);
 app.route("/api/product/roadmap", roadmapRoutes);
 app.route("/api/people/headcount", headcountRoutes);
 app.route("/api/sales", salesRoutes);
+app.route("/api/billing", billingRoutes);
 
 app.on(["GET", "POST", "PUT"], "/api/inngest", (c) => inngestRoutes(c));
 

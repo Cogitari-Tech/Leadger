@@ -10,6 +10,9 @@ const RoleManagement = lazy(() =>
 const TenantSettings = lazy(() =>
   import("./pages/TenantSettings").then((m) => ({ default: m.TenantSettings })),
 );
+const BillingManagement = lazy(() =>
+  import("./pages/BillingManagement").then((m) => ({ default: m.BillingManagement })),
+);
 const ProjectsListPage = lazy(() =>
   import("../projects/pages/ProjectsListPage").then((m) => ({
     default: m.ProjectsListPage,
@@ -54,6 +57,10 @@ const adminModule: ModuleConfig = {
       path: "admin/settings",
       element: <TenantSettings />,
     },
+    {
+      path: "admin/billing",
+      element: <BillingManagement />,
+    },
   ],
   navigation: [
     { label: "Gerenciar Equipe", path: "admin/team", icon: "Users" },
@@ -63,6 +70,11 @@ const adminModule: ModuleConfig = {
       label: "Ajustar Configurações",
       path: "admin/settings",
       icon: "Settings",
+    },
+    {
+      label: "Faturamento e Assinatura",
+      path: "admin/billing",
+      icon: "CreditCard",
     },
   ],
   settings: {},

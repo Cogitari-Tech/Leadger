@@ -4,6 +4,26 @@
 
 ---
 
+## 🚀 v1.2.0 — Sprint 3 Completa (Abril 2026)
+
+### 📈 Core & Módulos
+- ✅ **Sales & MRR:** Novos models do Prisma (`Sales`, `MRR`) e frontend para pipeline de vendas e painel de assinaturas
+- ✅ **Roadmap Estratégico:** Novo model `Roadmap` para tracking estratégico de features
+- ✅ **Stripe (Fase de Planejamento):** Definição arquitetural para Stripe Hosted Checkout com modelo híbrido (Flat Fee + Per-Seat)
+
+### 🛠️ Correções e Git Hygiene
+- ✅ Resolução definitiva de erros de *Hoisting* no Vitest v4 em `cap-table.test.ts` e `milestones.test.ts` (`vi.hoisted()`)
+- ✅ Mock retificado para tabelas como `headcount_plans` no *PrismaClient*
+- ✅ Compatibilidade multi-plataforma no comando **ESLint** (Windows `cmd.exe`)
+- ✅ Todos os 95 testes (API + Core) operacionais em CI/CD
+
+### 📚 Documentação e Infraestrutura
+- ✅ Atualização da base documental (PRD 1.2.0 e novos ADRs: 005-010)
+- ✅ Confirmação oficial da stack frontend+backend com React+Vite e Hono rodando no Vercel Edge 
+- ✅ Adoção integrada do framework de autenticação nativa do Supabase (GoTrue) no lugar de custom JWT
+
+---
+
 ## 🚀 v1.1.0 — Fase 1 Completa (Março 2026)
 
 ### ⚡ Backend API (Novo)

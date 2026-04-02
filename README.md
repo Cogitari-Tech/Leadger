@@ -476,7 +476,7 @@ git push origin joao
 
 **Ambiente Beta:**
 
-- 🌐 URL: `https://beta-audit-tool.vercel.app` (Vercel Free)
+- 🌐 URL: `https://beta.leadgers.com` (Vercel Free)
 - 🗄️ Database: Supabase project separado (Free Tier)
 
 #### 4️⃣ Correção de Bugs (hotfix)
@@ -637,4 +637,4 @@ Para testes rápidos em ambiente de produção ou homologação:
 
 **Cogitari Tech** - Construindo o futuro da auditoria e gestão empresarial. 🚀
 
-_Última atualização: 12 de Março de 2026_
+_Última atualização: 02 de Abril de 2026_

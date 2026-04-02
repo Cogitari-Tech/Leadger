@@ -5,6 +5,7 @@ import { moduleRegistry } from "../../../modules/registry";
 import { useAuth } from "../../../modules/auth/context/AuthContext";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { NotificationBell } from "../../../modules/notifications/components/NotificationBell";
+import { TenantSwitcher } from "./TenantSwitcher";
 import { ErrorBoundary } from "../ErrorBoundary";
 import {
   Menu,
@@ -444,7 +445,8 @@ export const AppLayout: React.FC = () => {
           <div className="w-8" />
         </div>
 
-        <div className="hidden md:flex flex-shrink-0 items-center justify-end px-6 py-3 border-b border-border/20 bg-background/50 backdrop-blur-xl">
+        <div className="hidden md:flex flex-shrink-0 items-center justify-end px-6 py-3 border-b border-border/20 bg-background/50 backdrop-blur-xl gap-4">
+          <TenantSwitcher />
           <NotificationBell />
         </div>
 
