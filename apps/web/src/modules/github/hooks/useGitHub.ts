@@ -118,32 +118,55 @@ export function useGitHub() {
     const reposWithoutProtection = repositories.filter(
       (r) => !r.has_branch_protection,
     ).length;
-    const openVulnerabilities = securityAlerts.filter(
-      (a) => a.state === "open",
-    ).length;
-    const criticalAlerts = securityAlerts.filter(
-      (a) => a.state === "open" && a.severity === "critical",
-    ).length;
-    const prsWithoutReview = pullRequests.filter(
-      (pr) => pr.state === "merged" && pr.review_count === 0,
-    ).length;
-    const prsMergedByAdmin = pullRequests.filter(
-      (pr) => pr.merged_by_admin,
-    ).length;
+
+    // ⚡ Bolt: Single pass reduction to optimize O(N*M) iterations into O(N)
+    const { openVulnerabilities, criticalAlerts } = securityAlerts.reduce(
+      (acc, a) => {
+        if (a.state === "open") {
+          acc.openVulnerabilities++;
+          if (a.severity === "critical") {
+            acc.criticalAlerts++;
+          }
+        }
+        return acc;
+      },
+      { openVulnerabilities: 0, criticalAlerts: 0 },
+    );
+
+    // ⚡ Bolt: Single pass reduction to optimize O(N*M) iterations into O(N)
+    const {
+      prsWithoutReview,
+      prsMergedByAdmin,
+      totalTimeToMergeHours,
+      mergedPRsCount,
+    } = pullRequests.reduce(
+      (acc, pr) => {
+        if (pr.state === "merged" && pr.review_count === 0) {
+          acc.prsWithoutReview++;
+        }
+        if (pr.merged_by_admin) {
+          acc.prsMergedByAdmin++;
+        }
+        if (pr.state === "merged" && pr.time_to_merge_hours != null) {
+          acc.totalTimeToMergeHours += pr.time_to_merge_hours;
+          acc.mergedPRsCount++;
+        }
+        return acc;
+      },
+      {
+        prsWithoutReview: 0,
+        prsMergedByAdmin: 0,
+        totalTimeToMergeHours: 0,
+        mergedPRsCount: 0,
+      },
+    );
+
+    const avgTimeToMergeHours =
+      mergedPRsCount > 0 ? totalTimeToMergeHours / mergedPRsCount : 0;
+
     const directCommitsToMain = events.filter(
       (e) => e.event_type === "push" && e.severity === "medium",
     ).length;
-
-    const mergedPRs = pullRequests.filter(
-      (pr) => pr.state === "merged" && pr.time_to_merge_hours != null,
-    );
-    const avgTimeToMergeHours =
-      mergedPRs.length > 0
-        ? mergedPRs.reduce(
-            (sum, pr) => sum + (pr.time_to_merge_hours ?? 0),
-            0,
-          ) / mergedPRs.length
-        : 0;
 
     const issuesPastSLA = issues.filter((i) => i.sla_breached).length;
 

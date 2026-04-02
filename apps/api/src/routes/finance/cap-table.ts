@@ -18,33 +18,6 @@ interface CalculatedVesting {
   percentage: number;
 }
 
-interface ShareholderRow {
-  id: string;
-  tenant_id: string;
-  round_id: string | null;
-  shareholder_name: string;
-  shareholder_type: string;
-  shares_count: number | string;
-  share_price: number | string;
-  ownership_percentage: number;
-  investment_amount: number | string;
-  vesting_schedule: VestingScheduleInput | null;
-  notes: string | null;
-  created_at: string;
-}
-
-interface RoundRow {
-  id: string;
-  tenant_id: string;
-  round_name: string;
-  round_type: string;
-  pre_money_valuation: number | string;
-  amount_raised: number | string;
-  post_money_valuation: number | string;
-  round_date: string | null;
-  notes: string | null;
-  created_at: string;
-}
 
 /**
  * Calculates vested/unvested shares based on a vesting schedule.
@@ -225,7 +198,7 @@ capTableRoutes.get("/shareholders", async (c) => {
       orderBy: { ownership_percentage: "desc" },
     });
 
-    const enrichedShareholders = shareholders.map((s: ShareholderRow) => {
+    const enrichedShareholders = shareholders.map((s: any) => {
       const schedule =
         typeof s.vesting_schedule === "object" && s.vesting_schedule !== null
           ? (s.vesting_schedule as VestingScheduleInput)
@@ -313,11 +286,11 @@ capTableRoutes.get("/summary", async (c) => {
     ]);
 
     const totalShares = shareholders.reduce(
-      (sum: number, s: ShareholderRow) => sum + Number(s.shares_count),
+      (sum: number, s: any) => sum + Number(s.shares_count),
       0,
     );
     const totalInvested = rounds.reduce(
-      (sum: number, r: RoundRow) => sum + Number(r.amount_raised),
+      (sum: number, r: any) => sum + Number(r.amount_raised),
       0,
     );
     const latestValuation =
