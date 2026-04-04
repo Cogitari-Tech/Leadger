@@ -45,11 +45,21 @@ export function AuthGuard({ children }: AuthGuardProps) {
         // they must complete the MFA challenge.
         if (currentLevel === "aal1" && nextLevel === "aal2") {
           // CHECK FOR TRUSTED DEVICE
-          const trustUntil = localStorage.getItem(`mfa_trust_${user.id}`);
-          if (trustUntil && parseInt(trustUntil) > Date.now()) {
-            setMfaStatus("ok");
-            setCheckingMfa(false);
-            return;
+          const deviceId = localStorage.getItem("leadgers_device_id");
+          if (deviceId) {
+            const { data } = await supabase
+              .from("device_trusts")
+              .select("expires_at")
+              .eq("device_id", deviceId)
+              .eq("user_id", user.id)
+              .eq("revoked", false)
+              .single();
+
+            if (data && new Date(data.expires_at) > new Date()) {
+              setMfaStatus("ok");
+              setCheckingMfa(false);
+              return;
+            }
           }
 
           setMfaStatus("needs_challenge");

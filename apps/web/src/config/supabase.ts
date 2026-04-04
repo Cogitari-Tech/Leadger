@@ -9,9 +9,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
     "CRITICAL: Supabase credentials missing. Check your .env file.",
   );
   console.error("Required: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY");
+
+  if (import.meta.env.PROD) {
+    throw new Error("Missing Supabase credentials in production environment.");
+  }
 }
 
-// Fallback to avoid crash, but client will fail on requests
+// Fallback for development to avoid crash, but client will fail on requests
 export const supabase = createClient(
   supabaseUrl || "https://placeholder.supabase.co",
   supabaseAnonKey || "placeholder-key",

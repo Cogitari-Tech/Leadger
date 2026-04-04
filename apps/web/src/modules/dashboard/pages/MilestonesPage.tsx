@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMilestones, Milestone } from "../hooks/useMilestones";
+import { MilestoneCharts } from "../components/MilestoneCharts";
 import {
   Bot,
   Flag,
@@ -205,6 +206,8 @@ export default function MilestonesTrackerPage() {
           </div>
         ))}
       </div>
+
+      {milestones.length > 0 && <MilestoneCharts milestones={milestones} />}
 
       {/* Board Layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 pt-6">

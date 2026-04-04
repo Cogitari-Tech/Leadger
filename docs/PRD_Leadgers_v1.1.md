@@ -11,9 +11,16 @@
 ║                  Product Requirements Document               ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-```
-
 ---
+
+> 🤖 **Nota de Atualização de Vibe Coding & IA (03/04/2026):**
+> Você está operando no repo `Cogitari-Tech/Leadgers-Platform` Versão 1.2.0-beta. O ecossistema Hono + Vite + Supabase está plenamente modularizado.
+> 
+> **MANDAMENTOS PARA AGENTES DE IA NESTE PROJETO (CUMPRIMENTO OBRIGATÓRIO):**
+> 1. **UX/UI Consistente:** NUNCA recrie componentes base do zero (Botão, Modal, Dropdown, Table). Siga a regra suprema de frontend: use `npx shadcn-ui@latest add [component]` com a estilização já em vigor (`@/shared/components`). 
+> 2. **Vercel & Configurações:** O projeto usa Vercel para todos os Deploys. Se precisar verificar ambiente ou re-sincronizar Envs, rode `npx vercel env pull`. Isso baixa o `.env` correto sob demanda em `apps/api` e `apps/web`.
+> 3. **E2E Hono API:** Toda nova rota criada em `apps/api/src/routes/...` precisa de um arquivio `[rota].test.ts`. Use a framework Vitest + Hono Testing (rodar `npm run test --workspace=api`). Sem E2E Test, sua alteração não passa na esteira.
+> 4. **Supabase + Inngest:** Quando criar lógicas longas como "gerar relatórios PDF" ou "Insights de IA", crie endpoints Hono que despachem webhooks para a plataforma local do Inngest (`POST /reports/generate -> 202 Queued`).
 
 ## Metadados do Documento
 

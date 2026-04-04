@@ -290,6 +290,13 @@ export function LoginPage() {
                     Mantenha-me conectado
                   </span>
                 </label>
+
+                <Link
+                  to="/forgot-password"
+                  className="text-[11px] font-bold text-primary/80 uppercase tracking-widest hover:text-primary transition-colors"
+                >
+                  Esqueci minha senha
+                </Link>
               </div>
 
               {import.meta.env.VITE_TURNSTILE_SITE_KEY &&

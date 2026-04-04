@@ -131,12 +131,12 @@ export function TenantProvider({ children }: { children: ReactNode }) {
             .from("tenant_members")
             .select("tenant:tenants(*)")
             .eq("user_id", supabaseUser.id)
-            .eq("status", "active")
+            .eq("status", "active"),
         ]);
 
         tenant = tenantRes.data;
         const memberData = memberRes.data;
-        
+
         if (allMembershipsRes.data) {
           availableTenants = allMembershipsRes.data
             .map((m: any) => m.tenant as Tenant)
@@ -218,10 +218,13 @@ export function TenantProvider({ children }: { children: ReactNode }) {
 
   const searchTenants = useCallback(
     async (query: string): Promise<Tenant[]> => {
+      const sanitized = query.replace(/[(),]/g, "");
       const { data } = await supabase
         .from("tenants")
-        .select("*")
-        .or(`slug.ilike.%${query}%,name.ilike.%${query}%`)
+        .select(
+          "id, name, slug, logo_url, industry, domain, created_at, plan, is_private, onboarding_completed, updated_at",
+        )
+        .or(`slug.ilike.%${sanitized}%,name.ilike.%${sanitized}%`)
         .eq("is_private", false)
         .limit(10);
       return (data ?? []) as Tenant[];
@@ -245,44 +248,41 @@ export function TenantProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const switchTenant = useCallback(
-    async (tenantId: string) => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (!session) return { error: new Error("Não autenticado") };
+  const switchTenant = useCallback(async (tenantId: string) => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) return { error: new Error("Não autenticado") };
 
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/switch-tenant`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${session.access_token}`,
-            },
-            body: JSON.stringify({ tenant_id: tenantId }),
-          }
-        );
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/switch-tenant`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ tenant_id: tenantId }),
+        },
+      );
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!response.ok) {
-          throw new Error(data.error || "Erro ao trocar de conta");
-        }
-
-        // Force auth session refresh to get new JWT with new app_metadata
-        await supabase.auth.refreshSession();
-        
-        // This refresh will trigger loadUserProfile via useEffect
-        return { error: null };
-      } catch (err: any) {
-        console.error("Failed to switch tenant:", err);
-        return { error: err as Error };
+      if (!response.ok) {
+        throw new Error(data.error || "Erro ao trocar de conta");
       }
-    },
-    []
-  );
+
+      // Force auth session refresh to get new JWT with new app_metadata
+      await supabase.auth.refreshSession();
+
+      // This refresh will trigger loadUserProfile via useEffect
+      return { error: null };
+    } catch (err: any) {
+      console.error("Failed to switch tenant:", err);
+      return { error: err as Error };
+    }
+  }, []);
 
   return (
     <TenantContext.Provider

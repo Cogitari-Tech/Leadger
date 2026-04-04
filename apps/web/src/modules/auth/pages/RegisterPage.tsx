@@ -267,9 +267,9 @@ export function RegisterPage() {
         return;
       }
     }
-    if (strengthScore < 3) {
+    if (strengthScore < 5) {
       setError(
-        "Sua segurança é nossa prioridade. Por favor, utilize uma senha mais forte (nível 'Razoável' ou superior).",
+        "Sua senha deve conter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos especiais.",
       );
       return;
     }
