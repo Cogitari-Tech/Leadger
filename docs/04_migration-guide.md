@@ -1,4 +1,4 @@
-# Guia de Migração - SPA Legado → Arquitetura Modular
+# Guia de Migração - SPA Legado → Arquitetura Modular (Leadgers Platform)
 
 ## 🎯 Objetivo
 
@@ -12,8 +12,8 @@ Transformar o sistema monolítico atual (980 linhas em um único HTML) em uma ar
 # Node.js 20+ (recomendado: 20.11.0)
 node --version
 
-# pnpm (gerenciador de pacotes)
-npm install -g pnpm
+# npm (gerenciador de pacotes padrão)
+npm --version
 
 # Supabase CLI
 npm install -g supabase
@@ -30,12 +30,12 @@ git --version
 
 ```bash
 # Criar estrutura base
-mkdir Audit-Tool
-cd Audit-Tool
+mkdir Leadgers-Platform
+cd Leadgers-Platform
 
 # Inicializar git
 git init
-git remote add origin https://github.com/Cogitari-Tech/Audit-Tool.git
+git remote add origin https://github.com/Cogitari-Tech/Leadgers-Platform.git
 
 # Criar estrutura de pastas
 mkdir -p apps/web packages/{core,ui,shared} supabase/{migrations,functions} e2e .github/workflows
@@ -54,7 +54,7 @@ Editar `package.json`:
 
 ```json
 {
-  "name": "cogitari-platform",
+  "name": "leadgers-platform",
   "version": "1.0.0",
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
@@ -552,23 +552,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
+          cache: "npm"
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Run unit tests
-        run: pnpm test
+        run: npm run test
 
       - name: Run E2E tests
-        run: pnpm test:e2e
+        run: npm run test:e2e
 
       - name: Build
-        run: pnpm build
+        run: npm run build
 ```
 
 ### 6.2 Deploy (Vercel)
@@ -641,10 +640,10 @@ moduleRegistry.register(financeModule);
 
 ```bash
 # Limpar cache
-pnpm test --clearCache
+npm run test --clearCache
 
 # Rodar em modo debug
-pnpm test --reporter=verbose
+npm run test --reporter=verbose
 ```
 
 ---

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "../hooks/useProfile";
+import { useTenant } from "../../auth/context/TenantContext";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -38,6 +39,14 @@ export default function ProfilePage() {
   const [secondaryEmailEditing, setSecondaryEmailEditing] = useState(false);
   const [secondaryEmailSaved, setSecondaryEmailSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { availableTenants, switchTenant } = useTenant();
+  const [switchingTenant, setSwitchingTenant] = useState<string | null>(null);
+
+  const handleSwitchTenant = async (id: string) => {
+    setSwitchingTenant(id);
+    await switchTenant(id);
+    setSwitchingTenant(null);
+  };
 
   if (loading) {
     return (
@@ -243,21 +252,65 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Tenant Info */}
+      {/* Tenants Info */}
       <div className="glass-panel rounded-[2.5rem] p-10 border border-border/40 shadow-xl space-y-6">
-        <div className="flex items-center gap-3">
-          <Building2 className="w-5 h-5 text-primary" />
-          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-            Organização Designada
-          </h2>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Building2 className="w-5 h-5 text-primary" />
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
+              Organizações Vinculadas
+            </h2>
+          </div>
         </div>
-        <div className="flex items-center justify-between border-t border-border/40 pt-6">
-          <span className="text-2xl font-black text-foreground tracking-tighter italic">
-            {profile.tenantName}
-          </span>
-          <span className="px-4 py-1.5 rounded-xl bg-background border border-border/60 text-[10px] text-muted-foreground font-black uppercase tracking-widest shadow-inner">
-            Agente Ativo
-          </span>
+
+        <div className="space-y-4 pt-4 border-t border-border/40">
+          {availableTenants.length === 0 ? (
+            <p className="text-sm text-muted-foreground italic opacity-50">
+              Nenhuma organização encontrada.
+            </p>
+          ) : (
+            availableTenants.map((t) => {
+              const isCurrent = t.id === profile.tenantId;
+              return (
+                <div
+                  key={t.id}
+                  className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border transition-all ${
+                    isCurrent
+                      ? "bg-primary/5 border-primary/20 shadow-sm"
+                      : "bg-background/30 border-border/40 hover:bg-background/50 hover:border-border"
+                  }`}
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg font-black text-foreground tracking-tighter italic">
+                        {t.name}
+                      </span>
+                      {isCurrent && (
+                        <span className="px-3 py-1 rounded-lg bg-primary/10 text-[9px] text-primary font-black uppercase tracking-widest border border-primary/20 shadow-inner">
+                          Ativa
+                        </span>
+                      )}
+                    </div>
+                    {t.domain && (
+                      <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">
+                        {t.domain}
+                      </p>
+                    )}
+                  </div>
+
+                  {!isCurrent && (
+                    <button
+                      onClick={() => handleSwitchTenant(t.id)}
+                      disabled={switchingTenant === t.id}
+                      className="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl bg-muted border border-border/60 text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {switchingTenant === t.id ? "Trocando..." : "Acessar"}
+                    </button>
+                  )}
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 

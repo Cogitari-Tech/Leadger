@@ -1,0 +1,78 @@
+﻿
+[7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90mE:/Dev/Leadgers-Platform/apps/web[39m
+
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1m[7m Unhandled Errors [27m[22mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+[31m[1m
+Vitest caught 4 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+node.exe : 
+No linha:1 caractere:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1m[7m Unhandled Error [27m[22mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+[31m[1mError[22m: Cannot find module 'E:\Dev\Leadgers-Platform\node_modules\decimal.js\decimal.js'[39m
+[90m [2mÔØ»[22m createEsmNotFoundErr node:internal/modules/cjs/loader:[2m1419:15[22m[39m
+[90m [2mÔØ»[22m finalizeEsmResolution node:internal/modules/cjs/loader:[2m1408:15[22m[39m
+[90m [2mÔØ»[22m resolveExports node:internal/modules/cjs/loader:[2m650:14[22m[39m
+[90m [2mÔØ»[22m Function._findPath node:internal/modules/cjs/loader:[2m717:31[22m[39m
+[90m [2mÔØ»[22m Function._resolveFilename node:internal/modules/cjs/loader:[2m1369:27[22m[39m
+[90m [2mÔØ»[22m defaultResolveImpl node:internal/modules/cjs/loader:[2m1025:19[22m[39m
+[90m [2mÔØ»[22m resolveForCJSWithHooks node:internal/modules/cjs/loader:[2m1030:22[22m[39m
+[90m [2mÔØ»[22m Function._load node:internal/modules/cjs/loader:[2m1192:37[22m[39m
+[90m [2mÔØ»[22m TracingChannel.traceSync node:diagnostics_channel:[2m322:14[22m[39m
+[90m [2mÔØ»[22m wrapModuleLoad node:internal/modules/cjs/loader:[2m237:24[22m[39m
+
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1m[7m Unhandled Error [27m[22mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+[31m[1mError[22m: Cannot find module 'E:\Dev\Leadgers-Platform\node_modules\decimal.js\decimal.js'[39m
+[90m [2mÔØ»[22m createEsmNotFoundErr node:internal/modules/cjs/loader:[2m1419:15[22m[39m
+[90m [2mÔØ»[22m finalizeEsmResolution node:internal/modules/cjs/loader:[2m1408:15[22m[39m
+[90m [2mÔØ»[22m resolveExports node:internal/modules/cjs/loader:[2m650:14[22m[39m
+[90m [2mÔØ»[22m Function._findPath node:internal/modules/cjs/loader:[2m717:31[22m[39m
+[90m [2mÔØ»[22m Function._resolveFilename node:internal/modules/cjs/loader:[2m1369:27[22m[39m
+[90m [2mÔØ»[22m defaultResolveImpl node:internal/modules/cjs/loader:[2m1025:19[22m[39m
+[90m [2mÔØ»[22m resolveForCJSWithHooks node:internal/modules/cjs/loader:[2m1030:22[22m[39m
+[90m [2mÔØ»[22m Function._load node:internal/modules/cjs/loader:[2m1192:37[22m[39m
+[90m [2mÔØ»[22m TracingChannel.traceSync node:diagnostics_channel:[2m322:14[22m[39m
+[90m [2mÔØ»[22m wrapModuleLoad node:internal/modules/cjs/loader:[2m237:24[22m[39m
+
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1m[7m Unhandled Error [27m[22mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+[31m[1mError[22m: Cannot find module 'E:\Dev\Leadgers-Platform\node_modules\decimal.js\decimal.js'[39m
+[90m [2mÔØ»[22m createEsmNotFoundErr node:internal/modules/cjs/loader:[2m1419:15[22m[39m
+[90m [2mÔØ»[22m finalizeEsmResolution node:internal/modules/cjs/loader:[2m1408:15[22m[39m
+[90m [2mÔØ»[22m resolveExports node:internal/modules/cjs/loader:[2m650:14[22m[39m
+[90m [2mÔØ»[22m Function._findPath node:internal/modules/cjs/loader:[2m717:31[22m[39m
+[90m [2mÔØ»[22m Function._resolveFilename node:internal/modules/cjs/loader:[2m1369:27[22m[39m
+[90m [2mÔØ»[22m defaultResolveImpl node:internal/modules/cjs/loader:[2m1025:19[22m[39m
+[90m [2mÔØ»[22m resolveForCJSWithHooks node:internal/modules/cjs/loader:[2m1030:22[22m[39m
+[90m [2mÔØ»[22m Function._load node:internal/modules/cjs/loader:[2m1192:37[22m[39m
+[90m [2mÔØ»[22m TracingChannel.traceSync node:diagnostics_channel:[2m322:14[22m[39m
+[90m [2mÔØ»[22m wrapModuleLoad node:internal/modules/cjs/loader:[2m237:24[22m[39m
+
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1m[7m Unhandled Error [27m[22mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+[31m[1mError[22m: Cannot find module 'E:\Dev\Leadgers-Platform\node_modules\decimal.js\decimal.js'[39m
+[90m [2mÔØ»[22m createEsmNotFoundErr node:internal/modules/cjs/loader:[2m1419:15[22m[39m
+[90m [2mÔØ»[22m finalizeEsmResolution node:internal/modules/cjs/loader:[2m1408:15[22m[39m
+[90m [2mÔØ»[22m resolveExports node:internal/modules/cjs/loader:[2m650:14[22m[39m
+[90m [2mÔØ»[22m Function._findPath node:internal/modules/cjs/loader:[2m717:31[22m[39m
+[90m [2mÔØ»[22m Function._resolveFilename node:internal/modules/cjs/loader:[2m1369:27[22m[39m
+[90m [2mÔØ»[22m defaultResolveImpl node:internal/modules/cjs/loader:[2m1025:19[22m[39m
+[90m [2mÔØ»[22m resolveForCJSWithHooks node:internal/modules/cjs/loader:[2m1030:22[22m[39m
+[90m [2mÔØ»[22m Function._load node:internal/modules/cjs/loader:[2m1192:37[22m[39m
+[90m [2mÔØ»[22m TracingChannel.traceSync node:diagnostics_channel:[2m322:14[22m[39m
+[90m [2mÔØ»[22m wrapModuleLoad node:internal/modules/cjs/loader:[2m237:24[22m[39m
+
+[31mÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[39m
+
+[2m Test Files [22m [2mno tests[22m
+[2m      Tests [22m [2mno tests[22m
+[2m     Errors [22m [1m[31m4 errors[39m[22m
+[2m   Start at [22m 23:34:26
+[2m   Duration [22m 8.78s[2m (transform 51ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 0ms)[22m
+

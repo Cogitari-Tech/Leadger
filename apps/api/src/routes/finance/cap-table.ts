@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../config/prisma";
 import { authMiddleware } from "../../middleware/auth";
 import { tenancyMiddleware } from "../../middleware/tenancy";
 import { AppEnv } from "../../types/env";
@@ -17,7 +17,6 @@ interface CalculatedVesting {
   unvested: number;
   percentage: number;
 }
-
 
 /**
  * Calculates vested/unvested shares based on a vesting schedule.
@@ -131,7 +130,6 @@ capTableRoutes.use("*", tenancyMiddleware);
 
 capTableRoutes.get("/rounds", async (c) => {
   const tenantId = c.get("tenantId");
-  const prisma = new PrismaClient();
 
   try {
     const rounds = await prisma.cap_table_rounds.findMany({
@@ -142,15 +140,12 @@ capTableRoutes.get("/rounds", async (c) => {
   } catch (error) {
     console.error("Error fetching rounds:", error);
     return c.json({ error: "Failed to fetch rounds" }, 500);
-  } finally {
-    await prisma.$disconnect();
   }
 });
 
 capTableRoutes.post("/rounds", async (c) => {
   const tenantId = c.get("tenantId");
   const user = c.get("user");
-  const prisma = new PrismaClient();
 
   try {
     const body = await c.req.json();
@@ -173,15 +168,12 @@ capTableRoutes.post("/rounds", async (c) => {
   } catch (error) {
     console.error("Error creating round:", error);
     return c.json({ error: "Failed to create round" }, 500);
-  } finally {
-    await prisma.$disconnect();
   }
 });
 
 capTableRoutes.delete("/rounds/:id", async (c) => {
   const tenantId = c.get("tenantId");
   const id = c.req.param("id");
-  const prisma = new PrismaClient();
 
   try {
     await prisma.cap_table_rounds.delete({
@@ -191,8 +183,6 @@ capTableRoutes.delete("/rounds/:id", async (c) => {
   } catch (error) {
     console.error("Error deleting round:", error);
     return c.json({ error: "Failed to delete round" }, 500);
-  } finally {
-    await prisma.$disconnect();
   }
 });
 
@@ -200,7 +190,6 @@ capTableRoutes.delete("/rounds/:id", async (c) => {
 
 capTableRoutes.get("/shareholders", async (c) => {
   const tenantId = c.get("tenantId");
-  const prisma = new PrismaClient();
 
   try {
     const shareholders = await prisma.cap_table_shareholders.findMany({
@@ -227,14 +216,11 @@ capTableRoutes.get("/shareholders", async (c) => {
   } catch (error) {
     console.error("Error fetching shareholders:", error);
     return c.json({ error: "Failed to fetch shareholders" }, 500);
-  } finally {
-    await prisma.$disconnect();
   }
 });
 
 capTableRoutes.post("/shareholders", async (c) => {
   const tenantId = c.get("tenantId");
-  const prisma = new PrismaClient();
 
   try {
     const body = await c.req.json();
@@ -264,15 +250,12 @@ capTableRoutes.post("/shareholders", async (c) => {
   } catch (error) {
     console.error("Error adding shareholder:", error);
     return c.json({ error: "Failed to add shareholder" }, 500);
-  } finally {
-    await prisma.$disconnect();
   }
 });
 
 capTableRoutes.delete("/shareholders/:id", async (c) => {
   const tenantId = c.get("tenantId");
   const id = c.req.param("id");
-  const prisma = new PrismaClient();
 
   try {
     await prisma.cap_table_shareholders.delete({
@@ -282,8 +265,6 @@ capTableRoutes.delete("/shareholders/:id", async (c) => {
   } catch (error) {
     console.error("Error deleting shareholder:", error);
     return c.json({ error: "Failed to delete shareholder" }, 500);
-  } finally {
-    await prisma.$disconnect();
   }
 });
 
@@ -291,7 +272,6 @@ capTableRoutes.delete("/shareholders/:id", async (c) => {
 
 capTableRoutes.get("/summary", async (c) => {
   const tenantId = c.get("tenantId");
-  const prisma = new PrismaClient();
 
   try {
     const [rounds, shareholders] = await Promise.all([
@@ -325,8 +305,6 @@ capTableRoutes.get("/summary", async (c) => {
   } catch (error) {
     console.error("Error fetching summary:", error);
     return c.json({ error: "Failed to fetch summary" }, 500);
-  } finally {
-    await prisma.$disconnect();
   }
 });
 

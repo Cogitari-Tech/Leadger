@@ -7,18 +7,18 @@
 
 ## 📚 Índice de Documentação
 
-Este repositório contém toda a especificação técnica para evolução da plataforma Cogitari de um SPA monolítico para uma arquitetura modular empresarial.
+Este repositório contém toda a especificação técnica para evolução da plataforma Leadgers de um SPA monolítico para uma arquitetura modular empresarial.
 
 ### 📖 Documentos Principais
 
-| Documento                              | Descrição                                                       | Arquivo                                |
-| -------------------------------------- | --------------------------------------------------------------- | -------------------------------------- |
-| **ADR (Architecture Decision Record)** | Decisões arquiteturais finais, stack aprovada, MCPs necessários | `docs/00_architecture-decision-record.md` |
-| **Estrutura do Projeto**               | Organização completa de pastas, módulos e pacotes               | `docs/01_project-structure.md`            |
-| **System Architecture**                | Documentação profunda de Engenharia e Regras de Negócio (Fase 1)| `docs/02_system-architecture.md`          |
-| **Workflow de Desenvolvimento**        | CI/CD, Testes e Segurança (Pre-commit)                          | `docs/03_development-workflow.md`         |
-| **Guia de Migração**                   | Passo a passo para migrar do sistema legado                     | `docs/04_migration-guide.md`              |
-| **Developer Experience (DX)**          | Usuários de teste, bypasses e shortcuts de Vibe Coding          | `docs/05_developer-experience.md`          |
+| Documento                              | Descrição                                                        | Arquivo                                   |
+| -------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------- |
+| **ADR (Architecture Decision Record)** | Decisões arquiteturais finais, stack aprovada, MCPs necessários  | `docs/00_architecture-decision-record.md` |
+| **Estrutura do Projeto**               | Organização completa de pastas, módulos e pacotes                | `docs/01_project-structure.md`            |
+| **System Architecture**                | Documentação profunda de Engenharia e Regras de Negócio (Fase 1) | `docs/02_system-architecture.md`          |
+| **Workflow de Desenvolvimento**        | CI/CD, Testes e Segurança (Pre-commit)                           | `docs/03_development-workflow.md`         |
+| **Guia de Migração**                   | Passo a passo para migrar do sistema legado                      | `docs/04_migration-guide.md`              |
+| **Developer Experience (DX)**          | Usuários de teste, bypasses e shortcuts de Vibe Coding           | `docs/05_developer-experience.md`         |
 
 ### 💻 Exemplos de Código
 
@@ -79,6 +79,7 @@ Este repositório contém toda a especificação técnica para evolução da pla
 Os MCPs são ferramentas usadas pelo seu Agente de IA Local (Cursor, Gemini CLI, Claude Desktop, etc) e rodam nativamente via `npx` em ambientes isolados pela própria IDE/Agente. O `package.json` do projeto deve permanecer limpo.
 
 ### Visão Geral dos MCPs Utilizados
+
 Para permitir que o seu Agente contribua eficientemente ("Vibe Coding") neste repositório mantendo o alto padrão da arquitetura e das interfaces, utilizamos as seguintes capacidades estendidas (MCP Servers):
 
 1. **`filesystem`**: Concede ao Agente a capacidade de ler, criar e alterar o código deste repositório com precisão.
@@ -96,16 +97,21 @@ Para permitir que o seu Agente contribua eficientemente ("Vibe Coding") neste re
 A configuração é projetada para ser "Plug and Play". Siga uma das duas opções:
 
 #### Opção A: Configuração Automática (Recomendada)
+
 Forneça o seguinte prompt de início (Vibe Coding) para o seu Agente/IDE:
-> *"Agente, verifique o arquivo `mcp_config.example.json` na raiz do projeto e configure seus servidores MCP internos (sua IDE) usando essas definições. Avise-me quando concluir."*
-Após ele carregar as configurações, basta você acessar as propriedades do seu Agente e colar as `API keys`.
+
+> _"Agente, verifique o arquivo `mcp_config.example.json` na raiz do projeto e configure seus servidores MCP internos (sua IDE) usando essas definições. Avise-me quando concluir."_
+> Após ele carregar as configurações, basta você acessar as propriedades do seu Agente e colar as `API keys`.
 
 #### Opção B: Configuração Manual
+
 1. Copie o conteúdo de `mcp_config.example.json` (localizado na raiz).
 2. Cole no arquivo de configurações de MCP do seu cliente (ex: `~/AppData/Roaming/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json` se estiver no VSCode/Cline, ou na UI de configurações do Cursor/Claude Desktop).
 
 ### 🔑 Política de Chaves (API Keys)
+
 O arquivo de template requer múltiplas chaves (Supabase Token, GitHub PAT, Vercel Auth, Google X-Goog-Api-Key e Upstash Redis).
+
 - **Consulte a equipe ("Ask your team"):** Verifique no canal oficial da engenharia se existe um conjunto de API Keys compartilhadas para ambiente de `Desenvolvimento` ou de `Homologação`.
 - Se as chaves compartilhadas não estiverem disponíveis, você deverá **criar contas gratuitas pessoais** nas plataformas correspondentes (Supabase, Vercel, Upstash, Google Cloud) para injetar as credenciais no seu agente de IA local.
 
@@ -476,7 +482,7 @@ git push origin joao
 
 **Ambiente Beta:**
 
-- 🌐 URL: `https://beta-audit-tool.vercel.app` (Vercel Free)
+- 🌐 URL: `https://beta.leadgers.com` (Vercel Free)
 - 🗄️ Database: Supabase project separado (Free Tier)
 
 #### 4️⃣ Correção de Bugs (hotfix)
@@ -501,7 +507,7 @@ git push origin hotfix/corrige-validacao
 
 **Ambiente Produção:**
 
-- 🌐 URL: `https://app.cogitari.com.br` (Vercel Free + domínio custom)
+- 🌐 URL: `https://app.leadgers.com` (Vercel Free + domínio custom)
 - 🗄️ Database: Supabase produção (Free Tier)
 
 ### Comandos Git Úteis
@@ -625,11 +631,11 @@ Uso interno restrito. Distribuição não autorizada é proibida.
 
 Para testes rápidos em ambiente de produção ou homologação:
 
-| Usuário                              | Senha               | Função             | Comportamento             |
-| ------------------------------------ | ------------------- | ------------------ | ------------------------- |
-| `teste@leadgers.com`                 | `Cogitari@2026!Dev` | Admin (Auditoria)  | Estático (Persistente)    |
-| `qa_vibe_test@leadgers.com`          | `Cogitari@2026!Dev` | Novo Registro      | **Auto-Removível** (LImpa ao Sair) |
-| `test_removivel@leadgers.com`        | `Cogitari@2026!Dev` | Teste de Cadastro  | **Auto-Removível** (Limpa ao Sair) |
+| Usuário                       | Senha               | Função            | Comportamento                      |
+| ----------------------------- | ------------------- | ----------------- | ---------------------------------- |
+| `teste@leadgers.com`          | `Cogitari@2026!Dev` | Admin (Auditoria) | Estático (Persistente)             |
+| `qa_vibe_test@leadgers.com`   | `Cogitari@2026!Dev` | Novo Registro     | **Auto-Removível** (LImpa ao Sair) |
+| `test_removivel@leadgers.com` | `Cogitari@2026!Dev` | Teste de Cadastro | **Auto-Removível** (Limpa ao Sair) |
 
 > 💡 **Dica:** Use o e-mail `qa_vibe_test@leadgers.com` se quiser testar o fluxo de registro e onboarding do zero repetidas vezes. O sistema apagará os dados deste usuário e de sua organização assim que você clicar em "Sair" do dashboard.
 
@@ -637,4 +643,4 @@ Para testes rápidos em ambiente de produção ou homologação:
 
 **Cogitari Tech** - Construindo o futuro da auditoria e gestão empresarial. 🚀
 
-_Última atualização: 12 de Março de 2026_
+_Última atualização: 02 de Abril de 2026_

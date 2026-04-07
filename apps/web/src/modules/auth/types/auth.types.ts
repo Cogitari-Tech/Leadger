@@ -8,6 +8,9 @@ export interface Tenant {
   slug: string;
   domain: string | null;
   plan: string;
+  plan_status?: string | null;
+  plan_expires_at?: string | null;
+  stripe_customer_id?: string | null;
   logo_url: string | null;
   settings: Record<string, unknown>;
   cnpj: string | null;

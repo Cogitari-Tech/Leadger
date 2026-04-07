@@ -1,7 +1,7 @@
 npx lint-staged
 
 echo "🔒 Checking for .env leaks..."
-if git diff --cached --name-only | grep -E '^\\.env(\\..+)?$' | grep -v '\\.example$'; then
+if git diff --cached --name-only | grep -E '^\.env(\..+)?$' | grep -v '\.example$'; then
   echo "🚨 CRITICAL: Attempting to commit a .env file!"
   echo "Commit rejected to prevent credential leaks."
   exit 1
