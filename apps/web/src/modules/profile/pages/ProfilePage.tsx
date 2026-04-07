@@ -262,7 +262,7 @@ export default function ProfilePage() {
             </h2>
           </div>
         </div>
-        
+
         <div className="space-y-4 pt-4 border-t border-border/40">
           {availableTenants.length === 0 ? (
             <p className="text-sm text-muted-foreground italic opacity-50">
@@ -272,11 +272,11 @@ export default function ProfilePage() {
             availableTenants.map((t) => {
               const isCurrent = t.id === profile.tenantId;
               return (
-                <div 
-                  key={t.id} 
+                <div
+                  key={t.id}
                   className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border transition-all ${
-                    isCurrent 
-                      ? "bg-primary/5 border-primary/20 shadow-sm" 
+                    isCurrent
+                      ? "bg-primary/5 border-primary/20 shadow-sm"
                       : "bg-background/30 border-border/40 hover:bg-background/50 hover:border-border"
                   }`}
                 >
@@ -297,7 +297,7 @@ export default function ProfilePage() {
                       </p>
                     )}
                   </div>
-                  
+
                   {!isCurrent && (
                     <button
                       onClick={() => handleSwitchTenant(t.id)}

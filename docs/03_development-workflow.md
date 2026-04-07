@@ -19,6 +19,7 @@ When you run `git commit`, the following checks execute automatically:
 ### Assurance Checks (Pre-push & Post-merge)
 
 Prior to any `git push`, the following occurs (via `pre-push` hook):
+
 1. **Typechecking**: `tsc --noEmit` validates Typescript structures.
 2. **Tests**: `npm run test` executes Vitest suites ensuring no regressions exist.
 3. **Security Audit**: High and critical vulnerabilities check.

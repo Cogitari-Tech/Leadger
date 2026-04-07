@@ -1149,21 +1149,21 @@ Cenário: Digest com conteúdo personalizado por perfil
 
 ### 8.2 Segurança
 
-| Requisito                  | Especificação                                                                                              |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Autenticação**           | Supabase Auth com Bearer token. JWT gerenciado pelo Supabase. Refresh automático via SDK.                  |
-| **Autorização**            | RBAC (Role-Based Access Control): Admin, Manager, Member, Viewer                                           |
-| **Multi-tenancy / RLS**    | Row-Level Security via SECURITY INVOKER no PostgreSQL com `search_path` bloqueado evitando SQL injections. |
-| **Input Validation**       | Uso restrito de schemas Zod no `validateBody` em todas as rotas de escrita (POST/PATCH).                   |
-| **Database Pool**          | Prisma Client Singleton instanciado na borda prevenindo connection exhaustion e vazamentos de memória.     |
-| **Rate Limiting**          | 60 req/min global, 10 req/min por rota de IA via in-memory middleware protegendo contra Flood.             |
-| **Secrets**                | Armazenados em Vercel env vars (encrypted). Nunca expostos em logs.                                        |
-| **Dados sensíveis**        | PII, tokens e dados financeiros nunca em logs. Log sanitization obrigatório.                               |
+| Requisito                  | Especificação                                                                                                              |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Autenticação**           | Supabase Auth com Bearer token. JWT gerenciado pelo Supabase. Refresh automático via SDK.                                  |
+| **Autorização**            | RBAC (Role-Based Access Control): Admin, Manager, Member, Viewer                                                           |
+| **Multi-tenancy / RLS**    | Row-Level Security via SECURITY INVOKER no PostgreSQL com `search_path` bloqueado evitando SQL injections.                 |
+| **Input Validation**       | Uso restrito de schemas Zod no `validateBody` em todas as rotas de escrita (POST/PATCH).                                   |
+| **Database Pool**          | Prisma Client Singleton instanciado na borda prevenindo connection exhaustion e vazamentos de memória.                     |
+| **Rate Limiting**          | 60 req/min global, 10 req/min por rota de IA via in-memory middleware protegendo contra Flood.                             |
+| **Secrets**                | Armazenados em Vercel env vars (encrypted). Nunca expostos em logs.                                                        |
+| **Dados sensíveis**        | PII, tokens e dados financeiros nunca em logs. Log sanitization obrigatório.                                               |
 | **IA Server-Side**         | Todas as chamadas às APIs de LLM (Claude/Gemini) são feitas no servidor. API keys nunca expostas ao cliente. Suporte BYOK. |
-| **OWASP Top 10**           | Conformidade obrigatória. Revisão em cada release major.                                                   |
-| **Prompt Injection**       | Validação e sanitização de todos os inputs antes de enviá-los a modelos de IA.                             |
-| **LGPD**                   | Consentimento explícito, direito de exclusão de dados, DPA com fornecedores.                               |
-| **Auditoria de segurança** | Log imutável de ações críticas (login, export, acesso a data room, alterações em cap table).               |
+| **OWASP Top 10**           | Conformidade obrigatória. Revisão em cada release major.                                                                   |
+| **Prompt Injection**       | Validação e sanitização de todos os inputs antes de enviá-los a modelos de IA.                                             |
+| **LGPD**                   | Consentimento explícito, direito de exclusão de dados, DPA com fornecedores.                                               |
+| **Auditoria de segurança** | Log imutável de ações críticas (login, export, acesso a data room, alterações em cap table).                               |
 
 ### 8.3 Escalabilidade
 
@@ -1205,22 +1205,22 @@ Cenário: Digest com conteúdo personalizado por perfil
 
 ### 9.1 Stack Técnica
 
-| Camada              | Tecnologia               | Justificativa                                              |
-| ------------------- | ------------------------ | ---------------------------------------------------------- |
-| **Frontend**        | Vite + React (SPA)       | Dashboard autenticado = SPA. HMR instantâneo, bundle estático para CDN, menor custo hosting |
-| **Linguagem**       | TypeScript               | Tipagem estática, menos bugs em runtime, DX superior       |
-| **Estilização**     | Tailwind CSS             | Utilitário, design system consistente, dark mode nativo    |
-| **Backend**         | Node.js + Hono           | Edge-native (~14KB), Web Standards, cold starts mínimos no Vercel serverless |
-| **ORM**             | Prisma                   | Type-safety, migrations automáticas, excelente DX          |
-| **Banco de Dados**  | PostgreSQL (Supabase)    | ACID, RLS nativo, extensões ricas (JSONB, FTS), Auth integrado |
-| **Autenticação**    | Supabase Auth            | Integração nativa com RLS, JWT gerenciado, social logins, MFA disponível |
-| **Monorepo**        | npm workspaces           | Zero-config nativo. Migração para pnpm+Turborepo planejada para escala (>3 devs) |
-| **Deploy**          | Vercel (unificado)       | Plataforma única (front+back), auto-scaling, preview deploys por PR, free tier generoso |
-| **Cache**           | Redis (Upstash)          | Serverless Redis, per-request billing, HTTP API para edge, integração Vercel Marketplace |
-| **Background Jobs** | Inngest                  | Step functions duráveis, event-driven, serverless-compatible, sem workers dedicados |
-| **IA**              | Multi-LLM (Adapter)      | Claude (narrativa) + Gemini (dados). Adapter pattern em `packages/ai`. Suporte a BYOK |
-| **Testes**          | Vitest + Playwright      | Vitest para unitários/integração, Playwright para E2E (roadmap) |
-| **IDE/Dev**         | Google Antigravity IDE   | Vibe coding com agentes de IA, produtividade acelerada     |
+| Camada              | Tecnologia             | Justificativa                                                                               |
+| ------------------- | ---------------------- | ------------------------------------------------------------------------------------------- |
+| **Frontend**        | Vite + React (SPA)     | Dashboard autenticado = SPA. HMR instantâneo, bundle estático para CDN, menor custo hosting |
+| **Linguagem**       | TypeScript             | Tipagem estática, menos bugs em runtime, DX superior                                        |
+| **Estilização**     | Tailwind CSS           | Utilitário, design system consistente, dark mode nativo                                     |
+| **Backend**         | Node.js + Hono         | Edge-native (~14KB), Web Standards, cold starts mínimos no Vercel serverless                |
+| **ORM**             | Prisma                 | Type-safety, migrations automáticas, excelente DX                                           |
+| **Banco de Dados**  | PostgreSQL (Supabase)  | ACID, RLS nativo, extensões ricas (JSONB, FTS), Auth integrado                              |
+| **Autenticação**    | Supabase Auth          | Integração nativa com RLS, JWT gerenciado, social logins, MFA disponível                    |
+| **Monorepo**        | npm workspaces         | Zero-config nativo. Migração para pnpm+Turborepo planejada para escala (>3 devs)            |
+| **Deploy**          | Vercel (unificado)     | Plataforma única (front+back), auto-scaling, preview deploys por PR, free tier generoso     |
+| **Cache**           | Redis (Upstash)        | Serverless Redis, per-request billing, HTTP API para edge, integração Vercel Marketplace    |
+| **Background Jobs** | Inngest                | Step functions duráveis, event-driven, serverless-compatible, sem workers dedicados         |
+| **IA**              | Multi-LLM (Adapter)    | Claude (narrativa) + Gemini (dados). Adapter pattern em `packages/ai`. Suporte a BYOK       |
+| **Testes**          | Vitest + Playwright    | Vitest para unitários/integração, Playwright para E2E (roadmap)                             |
+| **IDE/Dev**         | Google Antigravity IDE | Vibe coding com agentes de IA, produtividade acelerada                                      |
 
 ### 9.2 Arquitetura Hexagonal (Ports & Adapters)
 
@@ -2139,16 +2139,16 @@ O Leadgers implementa os 9 direitos previstos no Art. 18 da LGPD:
 
 ### 19.3 Subprocessadores e Transferências
 
-| Subprocessador     | Finalidade                           | Localização dos dados            | DPA assinado                      |
-| ------------------ | ------------------------------------ | -------------------------------- | --------------------------------- |
-| Vercel             | Hospedagem frontend + backend        | EUA (edge global)                | ✅                                |
-| Supabase           | Banco de dados + Auth                | Brasil (quando disponível) / EUA | ✅                                |
-| Anthropic          | Processamento de IA (Claude)         | EUA                              | ✅ (obrigatório antes do go-live) |
-| Google AI          | Processamento de IA (Gemini)         | EUA                              | ✅                                |
-| Inngest            | Background jobs                      | EUA                              | ✅                                |
-| SendGrid           | Envio de emails                      | EUA                              | ✅                                |
-| Stripe             | Processamento de pagamentos          | EUA                              | ✅                                |
-| Upstash (Redis)    | Cache                                | EUA / multi-região               | ✅                                |
+| Subprocessador  | Finalidade                    | Localização dos dados            | DPA assinado                      |
+| --------------- | ----------------------------- | -------------------------------- | --------------------------------- |
+| Vercel          | Hospedagem frontend + backend | EUA (edge global)                | ✅                                |
+| Supabase        | Banco de dados + Auth         | Brasil (quando disponível) / EUA | ✅                                |
+| Anthropic       | Processamento de IA (Claude)  | EUA                              | ✅ (obrigatório antes do go-live) |
+| Google AI       | Processamento de IA (Gemini)  | EUA                              | ✅                                |
+| Inngest         | Background jobs               | EUA                              | ✅                                |
+| SendGrid        | Envio de emails               | EUA                              | ✅                                |
+| Stripe          | Processamento de pagamentos   | EUA                              | ✅                                |
+| Upstash (Redis) | Cache                         | EUA / multi-região               | ✅                                |
 
 > ⚠️ **Atenção:** Para transferências internacionais, o Leadgers aplica cláusulas contratuais padrão (SCCs) ou verifica adequação de acordo com o Art. 33 da LGPD. O DPA com a Anthropic é pré-requisito para o go-live da funcionalidade de IA.
 
