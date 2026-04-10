@@ -12,14 +12,14 @@ Este repositório contém toda a especificação técnica para evolução da pla
 
 ### 📖 Documentos Principais
 
-| Documento                              | Descrição                                                       | Arquivo                                |
-| -------------------------------------- | --------------------------------------------------------------- | -------------------------------------- |
-| **ADR (Architecture Decision Record)** | Decisões arquiteturais finais, stack aprovada, MCPs necessários | `docs/00_architecture-decision-record.md` |
-| **Estrutura do Projeto**               | Organização completa de pastas, módulos e pacotes               | `docs/01_project-structure.md`            |
-| **System Architecture**                | Documentação profunda de Engenharia e Regras de Negócio (Fase 1)| `docs/02_system-architecture.md`          |
-| **Workflow de Desenvolvimento**        | CI/CD, Testes e Segurança (Pre-commit)                          | `docs/03_development-workflow.md`         |
-| **Guia de Migração**                   | Passo a passo para migrar do sistema legado                     | `docs/04_migration-guide.md`              |
-| **Developer Experience (DX)**          | Usuários de teste, bypasses e shortcuts de Vibe Coding          | `docs/05_developer-experience.md`          |
+| Documento                              | Descrição                                                        | Arquivo                                   |
+| -------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------- |
+| **ADR (Architecture Decision Record)** | Decisões arquiteturais finais, stack aprovada, MCPs necessários  | `docs/00_architecture-decision-record.md` |
+| **Estrutura do Projeto**               | Organização completa de pastas, módulos e pacotes                | `docs/01_project-structure.md`            |
+| **System Architecture**                | Documentação profunda de Engenharia e Regras de Negócio (Fase 1) | `docs/02_system-architecture.md`          |
+| **Workflow de Desenvolvimento**        | CI/CD, Testes e Segurança (Pre-commit)                           | `docs/03_development-workflow.md`         |
+| **Guia de Migração**                   | Passo a passo para migrar do sistema legado                      | `docs/04_migration-guide.md`              |
+| **Developer Experience (DX)**          | Usuários de teste, bypasses e shortcuts de Vibe Coding           | `docs/05_developer-experience.md`         |
 
 ---
 
