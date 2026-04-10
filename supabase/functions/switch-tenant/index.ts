@@ -65,18 +65,18 @@ serve(async (req) => {
 
     // 4. Update the user app_metadata using Admin API
     const currentMetadata = user.app_metadata || {};
-    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-      user.id,
-      {
+    const { error: updateError } =
+      await supabaseAdmin.auth.admin.updateUserById(user.id, {
         app_metadata: {
           ...currentMetadata,
           tenant_id: tenant_id,
         },
-      }
-    );
+      });
 
     if (updateError) {
-      throw new Error(`Failed to update tenant metadata: ${updateError.message}`);
+      throw new Error(
+        `Failed to update tenant metadata: ${updateError.message}`,
+      );
     }
 
     return new Response(JSON.stringify({ success: true, tenant_id }), {
@@ -92,7 +92,7 @@ serve(async (req) => {
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
-      }
+      },
     );
   }
 });

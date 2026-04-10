@@ -9,7 +9,8 @@ export const BillingManagement: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [errorMSG, setErrorMSG] = useState<string | null>(null);
 
-  const isAdminOrOwner = user?.role?.name === "admin" || user?.role?.name === "owner";
+  const isAdminOrOwner =
+    user?.role?.name === "admin" || user?.role?.name === "owner";
 
   const handleCheckout = async () => {
     if (!tenant) return;
@@ -26,7 +27,7 @@ export const BillingManagement: React.FC = () => {
             Authorization: `Bearer ${session?.access_token}`,
             "x-tenant-id": tenant.id,
           },
-        }
+        },
       );
 
       const data = await response.json();
@@ -40,7 +41,9 @@ export const BillingManagement: React.FC = () => {
       }
     } catch (err: any) {
       console.error(err);
-      setErrorMSG(err.message || "Não foi possível conectar com a Stripe no momento.");
+      setErrorMSG(
+        err.message || "Não foi possível conectar com a Stripe no momento.",
+      );
     } finally {
       setLoading(false);
     }
@@ -51,7 +54,9 @@ export const BillingManagement: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Faturamento e Assinatura</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Faturamento e Assinatura
+        </h1>
         <p className="text-muted-foreground mt-1">
           Gerencie o plano da empresa e detalhes financeiros.
         </p>
@@ -61,7 +66,7 @@ export const BillingManagement: React.FC = () => {
         <div className="col-span-1 md:col-span-2 space-y-6">
           <div className="glass-card rounded-2xl p-6 border border-border/50 bg-background/50 backdrop-blur-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-32 bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
-            
+
             <div className="flex items-start justify-between relative z-10">
               <div>
                 <h2 className="text-lg font-semibold flex items-center gap-2">
@@ -72,10 +77,14 @@ export const BillingManagement: React.FC = () => {
                   <span className="text-4xl font-extrabold tracking-tight">
                     {isPro ? "Ouro" : "Basic"}
                   </span>
-                  <span className="text-muted-foreground ml-2 text-sm font-medium">/ mês</span>
+                  <span className="text-muted-foreground ml-2 text-sm font-medium">
+                    / mês
+                  </span>
                 </div>
                 <div className="mt-2 text-sm">
-                  <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${isPro ? 'bg-emerald-500/10 text-emerald-500' : 'bg-muted text-muted-foreground'}`}>
+                  <span
+                    className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${isPro ? "bg-emerald-500/10 text-emerald-500" : "bg-muted text-muted-foreground"}`}
+                  >
                     Status: {tenant?.plan_status || "free"}
                   </span>
                 </div>
@@ -83,7 +92,9 @@ export const BillingManagement: React.FC = () => {
 
               {!isPro && (
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-foreground">R$ 5.000</div>
+                  <div className="text-2xl font-bold text-foreground">
+                    R$ 5.000
+                  </div>
                   <div className="text-muted-foreground text-sm">BRL / Mês</div>
                 </div>
               )}
@@ -175,26 +186,36 @@ export const BillingManagement: React.FC = () => {
             </h3>
             <div className="space-y-4 text-sm">
               <div>
-                <p className="text-muted-foreground text-xs font-medium uppercase mb-1">Empresa</p>
+                <p className="text-muted-foreground text-xs font-medium uppercase mb-1">
+                  Empresa
+                </p>
                 <p className="font-medium">{tenant?.name}</p>
               </div>
               <div>
-                <p className="text-muted-foreground text-xs font-medium uppercase mb-1">CNPJ</p>
+                <p className="text-muted-foreground text-xs font-medium uppercase mb-1">
+                  CNPJ
+                </p>
                 <p className="font-medium">{tenant?.cnpj || "Não informado"}</p>
               </div>
               {tenant?.plan_expires_at && (
                 <div>
-                  <p className="text-muted-foreground text-xs font-medium uppercase mb-1">Renovação / Fim do Ciclo</p>
+                  <p className="text-muted-foreground text-xs font-medium uppercase mb-1">
+                    Renovação / Fim do Ciclo
+                  </p>
                   <p className="font-medium">
-                    {new Date(tenant.plan_expires_at).toLocaleDateString('pt-BR')}
+                    {new Date(tenant.plan_expires_at).toLocaleDateString(
+                      "pt-BR",
+                    )}
                   </p>
                 </div>
               )}
             </div>
-            
+
             <div className="mt-6 pt-6 border-t border-border/40">
-              <button 
-                onClick={() => window.open('mailto:suporte@leadgers.com', '_blank')}
+              <button
+                onClick={() =>
+                  window.open("mailto:suporte@leadgers.com", "_blank")
+                }
                 className="w-full px-4 py-2 text-sm font-medium text-center rounded-lg border border-border bg-background hover:bg-muted transition-colors"
               >
                 Contatar Suporte
