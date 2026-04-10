@@ -53,22 +53,24 @@ Este repositório contém toda a especificação técnica para evolução da pla
 
 ## 🔌 Integração de Agentes IA e MCPs (Model Context Protocol)
 
-**🚨 ATENÇÃO:** Agentes IA devem sempre consultar o `mcp_config.json` na raiz da pasta de perfil (ex: `.gemini/antigravity/mcp_config.json`) para carregar a stack.
+**🚨 ATENÇÃO - Estratégia de Configuração (DX Otimizado):**
+Para garantir a melhor experiência de desenvolvimento e evitar conflitos de portas ou instâncias zumbis, utilizamos uma estratégia de separação de MCPs:
 
-### MCPs Ativos (Ecossistema de IA)
-1. **`filesystem`**: Leitura e escrita.
-2. **`github`**: Interação com PRs (`Cogitari-Tech/Leadgers-Platform`).
-3. **`leadgers-supabase`**: Interação direta com Postgres via Supabase. Modelagem DDL/RLS.
-4. **`leadgers-vercel`**: Deployment e env vars via `npx vercel env pull`. O ambiente está 100% linkado à Vercel.
-5. **`leadgers-brasil`**: Integração com APIs externas brasileiras se necessário (ex: Receita WS, IBGE).
-6. **`leadgers-context7`**: Leituras em tempo real das documentações mais atuais do Tailwind CSS, Hono, React.
-7. **`leadgers-memory` / `leadgers-sequential-thinking`**: Retenção de conhecimento estruturado para agentes de longo prazo.
+1. **Configuração Global (Perfil do Agente):**
+   - **Local:** Raiz da pasta de perfil do seu agente (ex: `~/.gemini/antigravity/mcp_config.json` ou `.claude/`).
+   - **Finalidade:** Ferramentas genéricas, compartilhadas entre múltiplos projetos.
+   - **MCPs:** `github`, `browser`, `leadgers-brasil`, `leadgers-context7`, `leadgers-memory`, `leadgers-sequential-thinking`, `leadgers-vercel`.
+
+2. **Configuração Local (Workspace):**
+   - **Local:** `.agent/mcp_config.json` na raiz deste projeto.
+   - **Finalidade:** Ferramentas específicas e exclusivas deste projeto, que o agente só deve carregar quando estiver trabalhando aqui.
+   - **MCPs:** `shadcn` (Criação de UI) e `leadgers-supabase` (Acesso ao DB do projeto).
 
 ### 📝 Regras de "Vibe Coding" para Agentes
 - **Regra 1 (UI/UX):** Nunca escreva um componente base (`Button`, `Dialog`, `Input`, `Form`) do zero. DEVE rodar `npx shadcn-ui@latest add [component]` com a estilização atual do projeto (`@/shared/components`).
 - **Regra 2 (Testes E2E):** Todo endpoint Hono criado em `apps/api/src/routes` DEVE ter um correspondente `*.test.ts` usando a framework testing nativa do Hono/Vitest. Ex: `npm run test --workspace=api`.
 - **Regra 3 (Variáveis de Ambiente):** Use a CLI da vercel `npx vercel env pull` para debugar configurações ou baixar novas envs para `.env` local.
-- **Regra 4 (Documentações Opcionais):** Sinta-se livre para ler e modificar os `.md` dentro de `/docs` periodicamente em caso de refatoração para garantir clareza à arquitetura.
+- **Regra 4 (Documentações Opcionais):** Sinta-se livre para ler e modificar os `.md` dentro de `/docs` periodicamente em caso de refatoração para garantir clareza à arquitetura. Devs humanos e IAs devem consultar o guia detalhado em `/docs/06_mcp_onboarding_guide.md` para gerenciamento de MCPs e troubleshooting.
 
 ---
 

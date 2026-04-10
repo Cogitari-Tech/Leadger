@@ -1,72 +1,69 @@
-# Guia de Onboarding para Desenvolvedores - Leadgers Governance
+# Guia de Onboarding e DX (Developer Experience) - MCPs e Agentes
 
-Este documento descreve como configurar o ambiente de desenvolvimento local, incluindo os MCPs (Model Context Protocol) necessários para a automação de IA durante o processo de "Vibe Coding".
+Este documento descreve como configurar o ecossistema local e global de MCPs (Model Context Protocol) para maximizar a produtividade tanto de desenvolvedores humanos quanto de agentes de IA na Leadgers.
 
-## 🚀 Início Rápido
+## 🚀 Filosofia de Configuração (Local vs Global)
 
-1. Clone o repositório.
-2. Execute `npm run mcp:setup` na raiz do projeto para instalar a infraestrutura estável de MCPs.
-3. Copie o arquivo `mcp_config.example.json` para a pasta de configuração do seu agente de IA (ex: `.gemini/` ou `.claude/` conforme o caso).
-4. Preencha as chaves de API necessárias no arquivo de configuração final.
+Para evitar duplicidade de processos na máquina, conflito de portas e carga desnecessária de memória, dividimos nossos MCPs em duas camadas:
 
-## 🛠️ MCPs Configurados
+### 1. Camada Global (Ferramentas Genéricas)
+**Local:** Arquivo de configuração da IDE (ex: `C:\Users\morek\AppData\Roaming\Antigravity\User\mcp.json`).
+Não utilize mais configs distribuídos em `.agent/mcp_config.json` e similares se usar o Antigravity IDE para evitar conflitos de escopo. Todos os servidores operam na camada global para múltiplos projetos.
 
-O projeto utiliza uma série de MCPs para estender as capacidades do agente de IA. Abaixo estão as instruções exatas de onde obter cada chave e como configurar.
+*   `github`: Interações com sistema de versionamento e pull requests.
+*   `context7`: Busca na documentação atualizada de frameworks (React, Tailwind, Hono).
+*   `memory` / `sequential-thinking`: Base vetorial ou grafo de conhecimento interconectado para reter contexto de longo prazo.
+*   `vercel`: Integração com serviços de hospedagem Vercel para monitoramento de deployments e environment variables.
+*   `filesystem`: Limitado a pastas de projetos (ex: `E:\Dev`, `D:\ai-game-factory`, `C:\Users\morek`) para isolamento e segurança.
+*   `stitch`: Integração de GCP para IA Google Cloud.
 
-### 1. GitHub MCP (`server-github`)
+> [!TIP]
+> **Performance e Timeout:** Para evitar timeouts constantes nas inicializações do npx, **INSTALE GLOBALMENTE** os servidores MCPcríticos no Node e aponte para o executável `.cmd`. Ex: `npm install -g @modelcontextprotocol/server-filesystem` e use o caminho `E:\cache\npm-global\mcp-server-filesystem.cmd` em `command`. Apenas servidores dinâmicos/remotos como `vercel` e `sequential-thinking` devem usar o `npx.cmd`.
 
-- **Finalidade:** Permite que a IA realize operações de branch, commits, pull requests e auditoria de código diretamente.
-- **Configuração:**
-  - Gere um **Personal Access Token (PAT)** em [GitHub Settings > Tokens](https://github.com/settings/tokens).
-  - Escopos necessários: `repo`, `admin:repo_hook`, `project`.
-  - **Onde colar:** No campo `GITHUB_PERSONAL_ACCESS_TOKEN` no seu `mcp_config.json`.
+### 2. Camada Local (Contexto Específico - Workspace)
+Não recomendamos o uso de `.antigravity/mcp.json` na raiz do projeto (cria conflitos).
 
-### 2. Supabase MCP (`supabase-mcp-server`)
-
-- **Finalidade:** Auditoria de banco de dados, comparação de schemas e execuções de SQL.
-- **Configuração:**
-  - Gere um **Supabase Access Token** em [Supabase Dashboard > Account Settings > Access Tokens](https://supabase.com/dashboard/account/tokens).
-  - **Onde colar:** No argumento `--access-token` do servidor `supabase-mcp-server`.
-
-### 3. StitchMCP (Stitch API)
-
-- **Finalidade:** Geração de telas UI e design de alta fidelidade via IA.
-- **Configuração:**
-  - Solicite a `X-Goog-Api-Key` à equipe técnica ou gere no console do Google Cloud (se tiver permissão).
-  - **Onde colar:** No header `X-Goog-Api-Key`.
-
-### 4. Prisma e Redis
-
-- **Prisma:** Já configurado para ler o arquivo `schema.prisma` local.
-- **Redis:** Requer uma `REDIS_URL`. Recomendamos o [Upstash](https://upstash.com/) para desenvolvimento.
+*   `shadcn`: Integração de UI. Essencial para invocar comandos de scaffold do projeto de design-system sem travar os agentes pedindo input.
+*   `supabase`: Acesso direto ao DB PostgreSQL da firma. É alimentado com um token do Supabase atrelado à organização. Recomenda-se adicionar na config Global também (com binário `.cmd`).
 
 ---
 
-## 🔑 Gerenciamento de Segredos
+## 🛠️ Configuração e Autenticação de MCPs
 
-> [!CAUTION]
-> **NUNCA** faça commit do seu arquivo `mcp_config.json` ou de qualquer arquivo que contenha chaves reais. Estes arquivos estão no `.gitignore` por padrão.
+Abaixo estão as instruções de como setar os tokens principais:
 
-### Estrutura de Placeholder para Novos Devs
+### Supabase (`supabase` - GLOBAL/Projeto)
+- **Onde:** `AppData\Roaming\Antigravity\User\mcp.json`
+- **Autenticação:** `--access-token <TOKEN>` nos args (gerado no Supabase Dashboard).
 
-Ao configurar um novo ambiente para um desenvolvedor, forneça apenas o arquivo `mcp_config.example.json`. O desenvolvedor deve:
+### Context7 (`context7` - GLOBAL)
+- **Onde:** `AppData\Roaming\Antigravity\User\mcp.json` (usar nó de `env` de injection).
+- **Variáveis de Ambiente:** injete `CONTEXT7_API_KEY` dentro do array de properties de `env`.
 
-1. Instalar as dependências globais via `npm install`.
-2. Perguntar à equipe se há uma conta compartilhada ou se deve criar a sua própria para os serviços externos (GitHub, Supabase, etc.).
-
-## 🤖 Como Pedir ao Agente para Configurar
-
-Você pode colar o conteúdo do `mcp_config.example.json` no chat com o seu agente de IA e dar o seguinte prompt:
-
-> "Configure meus MCPs de acordo com este template. Eu completarei as chaves de API manualmente nos placeholders indicados."
+### GitHub (`github` - GLOBAL)
+- **Onde:** `AppData\Roaming\Antigravity\User\mcp.json`
+- **Autenticação:** Injete a variavel de `env` `GITHUB_PERSONAL_ACCESS_TOKEN` no JSON.
 
 ---
 
-## 📅 Auditoria de Ambientes
+## 🔑 Gerenciamento de Segredos e Refresh
 
-O projeto mantém dois ambientes principais no Supabase:
+> [!IMPORTANT]
+> **Refresh no Antigravity IDE:** Para qualquer mudança na configuração de MCPs surtir efeito, você DEVE ir na aba "MCP Servers -> Manage MCP Servers" da sua IDE e clicar manualmente em **Refresh**. Os MCPs vão iniciar no backend.
 
-- **Audit-Tool-Beta:** Ambiente de testes e novas features.
-- **Audit-Tool-Prod:** Ambiente de produção com dados reais de clientes.
+### Como Pedir ao Agente para Configurar seu Ambiente
 
-Utilize o MCP do Supabase para garantir que as migrações em `beta` estão prontas para subir para `prod` através da branch `main`.
+No início de um setup na sua máquina, valide suas portas:
+
+> "Verifique meu `mcp_config.example.json`. Baseando-se nele, verifique se a minha config de OS global em `AppData\Roaming\Antigravity\User\mcp.json` está utilizando arquivos `.cmd` globais ao invés de `npx` onde possível para evitar timeouts."
+
+## 🤖 Agentes, Skills e Workflows (Arquitetura Otimizada)
+
+A Leadgers Platform não roda apenas Modelos Brutos, utilizamos nosso ecossistema de Agentes no VS Code. Conheça a base para guiar a IA de maneira otimizada:
+
+- **Agents:** (`orchestrator`, `frontend-specialist`, `backend-specialist`, etc). O núcleo da persona e limites.
+- **Skills:** (`brainstorming`, `clean-code`). O "cinto de ferramentas" atrelado às personas com práticas puras.
+- **Workflows:** Comandos base `/brainstorm`, `/deploy`, `/test` para não ter que ditar grandes instruções verbosamente.
+
+Toda essa orquestração reside em arquivos markdown limpos dentro de `.agent/` ou na respectiva pasta que você encontra no `ARCHITECTURE.md`.
+Leia o `ARCHITECTURE.md` para visualizar as capacidades da equipe digital do time de desenvolvimento.

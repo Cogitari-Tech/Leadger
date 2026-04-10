@@ -120,6 +120,14 @@ When user's prompt is NOT in English:
 2. Identify dependent files
 3. Update ALL affected files together
 
+### 🔌 Configuração de MCPs no Antigravity IDE
+
+**Mandatory Rule for MCPs:**
+Quando o usuário pedir para configurar, instalar ou testar servidores MCP:
+1. **Local do Arquivo:** O Antigravity IDE lê as definições por padrão em `AppData\Roaming\Antigravity\User\mcp.json`. Não adicione/crie arquivos `.antigravity/mcp.json` nas raízes de projeto para evitar conflito de escopo.
+2. **Binários Globais (`.cmd`):** Evite o uso de `npx -y` em servidores pesados (`filesystem`, `github`, `context7`, `supabase`), pois causam timeout recorrente na inicialização pelo Windows. Aconselhe a instalação global via `npm i -g <pacote>` e chame o binário em cache (ex: `E:\cache\npm-global\mcp-server-filesystem.cmd`).
+3. **Refresh Obrigatório:** Modificações de configuração não surtem efeito automático. Após corrigir ou instalar um MCP, você DEVE pedir ao usuário: *"Por favor, clique no botão 'Refresh' na aba 'MCP Servers -> Manage MCP Servers' da sua IDE para aplicar as mudanças."*
+
 ### 🗺️ System Map Read
 
 > 🔴 **MANDATORY:** Read `ARCHITECTURE.md` at session start to understand Agents, Skills, and Scripts.

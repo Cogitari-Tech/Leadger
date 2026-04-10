@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer base {
   :root {
@@ -99,7 +97,7 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
@@ -112,9 +110,10 @@
 
 @layer utilities {
   .glass-panel {
-    background-color: hsl(var(--background) / 0.85);
-    backdrop-filter: blur(24px);
-    border: 1px solid hsl(var(--border) / 0.5);
+    background-color: hsl(var(--background) / 0.4);
+    backdrop-filter: blur(12px) saturate(180%);
+    border: none;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
   }
 
   .glass-card {
@@ -128,12 +127,12 @@
   }
 
   .dark .glass-card {
-    background-color: hsl(var(--background) / 0.3);
-    backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--border) / 0.2);
+    background-color: hsl(var(--background) / 0.15);
+    backdrop-filter: blur(12px) saturate(120%);
+    border: 1px solid hsl(var(--border) / 0.1);
     box-shadow: 
-      0 20px 25px -5px rgb(0 0 0 / 0.1),
-      0 8px 10px -6px rgb(0 0 0 / 0.1);
+      0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
 
   /* Smooth Soft Shadow - macOS style */
@@ -164,12 +163,57 @@
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background-color: hsl(var(--muted-foreground) / 0.1);
     border-radius: 9999px;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: hsl(var(--muted-foreground) / 0.2);
   }
+}
+
+/* Reduced Noise: Simplifying border usage */
+.border-soft {
+  border: 1px solid hsl(var(--border) / 0.1);
+}
+
+/* Depth: High-premium shadows */
+.shadow-premium {
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+}
+
+/* Accessibility: Support for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Refined Glassmorphism tokens for better compliance */
+.glass-panel-heavy {
+  background-color: hsl(var(--background) / 0.8);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid hsl(var(--border) / 0.3);
+}
+
+.glass-card-premium {
+  background-color: hsl(var(--card) / 0.6);
+  backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid hsl(var(--border) / 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Fix for expensive property animations (avoiding width/height) */
+.animate-scale {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-scale:hover {
+  transform: scale(1.02);
 }
 
 /* aria-label Bypass for UX audit dummy regex */

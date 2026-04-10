@@ -28,14 +28,14 @@
 | ------------------- | -------------------------- |
 | **Produto**         | Leadgers                   |
 | **URL**             | leadgers.com               |
-| **Versão**          | 1.1.0                      |
-| **Data**            | 20/03/2026                 |
+| **Versão**          | 1.2.0                      |
+| **Data**            | 07/04/2026                 |
 | **Autor**           | Time de Produto — Cogitari |
-| **Status**          | 🟡 Em Revisão              |
+| **Status**          | 🟢 Ativa                 |
 | **Classificação**   | 🔴 Confidencial            |
 | **Revisores**       | CTO, CEO, Lead Engineer    |
-| **Última Revisão**  | 20/03/2026                 |
-| **Próxima Revisão** | 20/04/2026                 |
+| **Última Revisão**  | 07/04/2026                 |
+| **Próxima Revisão** | 07/05/2026                 |
 
 ---
 
@@ -52,6 +52,7 @@
 | 0.9.0  | 01/03/2026 | Time de Produto   | Revisão técnica e arquitetural                                                                                                                                           |
 | 1.0.0  | 20/03/2026 | Time de Produto   | Versão para revisão executiva                                                                                                                                            |
 | 1.1.0  | 20/03/2026 | Revisão editorial | Correção de métricas de mercado, ajuste de datas do roadmap, expansão do modelo de dados, racional de pricing, riscos ampliados, seções de Onboarding e LGPD adicionadas |
+| 1.2.0  | 07/04/2026 | Antigravity AI    | Estrutura de módulos UI e Prisma atualizados para refletir o estado de implementação. Validação dos packages e exclusão do conflito Shadcn. |
 
 ---
 
