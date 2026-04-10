@@ -1,5 +1,5 @@
 $env:CLAUDE_CODE_USE_OPENAI="1"
-$env:OPENAI_API_KEY="AIzaSyCB09eDhAW7ZoqS6X4hl912eeWjhqFDQ4M"
+$env:OPENAI_API_KEY=""
 $env:OPENAI_MODEL="Gemini 3.1 pro"
 
 openclaudeIntegridade de Dados
