@@ -83,7 +83,7 @@ export const generateDataRoomReportJob = inngest.createFunction(
       - MRR Atual: ${tenantData.mrr?.total_mrr || 0}
       - Churn MRR: ${tenantData.mrr?.churn_mrr || 0}
       - Health Score Global: ${tenantData.healthScores?.total_score || "N/A"}
-      - Histórico de Milestones Recentes: ${JSON.stringify(tenantData.milestones.map((m) => m.title))}
+      - Histórico de Milestones Recentes: ${JSON.stringify(tenantData.milestones.map((m: any) => m.title))}
       
       Regras:
       1. Comece com um resumo executivo direto ao ponto.
