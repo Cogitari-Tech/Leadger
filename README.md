@@ -54,17 +54,13 @@ Este repositório contém toda a especificação técnica para evolução da pla
 ## 🔌 Integração de Agentes IA e MCPs (Model Context Protocol)
 
 **🚨 ATENÇÃO - Estratégia de Configuração (DX Otimizado):**
-Para garantir a melhor experiência de desenvolvimento e evitar conflitos de portas ou instâncias zumbis, utilizamos uma estratégia de separação de MCPs:
+Para garantir a melhor experiência de desenvolvimento e evitar conflitos de portas ou instâncias zumbis, centralizamos nossa configuração de MCPs:
 
-1. **Configuração Global (Perfil do Agente):**
-   - **Local:** Raiz da pasta de perfil do seu agente (ex: `~/.gemini/antigravity/mcp_config.json` ou `.claude/`).
-   - **Finalidade:** Ferramentas genéricas, compartilhadas entre múltiplos projetos.
-   - **MCPs:** `github`, `browser`, `leadgers-brasil`, `leadgers-context7`, `leadgers-memory`, `leadgers-sequential-thinking`, `leadgers-vercel`.
-
-2. **Configuração Local (Workspace):**
-   - **Local:** `.agent/mcp_config.json` na raiz deste projeto.
-   - **Finalidade:** Ferramentas específicas e exclusivas deste projeto, que o agente só deve carregar quando estiver trabalhando aqui.
-   - **MCPs:** `shadcn` (Criação de UI) e `leadgers-supabase` (Acesso ao DB do projeto).
+1. **Configuração Única e Global (Recomendado):**
+   - **Local:** Arquivo de extensão da IDE (ex: `C:\Users\morek\AppData\Roaming\Antigravity\User\mcp.json`).
+   - **Finalidade:** Manter todos os servidores em uma única camada global, com variáveis injetadas via `env`, rodando através de binários globais `.cmd` em substituição ao `npx` (ex. para `filesystem`, `github`, `supabase`).
+   - **MCPs Utilizados:** `github`, `context7`, `memory`, `sequential-thinking`, `vercel`, `filesystem`, `supabase`, `shadcn` e `stitch`.
+   - **Deprecated:** A abordagem de múltiplos arquivos `.antigravity/mcp.json` na raiz dos projetos está **descontinuada** por gerar conflitos de escopo. O MCP `brasil` também foi removido do stack Leadgers por ociosidade do MVP atual.
 
 ### 📝 Regras de "Vibe Coding" para Agentes
 - **Regra 1 (UI/UX):** Nunca escreva um componente base (`Button`, `Dialog`, `Input`, `Form`) do zero. DEVE rodar `npx shadcn-ui@latest add [component]` com a estilização atual do projeto (`@/shared/components`).
@@ -102,6 +98,7 @@ npm run dev:all
 
 ### 🔄 Q2 2026 (Expansão Fase 2)
 - [x] Criação Rota Base `/api/investor` (Issue #188 via Hono, Migration CTE)
+- [x] Refatoração de UI/UX (Split-screen Enterprise) para Fluxos de Autenticação e Onboarding
 - [ ] Concluir o Data Room e Investor Updates via Inteligência Artificial (Inngest + AnthropicAdapter)
 - [ ] Construir as Interfaces UI do Data Room através do Shadcn
 - [ ] Módulo completo de Folha de Pagamento e Integração Bancária
@@ -109,4 +106,4 @@ npm run dev:all
 ---
 
 **Cogitari Tech** - Construindo o futuro da auditoria e gestão empresarial. 🚀
-_Última atualização: 03 de Abril de 2026_
+_Última atualização: 10 de Abril de 2026_

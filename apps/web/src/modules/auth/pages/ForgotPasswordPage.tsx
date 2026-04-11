@@ -31,7 +31,7 @@ export function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row relative overflow-x-hidden font-sans">
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>
@@ -42,7 +42,7 @@ export function ForgotPasswordPage() {
       </div>
 
       {/* Left side: Hero / Branding */}
-      <div className="hidden md:flex flex-col justify-between w-[60%] p-16 lg:p-24 relative z-10 overflow-hidden">
+      <div className="hidden md:flex flex-col justify-between w-[60%] p-16 lg:p-24 relative z-10 overflow-x-hidden">
         <div className="flex items-center justify-between">
           <img
             src="/images/logo-light.webp"
