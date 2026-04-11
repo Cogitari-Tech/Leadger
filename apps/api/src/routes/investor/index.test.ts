@@ -41,14 +41,14 @@ vi.mock("../../middleware/tenancy", () => ({
 import investorRouter from "./index";
 
 describe("Investor Routes", () => {
-  let app: Hono;
+  let app: Hono<{ Variables: { tenantId: string; user: { id: string } } }>;
 
   beforeEach(() => {
-    app = new Hono();
+    app = new Hono<{ Variables: { tenantId: string; user: { id: string } } }>();
     // Simulate auth context for all requests
     app.use("*", async (c, next) => {
-      c.set("tenantId" as any, "test-tenant");
-      c.set("user" as any, { id: "test-user" });
+      c.set("tenantId", "test-tenant");
+      c.set("user", { id: "test-user" });
       await next();
     });
     app.route("/investor", investorRouter);
