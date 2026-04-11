@@ -134,10 +134,12 @@ export function AuthGuard({ children }: AuthGuardProps) {
     (supabaseUser?.email?.startsWith("onboarding-test") &&
       supabaseUser?.email?.endsWith("@leadgers.com"));
 
+  const isDevEnvironment = import.meta.env.DEV;
   if (
     supabaseUser &&
     !supabaseUser.email_confirmed_at &&
     !isSetupTestUser &&
+    !isDevEnvironment &&
     location.pathname !== "/verify-email"
   ) {
     return <Navigate to="/verify-email" replace />;
@@ -168,20 +170,29 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
     // 1. Company Setup (Tenant Onboarding)
     if (!tenant.onboarding_completed) {
-      console.log(
-        "[AuthGuard] Tenant onboarding NOT completed. Redirecting to /onboarding. Tenant ID:",
-        tenant.id,
-        "Path:",
-        location.pathname,
-      );
-      if (isOwnerOrAdmin) {
-        if (location.pathname !== "/onboarding") {
-          return <Navigate to="/onboarding" replace />;
-        }
+      // Safety net: If the wizard just completed but React state hasn't propagated yet,
+      // do NOT redirect back to onboarding (prevents redirect loop)
+      const justCompleted = sessionStorage.getItem("onboarding_just_completed") === "true";
+      if (justCompleted) {
+        console.log("[AuthGuard] Onboarding just completed (session flag). Allowing through.");
+        // DO NOT REMOVE the flag here. Let the context catch up. 
+        // When tenant.onboarding_completed becomes true, this block won't run.
       } else {
-        // Not owner/admin but tenant is pending setup
-        if (location.pathname !== "/pending-setup") {
-          return <Navigate to="/pending-setup" replace />;
+        console.log(
+          "[AuthGuard] Tenant onboarding NOT completed. Redirecting to /onboarding. Tenant ID:",
+          tenant.id,
+          "Path:",
+          location.pathname,
+        );
+        if (isOwnerOrAdmin) {
+          if (location.pathname !== "/onboarding") {
+            return <Navigate to="/onboarding" replace />;
+          }
+        } else {
+          // Not owner/admin but tenant is pending setup
+          if (location.pathname !== "/pending-setup") {
+            return <Navigate to="/pending-setup" replace />;
+          }
         }
       }
     } else {

@@ -401,7 +401,7 @@ export function AcceptInvitePage() {
 
                   {/* Turnstile */}
                   {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
-                    <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-hidden">
+                    <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-x-hidden">
                       <Turnstile
                         siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
                         onSuccess={(token) => {

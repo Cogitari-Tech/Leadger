@@ -65,7 +65,7 @@ export function VerifyEmailPage() {
   }, [cooldown, resending]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center relative overflow-x-hidden font-sans">
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>

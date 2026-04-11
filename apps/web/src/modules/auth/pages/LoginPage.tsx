@@ -85,7 +85,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 selection:text-primary overflow-x-hidden text-foreground flex flex-col items-center justify-center relative">
+    <div className="min-h-screen md:h-screen bg-background text-foreground flex flex-col md:flex-row relative md:overflow-hidden font-sans cursor-default select-none">
       {/* SEO Metadata */}
       <div className="hidden" aria-hidden="true">
         <title>Acesso Restrito | Leadgers Governance</title>
@@ -99,57 +99,106 @@ export function LoginPage() {
           content="Acesse o ecossistema de governança da sua startup."
         />
       </div>
-      {/* ─── NAV HEADER ────────────────────────────────────────── */}
-      <header className="fixed top-0 inset-x-0 z-50 px-6 py-5 bg-background/40 backdrop-blur-sm transition-all duration-300 flex items-center justify-between border-transparent">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="flex items-center">
-            <img
-              src="/images/logo-light.webp"
-              alt="Leadgers Governance"
-              className="h-10 w-auto mix-blend-screen hidden dark:block"
-            />
-            <img
-              src="/images/logo-dark.webp"
-              alt="Leadgers Governance"
-              className="h-10 w-auto block dark:hidden"
-            />
-          </Link>
-          <span
-            className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-50 px-2 py-0.5 border-l border-border ml-2"
-            aria-label="Governance"
-          >
-            Governance
-          </span>
-        </div>
+
+      <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
-      </header>
+      </div>
 
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[150px] rounded-full animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
       </div>
 
-      {/* Login Card */}
-      <main className="w-full max-w-md relative z-10 px-6 py-12 md:py-24 my-auto mt-20 md:mt-auto">
-        <div className="w-full bg-background/40 backdrop-blur-3xl text-foreground rounded-[2rem] shadow-2xl border border-border/20 overflow-hidden p-8 md:p-10">
-          <div className="mb-8 text-center sm:text-left">
-            <h1 className="text-3xl md:text-3xl font-bold tracking-tight text-foreground">
-              Acesso
-            </h1>
-            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-3">
-              Identificação Exclusiva
+      <div className="hidden md:flex flex-col justify-between w-[50%] lg:w-[60%] p-16 lg:p-24 relative z-10 overflow-hidden h-full">
+        <div>
+          <div className="flex items-center">
+            <Link to="/">
+              <img
+                src="/images/logo-light.webp"
+                alt="Leadgers"
+                className="h-11 w-auto hidden dark:block"
+              />
+              <img
+                src="/images/logo-dark.webp"
+                alt="Leadgers"
+                className="h-11 w-auto block dark:hidden"
+              />
+            </Link>
+          </div>
+          <span className="text-[10px] font-semibold tracking-[0.3em] uppercase opacity-40 px-3 py-1 bg-foreground/5 rounded-full inline-block mt-4">
+            Cyber-Governance Platform
+          </span>
+        </div>
+
+        <div className="space-y-8">
+          <div className="space-y-4">
+            <h2 className="text-5xl lg:text-7xl font-black tracking-tighter leading-tight font-display">
+              Segurança em <br /> Cada Camada.
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
+              Leadgers Governance é o ecossistema definitivo para startups que
+              buscam maturidade operacional e compliance inquestionável.
             </p>
           </div>
 
-          {/* SSO Section - Primary for modern SaaS */}
-          <div className="mb-8 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-8 border-t border-border/20 pt-8 max-w-md">
+            <div className="space-y-1">
+              <div className="text-2xl font-black tracking-tighter">100%</div>
+              <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                Auditável
+              </div>
+            </div>
+            <div className="space-y-1">
+              <div className="text-2xl font-black tracking-tighter">
+                AES-256
+              </div>
+              <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                Criptografia
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-6">
+          <div className="flex -space-x-4">
+            {[1, 2, 3, 4].map((idx) => (
+              <div
+                key={idx}
+                className="w-10 h-10 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[10px] font-bold"
+              >
+                {idx}
+              </div>
+            ))}
+          </div>
+          <p className="text-xs font-semibold text-muted-foreground">
+            Junte-se a centenas de fundadores.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex-1 relative z-20 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 bg-background md:bg-background/40 md:backdrop-blur-3xl md:border-l border-border/20 shadow-none md:shadow-2xl overflow-y-auto w-full h-full">
+        <div className="w-full max-w-md space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-4 my-auto py-8">
+          <div className="space-y-2 md:space-y-4 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest mx-auto md:mx-0">
+              <Activity className="w-3 h-3" /> Acesso
+            </div>
+            <h2 className="text-4xl font-black tracking-tighter text-foreground font-display">
+              Bem-vindo de volta
+            </h2>
+            <p className="text-sm font-medium text-muted-foreground">
+              Acesse sua conta para continuar a jornada.
+            </p>
+          </div>
+
+          <div className="space-y-3 pb-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1">Acesso rápido com</label>
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={signInWithGoogle}
                 type="button"
-                className="flex items-center justify-center gap-2 border border-border/60 py-4 rounded-2xl text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-muted/50 transition-all active:scale-95 bg-background shadow-sm"
+                className="flex items-center justify-center gap-2 border border-border/40 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-muted/50 transition-all active:scale-95 bg-background shadow-sm hover:border-primary/30"
               >
-                <svg className="h-4 w-4" viewBox="0 0 24 24">
+                <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32l3.56 2.76c2.07-1.9 3.28-4.74 3.28-8.09z"
@@ -172,13 +221,9 @@ export function LoginPage() {
               <button
                 onClick={signInWithGitHub}
                 type="button"
-                className="flex items-center justify-center gap-2 border border-border/60 py-4 rounded-2xl text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-muted/50 transition-all active:scale-95 bg-background shadow-sm"
+                className="flex items-center justify-center gap-2 border border-border/40 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-muted/50 transition-all active:scale-95 bg-background shadow-sm hover:border-primary/30"
               >
-                <svg
-                  className="h-4 w-4"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
                     fillRule="evenodd"
                     d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"
@@ -191,7 +236,7 @@ export function LoginPage() {
 
             <div className="relative pt-4 pb-2">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border/30" />
+                <div className="w-full border-t border-border/20" />
               </div>
               <div className="relative flex justify-center text-[9px]">
                 <span className="bg-background px-4 font-black text-muted-foreground/30 uppercase tracking-[0.3em]">
@@ -201,24 +246,23 @@ export function LoginPage() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             {error && (
               <div
-                className="p-4 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-bold rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2"
+                className="px-4 py-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2"
                 aria-live="polite"
               >
-                <Activity className="w-5 h-5 shrink-0 mt-0.5" />
+                <Activity className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
             )}
-
-            <div className="space-y-5">
-              <div className="space-y-1.5 flex flex-col">
+            <div className="space-y-4">
+              <div className="space-y-2">
                 <label
                   htmlFor="email"
-                  className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-widest ml-1 cursor-pointer w-fit"
+                  className="text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1"
                 >
-                  E-mail Institucional <span className="text-primary">*</span>
+                  E-mail <span className="text-primary">*</span>
                 </label>
                 <input
                   id="email"
@@ -227,24 +271,24 @@ export function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-6 py-4 text-sm bg-muted/40 border border-border/60 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 shadow-sm rounded-2xl font-medium placeholder:opacity-40"
+                  className="w-full px-4 py-2.5 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-50 cursor-text select-text"
                   placeholder="nome@empresa.com"
                 />
               </div>
 
-              <div className="space-y-1.5 flex flex-col">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between ml-1">
                   <label
                     htmlFor="password"
-                    className="text-[11px] font-bold text-muted-foreground/80 uppercase tracking-widest cursor-pointer w-fit"
+                    className="text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground/70"
                   >
-                    Senha de Segurança <span className="text-primary">*</span>
+                    Senha <span className="text-primary">*</span>
                   </label>
                   <Link
                     to="/forgot-password"
-                    className="text-[11px] font-bold text-primary hover:text-primary/80 transition-all uppercase tracking-widest focus:outline-none focus:underline rounded"
+                    className="text-[10.5px] font-bold text-primary hover:underline transition-all uppercase tracking-widest"
                   >
-                    Esqueci minha senha
+                    Esqueci a senha
                   </Link>
                 </div>
                 <div className="relative">
@@ -255,28 +299,28 @@ export function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-6 py-4 text-sm bg-muted/40 border border-border/60 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300 shadow-sm rounded-2xl font-medium tracking-widest placeholder:opacity-40"
-                    placeholder="••••••••"
+                    className="w-full px-4 py-2.5 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-50 tracking-widest cursor-text select-text"
+                    placeholder="Mínimo de 8 caracteres"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors p-1"
                     title={showPassword ? "Ocultar senha" : "Exibir senha"}
                   >
                     {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
+                      <EyeOff className="w-4 h-4" />
                     ) : (
-                      <Eye className="w-5 h-5" />
+                      <Eye className="w-4 h-4" />
                     )}
                   </button>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between px-1">
+              <div className="flex items-center justify-between mt-4">
                 <label
                   htmlFor="rememberMe"
-                  className="flex items-center gap-2 cursor-pointer group"
+                  className="flex items-center gap-3 cursor-pointer group"
                 >
                   <input
                     id="rememberMe"
@@ -284,19 +328,12 @@ export function LoginPage() {
                     type="checkbox"
                     checked={remember}
                     onChange={(e) => setRemember(e.target.checked)}
-                    className="w-4 h-4 rounded border-border/40 text-primary focus:ring-primary/20 bg-muted/40 transition-all"
+                    className="mt-1 w-4 h-4 rounded border-border/40 text-primary focus:ring-primary/20 bg-background/50 accent-primary cursor-pointer"
                   />
-                  <span className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest group-hover:text-muted-foreground transition-colors">
+                  <span className="text-sm font-medium text-muted-foreground leading-relaxed select-none group-hover:text-foreground transition-colors">
                     Mantenha-me conectado
                   </span>
                 </label>
-
-                <Link
-                  to="/forgot-password"
-                  className="text-[11px] font-bold text-primary/80 uppercase tracking-widest hover:text-primary transition-colors"
-                >
-                  Esqueci minha senha
-                </Link>
               </div>
 
               {import.meta.env.VITE_TURNSTILE_SITE_KEY &&
@@ -339,32 +376,27 @@ export function LoginPage() {
                   import.meta.env.DEV &&
                   localStorage.getItem("LEADGERS_AUTOMATION_BYPASS") !== "true")
               }
-              className="group w-full bg-primary text-primary-foreground py-4 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-xl shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/30 disabled:opacity-50 transition-all duration-300 rounded-2xl active:scale-[0.98] flex items-center justify-center gap-2 mt-4"
+              className="w-full bg-primary text-primary-foreground py-3.5 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-lg shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:opacity-50 transition-all rounded-xl active:scale-95 flex items-center justify-center gap-2 mt-2"
             >
               {submitting || loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                "Iniciar Sessão"
+                "Entrar"
               )}
               {!submitting && !loading && (
-                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 ml-1" />
               )}
             </button>
           </form>
 
-          <div className="mt-8 text-center">
-            <p className="text-muted-foreground text-[13px] font-medium">
-              Ainda não possui acesso?{" "}
-              <Link
-                to="/register"
-                className="text-foreground font-bold hover:text-primary focus:outline-none focus:underline rounded transition-colors"
-              >
-                Cadastre-se
-              </Link>
-            </p>
-          </div>
+          <p className="text-center text-sm text-muted-foreground/80 font-medium">
+            Não tem uma conta?{" "}
+            <Link to="/register" className="text-primary hover:underline font-bold">
+              Criar conta
+            </Link>
+          </p>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

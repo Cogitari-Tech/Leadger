@@ -18,7 +18,7 @@ Não utilize mais configs distribuídos em `.agent/mcp_config.json` e similares 
 *   `stitch`: Integração de GCP para IA Google Cloud.
 
 > [!TIP]
-> **Performance e Timeout:** Para evitar timeouts constantes nas inicializações do npx, **INSTALE GLOBALMENTE** os servidores MCPcríticos no Node e aponte para o executável `.cmd`. Ex: `npm install -g @modelcontextprotocol/server-filesystem` e use o caminho `E:\cache\npm-global\mcp-server-filesystem.cmd` em `command`. Apenas servidores dinâmicos/remotos como `vercel` e `sequential-thinking` devem usar o `npx.cmd`.
+> **Performance e Timeout:** Para evitar timeouts constantes nas inicializações do npx, **INSTALE GLOBALMENTE** os servidores MCP críticos no Node e aponte para o executável `.cmd`. Ex: `npm install -g @modelcontextprotocol/server-filesystem` e use o caminho `E:\cache\npm-global\mcp-server-filesystem.cmd` em `command`. Apenas servidores dinâmicos/remotos como `vercel` e `sequential-thinking` devem usar o `npx.cmd`.
 
 ### 2. Camada Local (Contexto Específico - Workspace)
 Não recomendamos o uso de `.antigravity/mcp.json` na raiz do projeto (cria conflitos).
@@ -39,6 +39,13 @@ Abaixo estão as instruções de como setar os tokens principais:
 ### Context7 (`context7` - GLOBAL)
 - **Onde:** `AppData\Roaming\Antigravity\User\mcp.json` (usar nó de `env` de injection).
 - **Variáveis de Ambiente:** injete `CONTEXT7_API_KEY` dentro do array de properties de `env`.
+
+### Stitch (`stitch` - GLOBAL)
+- **Onde:** `AppData\Roaming\Antigravity\User\mcp.json` (usar nó de `env` de injection).
+- **Variáveis de Ambiente Recomendadas:** 
+  - `GOOGLE_CLOUD_PROJECT`: ID do projeto (ex: `gen-lang-client-XXXXX`)
+  - `CLOUDSDK_PYTHON`: Caminho absoluto para instalação do Python (ex: `C:\Users\morek\AppData\Local\Programs\Python\Python312\python.exe`). Isso previne falhas no módulo do Python bundlado com o gcloud CLI ao requisitar access tokens.
+- **Autenticação (Importante):** O Stitch community requer auth ativa via gcloud. Garanta que vocẽ executou `gcloud auth login` e `gcloud auth application-default login`.
 
 ### GitHub (`github` - GLOBAL)
 - **Onde:** `AppData\Roaming\Antigravity\User\mcp.json`

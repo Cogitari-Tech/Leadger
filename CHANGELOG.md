@@ -4,6 +4,25 @@
 
 ---
 
+## 🚀 v1.2.1 — Security & Infra Fixes (Abril 2026)
+
+### 🎨 UI/UX & Autenticação (Onboarding & Auth)
+- ✅ **Refatoração Auth:** Novo layout split-screen para LoginPage e RegisterPage (Desktop/Mobile), garantindo consistência visual Enterprise e remoção de bugs envolvendo dimensões e scrolls da tela.
+- ✅ **Integração GitHub Explicita:** Substituição do emoji antigo pelo ícone oficial do GitHub no Onboarding Wizard, permitindo OAuth com Supabase e conexão imediata da etapa "Integrações".
+- ✅ **Convites de Equipe (Onboarding):** Funcionalidade completa para engatilhar `send-invite` (Edge Function) direto via tela de Setup.
+- ✅ **Compliance & Sec:** Teste em profundidade via puppeteer e devtools certificando que o fluxo não permite loop, travamento nem vazamento de dados críticos via DOM/Console (Padrão OWASP testado via subagents).
+
+### 🛡️ Segurança e Auditoria
+- ✅ **Histórico Git Limpo:** Remoção de tokens Vercel e chaves de Deploy *hardcoded* (`mcp-github` operations) em branches remotos para prevenir sec-leaks.
+- ✅ **Vercel Deployments Eliminados:** Antigos deployments que expunham as envs vulneráveis e maps também foram deletados da infra da Vercel.
+- ✅ **Auditoria UX/SEO Resolvida:** Resolução de falsos-positivos na varredura de `seo_checker.py` e customização para tolerância em arquivos `.config.tsx`.
+
+### ⚡ Vercel Cloud Native
+- ✅ **Analytics & Telemetria:** Instalação e integração profunda de `@vercel/analytics` e `@vercel/speed-insights` no entry point do projeto Vite (`main.tsx`).
+- ✅ **Background CRON:** Configuração de agendadores automáticos via `vercel.json` na rota `/api/health` para evitar cold starts excessivos do backend Serverless.
+
+---
+
 ## 🚀 v1.2.0 — Sprint 3 Completa (Abril 2026)
 
 ### 📈 Core & Módulos
