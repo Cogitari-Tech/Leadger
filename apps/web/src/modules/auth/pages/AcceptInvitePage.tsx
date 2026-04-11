@@ -113,8 +113,20 @@ export function AcceptInvitePage() {
       return;
     }
 
-    if (password.length < 8) {
-      setError("A senha deve ter pelo menos 8 caracteres.");
+    const calculateStrength = (pwd: string) => {
+      let score = 0;
+      if (pwd.length >= 8) score++;
+      if (/[A-Z]/.test(pwd)) score++;
+      if (/[a-z]/.test(pwd)) score++;
+      if (/[0-9]/.test(pwd)) score++;
+      if (/[^A-Za-z0-9]/.test(pwd)) score++;
+      return Math.min(score, 5);
+    };
+
+    if (calculateStrength(password) < 5) {
+      setError(
+        "Sua senha deve conter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos especiais.",
+      );
       return;
     }
 
@@ -333,9 +345,17 @@ export function AcceptInvitePage() {
                   </div>
 
                   <div className="space-y-1.5 flex flex-col">
-                    <label htmlFor="invite-password" className={labelClass}>
-                      Nova Senha de Acesso
-                    </label>
+                    <div className="flex justify-between items-center">
+                      <label htmlFor="invite-password" className={labelClass}>
+                        Nova Senha de Acesso
+                      </label>
+                      <Link
+                        to="/forgot-password"
+                        className="text-[11px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
+                      >
+                        Esqueceu a senha?
+                      </Link>
+                    </div>
                     <div className="relative">
                       <input
                         id="invite-password"
@@ -381,7 +401,7 @@ export function AcceptInvitePage() {
 
                   {/* Turnstile */}
                   {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
-                    <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-hidden">
+                    <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-x-hidden">
                       <Turnstile
                         siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
                         onSuccess={(token) => {

@@ -152,7 +152,7 @@ export function RegisterPage() {
   }, [searchQuery, searchTenants]);
 
   const btnPrimary =
-    "w-full bg-primary text-primary-foreground py-4 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-lg shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:opacity-50 transition-all rounded-xl active:scale-95";
+    "w-full bg-primary text-primary-foreground py-3.5 text-xs font-bold tracking-[0.2em] uppercase hover:brightness-110 shadow-lg shadow-primary/20 focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:opacity-50 transition-all rounded-xl active:scale-95 flex items-center justify-center";
 
   // ── Early returns (AFTER all hooks) ──
   // If already logged in and has a tenant, redirect home.
@@ -176,6 +176,11 @@ export function RegisterPage() {
 
     // If no user yet (not yet logged in or email confirmation required)
     if (!user) {
+      // In DEV mode, skip email confirmation screen and go straight to login
+      if (import.meta.env.DEV) {
+        return <Navigate to="/login" replace />;
+      }
+
       return (
         <div className="min-h-screen flex items-center justify-center p-6 text-center">
           <div className="max-w-md space-y-6">
@@ -201,7 +206,7 @@ export function RegisterPage() {
     // --- PROVISIONING STATE ---
     // User is logged in but tenant is not ready yet.
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-x-hidden">
         <div className="absolute inset-0 z-0 pointer-events-none">
           <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/5 blur-[150px] rounded-full animate-pulse" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
@@ -267,9 +272,9 @@ export function RegisterPage() {
         return;
       }
     }
-    if (strengthScore < 3) {
+    if (strengthScore < 5) {
       setError(
-        "Sua segurança é nossa prioridade. Por favor, utilize uma senha mais forte (nível 'Razoável' ou superior).",
+        "Sua senha deve conter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos especiais.",
       );
       return;
     }
@@ -369,14 +374,14 @@ export function RegisterPage() {
   };
 
   const inputClass =
-    "w-full px-5 py-3 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-50 cursor-text select-text";
+    "w-full px-4 py-2.5 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-50 cursor-text select-text";
   const labelClass =
-    "text-[11px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1";
+    "text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1";
 
   const renderPersonalStep = () => (
     <form
       onSubmit={handlePersonalNext}
-      className="space-y-5 animate-in fade-in slide-in-from-bottom-4"
+      className="space-y-3 animate-in fade-in slide-in-from-bottom-4"
     >
       {error && (
         <div className="bg-destructive/10 border border-destructive/20 px-4 py-3 rounded-xl text-sm text-destructive font-medium">
@@ -569,7 +574,7 @@ export function RegisterPage() {
             email.startsWith("onboarding-test") &&
             email.endsWith("@leadgers.com")
           ) && (
-            <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-hidden">
+            <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-x-hidden">
               <Turnstile
                 siteKey={(import.meta as any).env.VITE_TURNSTILE_SITE_KEY}
                 onSuccess={(token) => {
@@ -747,7 +752,7 @@ export function RegisterPage() {
         </div>
 
         {searchResults.length > 0 && !selectedTenant && (
-          <div className="border border-border/30 rounded-xl overflow-hidden divide-y divide-border/20 max-h-48 overflow-y-auto">
+          <div className="border border-border/30 rounded-xl overflow-x-hidden divide-y divide-border/20 max-h-48 overflow-y-auto">
             {searchResults.map((t) => (
               <button
                 key={t.id}
@@ -828,7 +833,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row relative overflow-hidden font-sans cursor-default select-none">
+    <div className="min-h-screen md:h-screen bg-background text-foreground flex flex-col md:flex-row relative md:overflow-hidden font-sans cursor-default select-none">
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>
@@ -838,7 +843,7 @@ export function RegisterPage() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[150px] rounded-full" />
       </div>
 
-      <div className="hidden md:flex flex-col justify-between w-[50%] lg:w-[60%] p-16 lg:p-24 relative z-10 overflow-hidden">
+      <div className="hidden md:flex flex-col justify-between w-[50%] lg:w-[60%] p-16 lg:p-24 relative z-10 overflow-hidden h-full">
         <div>
           <div className="flex items-center">
             <img
@@ -903,9 +908,9 @@ export function RegisterPage() {
         </div>
       </div>
 
-      <div className="flex-1 relative z-20 flex items-center justify-center p-4 md:p-12 lg:p-20 bg-background/40 backdrop-blur-3xl border-l border-border/20 shadow-2xl my-auto">
-        <div className="w-full max-w-md space-y-6 md:space-y-10">
-          <div className="space-y-4 text-center md:text-left">
+      <div className="flex-1 relative z-20 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 bg-background md:bg-background/40 md:backdrop-blur-3xl md:border-l border-border/20 shadow-none md:shadow-2xl overflow-y-auto w-full h-full">
+        <div className="w-full max-w-md space-y-4 md:space-y-6 my-auto py-8">
+          <div className="space-y-2 md:space-y-4 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest mx-auto md:mx-0">
               <Globe className="w-3 h-3" /> Step{" "}
               {step === "personal" ? "01" : step === "choice" ? "02" : "03"} /

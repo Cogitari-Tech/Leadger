@@ -20,6 +20,7 @@ import {
   Home,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
+import { DashboardNavItems } from "./DashboardNavItems";
 
 export const AppLayout: React.FC = () => {
   const { permissions, user, signOut, loading } = useAuth();
@@ -141,10 +142,11 @@ export const AppLayout: React.FC = () => {
         </div>
 
         <nav className="relative z-10 flex-1 mt-4 overflow-y-auto custom-scrollbar px-2">
-          {/* Dashboard Home */}
+          {/* Strategic Planning Group */}
           <div className="mb-4 space-y-1">
             <Link
               to="/dashboard"
+              aria-label="Ir para Dashboard"
               onClick={() => setIsMobileMenuOpen(false)}
               className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
                 location.pathname === "/dashboard"
@@ -158,78 +160,10 @@ export const AppLayout: React.FC = () => {
               )}
             </Link>
 
-            <Link
-              to="/dashboard/health-score"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
-                location.pathname === "/dashboard/health-score"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
-              } ${isCollapsed ? "justify-center" : ""}`}
-            >
-              <LucideIcons.HeartPulse className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <span className="ml-3 truncate">Health Score</span>
-              )}
-            </Link>
-
-            <Link
-              to="/dashboard/north-star"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
-                location.pathname === "/dashboard/north-star"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
-              } ${isCollapsed ? "justify-center" : ""}`}
-            >
-              <LucideIcons.Sparkles className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <span className="ml-3 truncate">North Star</span>
-              )}
-            </Link>
-
-            <Link
-              to="/dashboard/bmc"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
-                location.pathname === "/dashboard/bmc"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
-              } ${isCollapsed ? "justify-center" : ""}`}
-            >
-              <LucideIcons.LayoutDashboard className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <span className="ml-3 truncate">Business Model Canvas</span>
-              )}
-            </Link>
-
-            <Link
-              to="/dashboard/okrs"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
-                location.pathname === "/dashboard/okrs"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
-              } ${isCollapsed ? "justify-center" : ""}`}
-            >
-              <LucideIcons.Target className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && <span className="ml-3 truncate">OKRs</span>}
-            </Link>
-
-            <Link
-              to="/dashboard/milestones"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
-                location.pathname === "/dashboard/milestones"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
-              } ${isCollapsed ? "justify-center" : ""}`}
-            >
-              <LucideIcons.Flag className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <span className="ml-3 truncate">Milestones</span>
-              )}
-            </Link>
+            <DashboardNavItems 
+              isCollapsed={isCollapsed} 
+              setIsMobileMenuOpen={setIsMobileMenuOpen} 
+            />
           </div>
 
           {displayNavigation.map((section) => {
@@ -349,6 +283,7 @@ export const AppLayout: React.FC = () => {
           {/* Manual de Uso */}
           <Link
             to="/dashboard/manual-uso"
+            aria-label="Manual de Uso"
             className={`flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
               location.pathname === "/dashboard/manual-uso"
                 ? "bg-primary/10 text-primary"

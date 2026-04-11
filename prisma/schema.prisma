@@ -124,7 +124,7 @@ model key_results {
   unit         String
   weight       Decimal @default(1) @db.Decimal(5, 2)
 
-  objective objectives @relation(fields: [objective_id], references: [id], onDelete: Cascade)
+  objective     objectives      @relation(fields: [objective_id], references: [id], onDelete: Cascade)
   roadmap_items roadmap_items[]
 
   created_at DateTime @default(now()) @db.Timestamptz(6)
@@ -211,7 +211,6 @@ model headcount_plans {
   @@schema("public")
 }
 
-
 model sales_opportunities {
   id                  String    @id @default(uuid()) @db.Uuid
   tenant_id           String    @db.Uuid
@@ -225,9 +224,9 @@ model sales_opportunities {
   type                String    @default("new_business")
   recurrence          String    @default("one_time")
   notes               String?
-  
-  created_at          DateTime @default(now()) @db.Timestamptz(6)
-  updated_at          DateTime @default(now()) @db.Timestamptz(6)
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
 
   @@schema("public")
 }
@@ -242,32 +241,68 @@ model mrr_snapshots {
   expansion_mrr   Decimal  @default(0) @db.Decimal
   churn_mrr       Decimal  @default(0) @db.Decimal
   contraction_mrr Decimal  @default(0) @db.Decimal
-  
-  created_at      DateTime @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
 
   @@schema("public")
 }
 
 model roadmap_items {
-  id              String   @id @default(uuid()) @db.Uuid
-  tenant_id       String   @db.Uuid
-  title           String
-  description     String?
-  status          String   @default("planned")
-  quarter         String   
-  github_issue_id Int?
+  id               String    @id @default(uuid()) @db.Uuid
+  tenant_id        String    @db.Uuid
+  title            String
+  description      String?
+  status           String    @default("planned")
+  quarter          String
+  github_issue_id  Int?
   github_issue_url String?
-  key_result_id   String?  @db.Uuid
-  milestone_id    String?  @db.Uuid
-  start_date      DateTime? @db.Date
-  end_date        DateTime? @db.Date
+  key_result_id    String?   @db.Uuid
+  milestone_id     String?   @db.Uuid
+  start_date       DateTime? @db.Date
+  end_date         DateTime? @db.Date
 
-  milestone       milestones? @relation(fields: [milestone_id], references: [id])
-  key_result      key_results? @relation(fields: [key_result_id], references: [id])
-  
-  created_at      DateTime @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+  milestone  milestones?  @relation(fields: [milestone_id], references: [id])
+  key_result key_results? @relation(fields: [key_result_id], references: [id])
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model investor_updates {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenant_id       String    @db.Uuid
+  title           String
+  content_md      String
+  period          String
+  generated_by_ai Boolean   @default(false)
+  ai_model_used   String?
+  status          String    @default("draft")
+  published_at    DateTime? @db.Timestamptz(6)
+  created_by      String?   @db.Uuid
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
+
+model data_room_documents {
+  id             String  @id @default(uuid()) @db.Uuid
+  tenant_id      String  @db.Uuid
+  name           String
+  file_path      String
+  storage_bucket String  @default("data_room")
+  file_size      Int
+  mime_type      String
+  category       String  @default("general")
+  uploaded_by    String? @db.Uuid
+  description    String?
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
 
   @@schema("public")
 }
