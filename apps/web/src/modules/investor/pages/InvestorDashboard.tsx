@@ -1,15 +1,62 @@
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "../../../shared/components/ui/Button";
+
+const Card = ({ className, children }: any) => (
+  <div
+    className={`border rounded-lg p-4 bg-card text-card-foreground shadow-sm ${className || ""}`}
+  >
+    {children}
+  </div>
+);
+const CardHeader = ({ className, children }: any) => (
+  <div className={`flex flex-col space-y-1.5 p-6 ${className || ""}`}>
+    {children}
+  </div>
+);
+const CardTitle = ({ className, children }: any) => (
+  <h3
+    className={`text-lg font-semibold leading-none tracking-tight ${className || ""}`}
+  >
+    {children}
+  </h3>
+);
+const CardDescription = ({ className, children }: any) => (
+  <p className={`text-sm text-muted-foreground ${className || ""}`}>
+    {children}
+  </p>
+);
+const CardContent = ({ className, children }: any) => (
+  <div className={`p-6 pt-0 ${className || ""}`}>{children}</div>
+);
+
+const Tabs = ({ className, children }: any) => (
+  <div className={className}>{children}</div>
+);
+const TabsList = ({ className, children }: any) => (
+  <div
+    className={`inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground ${className || ""}`}
+  >
+    {children}
+  </div>
+);
+const TabsTrigger = ({ children }: any) => (
+  <button className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">
+    {children}
+  </button>
+);
+const TabsContent = ({ className, children }: any) => (
+  <div
+    className={`mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${className || ""}`}
+  >
+    {children}
+  </div>
+);
+
+const ScrollArea = ({ className, children }: any) => (
+  <div className={`relative overflow-auto ${className || ""}`}>{children}</div>
+);
 import { Download, RefreshCcw, FileText, CheckCircle2 } from "lucide-react";
+import { apiClient } from "../../../shared/utils/apiClient";
 
 export default function InvestorDashboard() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -26,18 +73,8 @@ export default function InvestorDashboard() {
   const handleGenerateReport = async () => {
     setIsGenerating(true);
     try {
-      // Simulate calling the background Inngest job
-      const res = await fetch(
-        "http://localhost:3000/api/investor/reports/generate",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type: "monthly" }),
-        },
-      );
-      if (res.ok) {
-        console.log("Job despachado!");
-      }
+      await apiClient.post("/investor/reports/generate", { type: "monthly" });
+      console.log("Job despachado!");
     } catch (e) {
       console.error(e);
     } finally {

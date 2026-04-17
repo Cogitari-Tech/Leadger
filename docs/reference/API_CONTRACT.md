@@ -5,11 +5,13 @@
 ## Convenção de Rotas REST
 
 O App Web deve sempre realizar requisições no BackEnd padronizadas utilizando URLs de recurso nos formatos:
-- `List / Collection:` `GET /api/v1/{domain}`
-- `Read Detail:`      `GET /api/v1/{domain}/:id`
-- `Create Action:`    `POST /api/v1/{domain}`
-- `Update Field:`     `PATCH /api/v1/{domain}/:id`
-- `Soft Delete:`      `DELETE /api/v1/{domain}/:id`
+- `List / Collection:` `GET /api/{domain}`
+- `Read Detail:`      `GET /api/{domain}/:id`
+- `Create Action:`    `POST /api/{domain}`
+- `Update Field:`     `PATCH /api/{domain}/:id`
+- `Soft Delete:`      `DELETE /api/{domain}/:id`
+
+> **Nota:** O prefixo de versionamento (`/v1/`) não é utilizado na implementação atual do Hono backend. As rotas usam `/api/` diretamente (ex: `/api/finance/runway`, `/api/audit/programs`). Versionamento será aplicado quando houver breaking changes na API.
 
 ## Validation Layer (ZOD)
 Toda Controller exposta DEVE assinar seu Contrato por ZOD. O Client SDK em si no front validará tipagens inferidas a partir do `z.infer`.

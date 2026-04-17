@@ -30,9 +30,7 @@ export function useTechDebt() {
     setLoading(true);
     setError(null);
     try {
-      const result = await apiClient.get<TechDebtData>(
-        "/api/product/tech-debt",
-      );
+      const result = await apiClient.get<TechDebtData>("/product/tech-debt");
       setData(result);
     } catch (err) {
       console.error("Failed to load tech debt:", err);

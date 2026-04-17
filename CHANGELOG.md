@@ -4,6 +4,22 @@
 
 ---
 
+## 🚀 v1.2.2 — Core Stability & Security Patches (Abril 2026)
+
+### 📊 Finance & Export (Dashboard)
+- ✅ **Conversão Excel e Formatação:** Correção da métrica financeira no pipeline de exports via biblioteca `xlsx`, substituindo dependências obsoletas e formatando dados complexos que quebravam em loop em Object arrays (`InvoiceCard.tsx` + `Dashboard.tsx`).
+- ✅ **Sanitização Financeira:** Tratamento de verificações `NaN` severas nas pipelines de Billing via `useBilling.ts` ao renderizar o Pending MRR.
+
+### ⚙️ Integração Storage (Configurações)
+- ✅ **Cloudflare S3 Wrapper Integrado:** Implementação do client de Storage focado no R2 da Cloudflare com suporte direto as variáveis de ambiente base (`VITE_R2_ACCESS_KEY_ID`, `VITE_R2_SECRET_ACCESS_KEY`), mitigando erros no wrapper `useCloudflareStorage.ts`.
+- ✅ **Correções de Scope/Context:** Refatoração de hierarquia de Providers (`useTenant`) da tela de configurações para não colapsar com layouts limitados globalmente e reescrita de toasts da UI.
+
+### 🛡️ Auditoria, Perfomance & Anti-XSS (Audit Framework)
+- ✅ **Performance de Render Loop (React Purity):** Identificação e correção cirúrgica de um _deadlock_ render vs state loop na engine do `AuditReportForm/ReportBuilder`. As chamadas síncronas de gravação local foram refatoradas e movidas de dentro de setters funcionais de React para um modelo Observer / `useEffect` focado exclusivamente em gerenciar auto-save através do LocalStorage sem vazar _side-effects_ para a Virtual DOM.
+- ✅ **Limites de Segurança do Frontend (XSS Control):** Introdução de sanitização hard/soft em painéis expostos via input HTML. Atuação forte nos hiperlinks e "Links de Evidências" da matriz 5W2H implementando Regex Filters contra tentativas nativas de XSS via protocolos arbitrários (`javascript:`, `vbscript:`, `data:`). Correção aplicada rigorosamente a tela `ReportFindingCard.tsx` e injetada no Blur Lifecycle.
+
+---
+
 ## 🚀 v1.2.1 — Security & Infra Fixes (Abril 2026)
 
 ### 🎨 UI/UX & Autenticação (Onboarding & Auth)
@@ -14,6 +30,7 @@
 
 ### 🛡️ Segurança e Auditoria
 - ✅ **Histórico Git Limpo:** Remoção de tokens Vercel e chaves de Deploy *hardcoded* (`mcp-github` operations) em branches remotos para prevenir sec-leaks.
+- ✅ **Rate Limit Nativo & Bypass Seguro (RPC):** Implementação de limitador de requisições nativo no PostgreSQL via *Sliding Window* (`rpc_rate_limits`) e encapsulamento de validação de convites públicos via `check_invite_token` (SECURITY DEFINER), contornando limitações do RLS atestando segurança anti-bruteforce no banco `leadgers-beta`.
 - ✅ **Vercel Deployments Eliminados:** Antigos deployments que expunham as envs vulneráveis e maps também foram deletados da infra da Vercel.
 - ✅ **Auditoria UX/SEO Resolvida:** Resolução de falsos-positivos na varredura de `seo_checker.py` e customização para tolerância em arquivos `.config.tsx`.
 

@@ -354,15 +354,24 @@ export function RegisterPage() {
       const { error: authError } = await signUp(email, password, {
         name,
         signup_mode: "join",
+        join_tenant_id: selectedTenant.id,
+        join_message: joinMessage || "",
         captchaToken: turnstileToken || undefined,
       });
       if (authError) throw authError;
 
+      // We still attempt to requestAccess just in case the user was already created
+      // and logged in without triggering the auth trigger (e.g. existing user).
+      // However, if it fails due to lack of session (e.g. email confirmation required),
+      // we can ignore the error because the backend trigger `on_auth_user_created`
+      // already inserted the access request using the metadata we just passed above!
       const { error: reqError } = await requestAccess(
         selectedTenant.id,
         joinMessage || undefined,
       );
-      if (reqError) throw reqError;
+      if (reqError && reqError.message !== "Não autenticado") {
+        console.warn("requestAccess error:", reqError);
+      }
 
       setSuccessMode("join");
       setSuccess(true);

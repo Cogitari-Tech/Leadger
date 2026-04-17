@@ -44,6 +44,12 @@ describe("useProjects hook", () => {
       single: vi.fn().mockResolvedValue({ data: dbProject, error: null }),
     } as any);
 
+    (supabase.auth as any) = {
+      getUser: vi
+        .fn()
+        .mockResolvedValue({ data: { user: { id: "test-user-id" } } }),
+    };
+
     const { result } = renderHook(() => useProjects());
 
     const expectedProject = {
@@ -55,6 +61,8 @@ describe("useProjects hook", () => {
       startDate: "2024-01-01",
       endDate: null,
       createdAt: "2024-01-01T00:00:00Z",
+      createdBy: null,
+      updatedAt: null,
     };
 
     const created = await result.current.createProject({
