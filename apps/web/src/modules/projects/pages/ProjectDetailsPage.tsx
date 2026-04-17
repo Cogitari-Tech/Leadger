@@ -18,6 +18,7 @@ import { Project } from "../types/project.types";
 import { useProjectMembers } from "../services/projects.service";
 import { AssignMemberModal } from "../components/AssignMemberModal";
 import { ProjectFormModal } from "../components/ProjectFormModal";
+import { LinkResourceModal } from "../components/LinkResourceModal";
 import { useAuth } from "../../auth/context/AuthContext";
 import { SupabaseProjectRepository } from "../repositories/SupabaseProjectRepository";
 import { useMemo } from "react";
@@ -48,6 +49,10 @@ export function ProjectDetailsPage() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isLinkResourceModalOpen, setIsLinkResourceModalOpen] = useState(false);
+  const [linkResourceType, setLinkResourceType] = useState<"audit" | "github">(
+    "audit",
+  );
 
   const repository = useMemo(() => new SupabaseProjectRepository(supabase), []);
 
@@ -69,7 +74,7 @@ export function ProjectDetailsPage() {
 
   const canManage = can("projects.manage") || can("projects.edit");
 
-  const canManageTeam = can("projects.manager") || canManage;
+  const canManageTeam = can("projects.edit") || canManage;
 
   useEffect(() => {
     if (id) {
@@ -96,6 +101,50 @@ export function ProjectDetailsPage() {
       console.error(err);
     } finally {
       setLoadingResources(false);
+    }
+  };
+
+  const handleLinkResource = async (
+    resourceId: string,
+    type: "audit" | "github",
+  ) => {
+    try {
+      const table = type === "audit" ? "audit_programs" : "github_repositories";
+      const { error } = await supabase
+        .from(table)
+        .update({ project_id: id })
+        .eq("id", resourceId);
+
+      if (error) throw error;
+      fetchResources();
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao vincular recurso.");
+    }
+  };
+
+  const handleUnlinkResource = async (
+    resourceId: string,
+    type: "audit" | "github",
+  ) => {
+    if (
+      !confirm(
+        "Remover este recurso do projeto? O recurso não será apagado, apenas desvinculado.",
+      )
+    )
+      return;
+    try {
+      const table = type === "audit" ? "audit_programs" : "github_repositories";
+      const { error } = await supabase
+        .from(table)
+        .update({ project_id: null }) // Using null directly is supported by Supabase JS for clearing relationship
+        .eq("id", resourceId);
+
+      if (error) throw error;
+      fetchResources();
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao desvincular recurso.");
     }
   };
 
@@ -419,10 +468,23 @@ export function ProjectDetailsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Audit Programs */}
                   <div className="space-y-4">
-                    <h4 className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                      <ShieldAlert className="w-4 h-4 text-primary" />{" "}
-                      Auditorias ({programs.length})
-                    </h4>
+                    <div className="flex items-center justify-between">
+                      <h4 className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                        <ShieldAlert className="w-4 h-4 text-primary" />{" "}
+                        Auditorias ({programs.length})
+                      </h4>
+                      {canManage && (
+                        <button
+                          onClick={() => {
+                            setLinkResourceType("audit");
+                            setIsLinkResourceModalOpen(true);
+                          }}
+                          className="text-xs flex items-center gap-1 text-primary hover:text-primary/80 transition-colors bg-primary/10 px-2 py-1 rounded"
+                        >
+                          <Plus className="w-3 h-3" /> Vincular
+                        </button>
+                      )}
+                    </div>
                     {programs.length === 0 ? (
                       <div className="bg-muted/30 border border-border/40 p-6 rounded-lg text-center text-sm text-muted-foreground">
                         Nenhuma auditoria vinculada.
@@ -433,11 +495,25 @@ export function ProjectDetailsPage() {
                           <Link
                             key={p.id}
                             to={`/audit/programs`}
-                            className="block p-4 bg-card border border-border/60 shadow-sm rounded-lg hover:border-primary/50 hover:shadow-md transition-all"
+                            className="block p-4 bg-card border border-border/60 shadow-sm rounded-lg hover:border-primary/50 hover:shadow-md transition-all group relative"
                           >
-                            <p className="font-medium text-card-foreground text-sm">
-                              {p.name as string}
-                            </p>
+                            <div className="flex justify-between items-start pr-8">
+                              <p className="font-medium text-card-foreground text-sm">
+                                {p.name as string}
+                              </p>
+                              {canManage && (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleUnlinkResource(p.id, "audit");
+                                  }}
+                                  className="absolute top-4 right-4 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                  title="Desvincular"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
                             <div className="flex justify-between mt-2">
                               <span className="text-xs font-semibold text-muted-foreground">
                                 {String(p.status).toUpperCase()}
@@ -458,10 +534,23 @@ export function ProjectDetailsPage() {
 
                   {/* GitHub Repositories */}
                   <div className="space-y-4">
-                    <h4 className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                      <FolderGit2 className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />{" "}
-                      Repositórios ({repos.length})
-                    </h4>
+                    <div className="flex items-center justify-between">
+                      <h4 className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                        <FolderGit2 className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />{" "}
+                        Repositórios ({repos.length})
+                      </h4>
+                      {canManage && (
+                        <button
+                          onClick={() => {
+                            setLinkResourceType("github");
+                            setIsLinkResourceModalOpen(true);
+                          }}
+                          className="text-xs flex items-center gap-1 text-cyan-500 hover:text-cyan-400 transition-colors bg-cyan-500/10 px-2 py-1 rounded"
+                        >
+                          <Plus className="w-3 h-3" /> Vincular
+                        </button>
+                      )}
+                    </div>
                     {repos.length === 0 ? (
                       <div className="bg-muted/30 border border-border/40 p-6 rounded-lg text-center text-sm text-muted-foreground">
                         Nenhum repositório vinculado.
@@ -472,11 +561,25 @@ export function ProjectDetailsPage() {
                           <Link
                             key={r.id}
                             to={`/github/repos`}
-                            className="block p-4 bg-card border border-border/60 shadow-sm rounded-lg hover:border-cyan-500/50 hover:shadow-md transition-all"
+                            className="block p-4 bg-card border border-border/60 shadow-sm rounded-lg hover:border-cyan-500/50 hover:shadow-md transition-all group relative"
                           >
-                            <p className="font-medium text-card-foreground text-sm truncate">
-                              {r.full_name as string}
-                            </p>
+                            <div className="flex justify-between items-start pr-8">
+                              <p className="font-medium text-card-foreground text-sm truncate">
+                                {r.full_name as string}
+                              </p>
+                              {canManage && (
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleUnlinkResource(r.id, "github");
+                                  }}
+                                  className="absolute top-4 right-4 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                  title="Desvincular"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
                             <div className="flex justify-between mt-2">
                               <span className="text-xs text-muted-foreground">
                                 Vulns Abertas:{" "}
@@ -512,6 +615,13 @@ export function ProjectDetailsPage() {
           await assignMember(memberId, role);
         }}
         currentMemberIds={members.map((m) => m.memberId)}
+      />
+
+      <LinkResourceModal
+        isOpen={isLinkResourceModalOpen}
+        onClose={() => setIsLinkResourceModalOpen(false)}
+        onLink={handleLinkResource}
+        type={linkResourceType}
       />
     </div>
   );

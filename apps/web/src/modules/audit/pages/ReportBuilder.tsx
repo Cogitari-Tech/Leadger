@@ -6,15 +6,18 @@ import {
   Download,
   CheckCircle2,
   AlertCircle,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import { Input } from "@/shared/components/ui/Input";
 import { Select } from "@/shared/components/ui/Select";
 import { useReportGenerator } from "../hooks/useReportGenerator";
 import { useAudit } from "../hooks/useAudit";
+import { useProjects } from "../../projects/services/projects.service";
 import ReportFindingCard from "../components/ReportFindingCard";
 import ReportSignatures from "../components/ReportSignatures";
 import ExportModal from "../components/ExportModal";
+import ReportPreviewModal from "../components/ReportPreviewModal";
 
 export default function ReportBuilder() {
   const {
@@ -33,8 +36,10 @@ export default function ReportBuilder() {
   } = useReportGenerator();
 
   const { programs } = useAudit();
+  const { projects } = useProjects();
   const [showExport, setShowExport] = useState(false);
   const [showReset, setShowReset] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const validation = useMemo(() => validate(), [validate]);
 
@@ -82,12 +87,47 @@ export default function ReportBuilder() {
               Resetar
             </Button>
             <Button
-              onClick={() => setShowExport(true)}
-              className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+              variant="ghost"
+              onClick={() => setShowPreview(true)}
+              className="text-[10px] font-bold uppercase tracking-widest px-4 py-2 hover:bg-primary/5 hover:text-primary rounded-xl transition-all"
             >
-              <Download className="w-3.5 h-3.5 mr-2" />
-              Exportar
+              <Eye className="w-3.5 h-3.5 mr-2" />
+              Pré-visualizar
             </Button>
+            <div className="relative group">
+              <Button
+                onClick={() => setShowExport(true)}
+                className="text-[10px] font-bold uppercase tracking-widest px-6 py-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+              >
+                <Download className="w-3.5 h-3.5 mr-2" />
+                Exportar
+                {validation.errors.length > 0 && (
+                  <span className="ml-2 w-4 h-4 rounded-full bg-white/20 text-[8px] font-bold flex items-center justify-center">
+                    {validation.errors.length}
+                  </span>
+                )}
+              </Button>
+              {validation.errors.length > 0 && (
+                <div className="absolute right-0 top-full mt-2 w-64 p-3 bg-card border border-border rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                  <p className="text-[10px] font-bold text-destructive uppercase tracking-widest mb-1.5">
+                    Pendências:
+                  </p>
+                  {validation.errors.slice(0, 3).map((err, i) => (
+                    <p
+                      key={i}
+                      className="text-[10px] text-muted-foreground leading-relaxed"
+                    >
+                      • {err}
+                    </p>
+                  ))}
+                  {validation.errors.length > 3 && (
+                    <p className="text-[10px] text-muted-foreground/50 mt-1">
+                      +{validation.errors.length - 3} mais...
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -104,7 +144,7 @@ export default function ReportBuilder() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
-                Doc ID
+                Doc ID <span className="text-destructive">*</span>
               </label>
               <Input
                 value={report.doc_id}
@@ -114,16 +154,25 @@ export default function ReportBuilder() {
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
-                Projeto
+                Programa de Auditoria{" "}
+                <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <Select
                   value={report.program_id}
-                  onChange={(e) => updateField("program_id", e.target.value)}
+                  onChange={(e) => {
+                    const progId = e.target.value;
+                    updateField("program_id", progId);
+                    const prog = programs.find((p) => p.id === progId);
+                    if (prog) {
+                      // Note: We leave project_name alone if a project is selected
+                      // but program also has its name
+                    }
+                  }}
                   className="bg-card/60 border-border h-[54px] rounded-2xl pr-10"
                 >
                   <option value="" className="bg-background text-foreground">
-                    Selecione o projeto...
+                    Selecione o programa...
                   </option>
                   {programs.map((p) => (
                     <option
@@ -140,13 +189,115 @@ export default function ReportBuilder() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
-                Empresa
+                Projeto Vinculado{" "}
+                <span className="text-muted-foreground/40 normal-case tracking-normal">
+                  (Auto-preencher)
+                </span>
+              </label>
+              <div className="relative">
+                <Select
+                  value={report.project_id || ""}
+                  onChange={(e) => {
+                    const projId = e.target.value;
+                    updateField("project_id", projId);
+                    const proj = projects.find((p) => p.id === projId);
+                    if (proj) {
+                      updateField("project_name", proj.name);
+                      if (proj.startDate)
+                        updateField("start_date", proj.startDate.split("T")[0]);
+                      if (proj.endDate)
+                        updateField("end_date", proj.endDate.split("T")[0]);
+                    }
+                  }}
+                  className="bg-card/60 border-border h-[54px] rounded-2xl pr-10"
+                >
+                  <option value="" className="bg-background text-foreground">
+                    Selecione um projeto...
+                  </option>
+                  {projects.map((p) => (
+                    <option
+                      key={p.id}
+                      value={p.id}
+                      className="bg-background text-foreground"
+                    >
+                      {p.name}
+                    </option>
+                  ))}
+                </Select>
+                <Plus className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 pointer-events-none rotate-45" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
+                Empresa Cliente <span className="text-destructive">*</span>
               </label>
               <Input
-                placeholder="Nome completo"
+                placeholder="Ex: Cogitari Tech"
+                value={report.client_name}
+                onChange={(e) => updateField("client_name", e.target.value)}
+                className="bg-card/60 border border-border rounded-2xl px-6 py-4"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
+                Nome do Projeto / Módulo{" "}
+                <span className="text-destructive">*</span>
+              </label>
+              <Input
+                placeholder="Ex: Plataforma Leadgers"
+                value={report.project_name}
+                onChange={(e) => updateField("project_name", e.target.value)}
+                className="bg-card/60 border border-border rounded-2xl px-6 py-4"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
+                Data Início <span className="text-destructive">*</span>
+              </label>
+              <Input
+                type="date"
+                value={report.start_date}
+                onChange={(e) => updateField("start_date", e.target.value)}
+                className="bg-card/60 border border-border rounded-2xl px-6 py-4"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
+                Data Fim <span className="text-destructive">*</span>
+              </label>
+              <Input
+                type="date"
+                value={report.end_date}
+                onChange={(e) => updateField("end_date", e.target.value)}
+                className="bg-card/60 border border-border rounded-2xl px-6 py-4"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
+                Ambiente
+              </label>
+              <Input
+                placeholder="Ex: Produção, Staging"
+                value={report.environment}
+                onChange={(e) => updateField("environment", e.target.value)}
+                className="bg-card/60 border border-border rounded-2xl px-6 py-4"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
+                Auditor Líder <span className="text-destructive">*</span>
+              </label>
+              <Input
+                placeholder="Nome do Auditor Líder"
                 value={report.lead_auditor}
                 onChange={(e) => updateField("lead_auditor", e.target.value)}
                 className="bg-card/60 border border-border rounded-2xl px-6 py-4"
@@ -285,6 +436,17 @@ export default function ReportBuilder() {
         onExport={exportReport}
         validationErrors={validation.errors}
         validationWarnings={validation.warnings}
+      />
+
+      {/* Preview Modal */}
+      <ReportPreviewModal
+        isOpen={showPreview}
+        onClose={() => setShowPreview(false)}
+        report={report}
+        onExport={() => {
+          setShowPreview(false);
+          setShowExport(true);
+        }}
       />
 
       {/* Reset Confirmation */}

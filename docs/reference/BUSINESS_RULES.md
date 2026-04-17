@@ -39,3 +39,10 @@
 |----|-----------|
 | **RN-02** | Antes do cliff = Zero Vesting. Pós Cliff = O gap de 12 meses bate de uma vez de forma retroativa (burst). |
 | **RN-04 & 05**| Single Trigger (Aceleração M&A imediata) e Double Trigger suportados e rastreáveis na timeline 24m. |
+
+## Módulo: Auth & Security (Onboarding)
+| RN | Descrição |
+|----|-----------|
+| **RN-01** | Tokens de convite (`invite_links` e `invitations`) não devem ser legíveis globalmente para prevenir vazamentos. Listagem direta via RLS é proibida. |
+| **RN-02** | A validação do link por usuários anônimos na tela de Aceite atua sob *SECURITY DEFINER* estrito cruzando o token gerado com hash SHA-256. |
+| **RN-03** | Endpoints de convites públicos e APIs expostas são controladas por *Rate Limiting Sliding Window* nativo baseadas no IP (`x-forwarded-for`), limitando a 20 requisições/min. |

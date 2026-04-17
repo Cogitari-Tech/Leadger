@@ -38,9 +38,14 @@ export class SupabaseProjectRepository implements IProjectRepository {
     tenantId: string,
     input: CreateProjectInput,
   ): Promise<ProjectDTO> {
+    const {
+      data: { user },
+    } = await this.supabase.auth.getUser();
+
     const persistence = {
       ...this.mapToPersistence(input),
       tenant_id: tenantId,
+      created_by: user?.id || null, // FIX-02
     };
     const { data, error } = await this.supabase
       .from("projects")
@@ -163,6 +168,8 @@ export class SupabaseProjectRepository implements IProjectRepository {
     startDate: (row.start_date as string) || null,
     endDate: (row.end_date as string) || null,
     createdAt: row.created_at as string,
+    createdBy: (row.created_by as string) || null,
+    updatedAt: (row.updated_at as string) || null,
   });
 
   private mapMember = (row: Record<string, unknown>): ProjectMemberDTO => ({

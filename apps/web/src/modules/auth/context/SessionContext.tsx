@@ -38,6 +38,8 @@ export interface SessionActions {
       signup_mode?: SignupMode;
       invite_token?: string;
       captchaToken?: string;
+      join_tenant_id?: string;
+      join_message?: string;
     },
   ) => Promise<{
     error: Error | null;
@@ -167,6 +169,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         signup_mode?: SignupMode;
         invite_token?: string;
         captchaToken?: string;
+        join_tenant_id?: string;
+        join_message?: string;
       },
     ) => {
       setState((prev) => ({ ...prev, loading: true }));
@@ -181,6 +185,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             companyName: metadata?.companyName,
             signup_mode: metadata?.signup_mode || "create",
             invite_token: metadata?.invite_token,
+            join_tenant_id: metadata?.join_tenant_id,
+            join_message: metadata?.join_message,
           },
         },
       });

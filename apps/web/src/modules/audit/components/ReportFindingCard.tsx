@@ -427,14 +427,22 @@ export default function ReportFindingCard({
             {finding.evidence_links.map((link, li) => (
               <div key={li} className="flex gap-1.5 items-center">
                 <input
-                  type="text"
+                  type="url"
                   className="text-xs flex-1 border border-border px-2 py-1.5 rounded bg-muted/40 text-foreground placeholder:text-muted-foreground/30 focus:bg-card focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none"
-                  placeholder="URL da evidência"
+                  placeholder="https://..."
                   value={link}
                   onChange={(e) => {
                     const links = [...finding.evidence_links];
                     links[li] = e.target.value;
                     onUpdate(finding.id, { evidence_links: links });
+                  }}
+                  onBlur={(e) => {
+                    const val = e.target.value.trim();
+                    if (/^(javascript|data|vbscript):/i.test(val)) {
+                      const links = [...finding.evidence_links];
+                      links[li] = "";
+                      onUpdate(finding.id, { evidence_links: links });
+                    }
                   }}
                 />
                 <button

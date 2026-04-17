@@ -40,6 +40,8 @@ export interface ProjectDTO {
   startDate: string | null;
   endDate: string | null;
   createdAt: string;
+  createdBy: string | null;
+  updatedAt: string | null;
 }
 
 export interface CreateProjectInput {

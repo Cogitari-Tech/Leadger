@@ -21,7 +21,7 @@ export function useHeadcount() {
     setError(null);
     try {
       const result = await apiClient.get<{ plans: HeadcountPlan[] }>(
-        "/api/people/headcount",
+        "/people/headcount",
       );
       setPlans(result.plans);
     } catch (err) {
@@ -34,7 +34,7 @@ export function useHeadcount() {
 
   const createPlan = async (data: Omit<HeadcountPlan, "id">) => {
     try {
-      await apiClient.post("/api/people/headcount", data);
+      await apiClient.post("/people/headcount", data);
       await fetchPlans();
     } catch (err) {
       throw err;
@@ -43,7 +43,7 @@ export function useHeadcount() {
 
   const updatePlan = async (id: string, data: Partial<HeadcountPlan>) => {
     try {
-      await apiClient.patch(`/api/people/headcount/${id}`, data);
+      await apiClient.patch(`/people/headcount/${id}`, data);
       await fetchPlans();
     } catch (err) {
       throw err;
@@ -52,7 +52,7 @@ export function useHeadcount() {
 
   const deletePlan = async (id: string) => {
     try {
-      await apiClient.delete(`/api/people/headcount/${id}`);
+      await apiClient.delete(`/people/headcount/${id}`);
       await fetchPlans();
     } catch (err) {
       throw err;

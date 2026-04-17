@@ -28,4 +28,8 @@ Toda tabela vinculada aos clientes precisa ser acompanhada do RLS (Row Level Sec
 - `alerts`, `weekly_digests`
 - `investor_updates`
 
+### 🛡️ Autenticação e Segurança (Security DDL)
+- **invitations** e **invite_links:** Regras estritas de RLS impedem acessos deslogados (Não contornáveis com `.select()`). O resgate seguro é feito por `SECURITY DEFINER RPC` isolada para proteção do Hash.
+- **rpc_rate_limits:** `ip_address`, `endpoint`, `request_count`, `window_start`. (Responsável por controlar o Rate Limiting ativo dentro do DB via *Sliding Windows* barrando requisições abusivas em endpoints nativos baseados em headers `x-forwarded-for`).
+
 As migrations reais residem em `supabase/migrations/`. Qualquer manipulação de Modelos DDL deve invariavelmente gerar um script correspondente neste caminho, respeitando as referidas constraints de Check.
