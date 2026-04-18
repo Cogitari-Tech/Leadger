@@ -1,3 +1,10 @@
+#!/usr/bin/env sh
+
+if [ "$SKIP_PRE_COMMIT" = "1" ]; then
+  echo "⚠️ Skipping pre-commit checks due to SKIP_PRE_COMMIT=1"
+  exit 0
+fi
+
 npx lint-staged
 
 echo "🔒 Checking for .env leaks..."

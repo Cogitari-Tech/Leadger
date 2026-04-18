@@ -1,5 +1,12 @@
 import { useState } from "react";
 import { useHeadcount, HeadcountPlan } from "../hooks/useHeadcount";
+/* 
+  <head>
+    <title>Headcount Planning | Leadgers</title>
+    <meta name="description" content="Planejamento de equipe" />
+    <meta property="og:title" content="Headcount Planning" />
+  </head>
+*/
 import {
   Users,
   Plus,

@@ -14,6 +14,7 @@ Supports:
 import subprocess
 import sys
 import json
+import os
 from pathlib import Path
 from datetime import datetime
 
@@ -43,25 +44,29 @@ def detect_test_framework(project_path: Path) -> dict:
             deps = {**pkg.get("dependencies", {}), **pkg.get("devDependencies", {})}
             
             # Check for test script
+            is_windows = os.name == 'nt'
+            npm_cmd = "npm.cmd" if is_windows else "npm"
+            npx_cmd = "npx.cmd" if is_windows else "npx"
+            
             if "test" in scripts:
                 result["framework"] = "npm test"
-                result["cmd"] = ["npm", "test"]
+                result["cmd"] = [npm_cmd, "test"]
                 
                 # Try to detect specific framework for coverage
                 if "vitest" in deps:
                     result["framework"] = "vitest"
-                    result["coverage_cmd"] = ["npx", "vitest", "run", "--coverage"]
+                    result["coverage_cmd"] = [npx_cmd, "vitest", "run", "--coverage"]
                 elif "jest" in deps:
                     result["framework"] = "jest"
-                    result["coverage_cmd"] = ["npx", "jest", "--coverage"]
+                    result["coverage_cmd"] = [npx_cmd, "jest", "--coverage"]
             elif "vitest" in deps:
                 result["framework"] = "vitest"
-                result["cmd"] = ["npx", "vitest", "run"]
-                result["coverage_cmd"] = ["npx", "vitest", "run", "--coverage"]
+                result["cmd"] = [npx_cmd, "vitest", "run"]
+                result["coverage_cmd"] = [npx_cmd, "vitest", "run", "--coverage"]
             elif "jest" in deps:
                 result["framework"] = "jest"
-                result["cmd"] = ["npx", "jest"]
-                result["coverage_cmd"] = ["npx", "jest", "--coverage"]
+                result["cmd"] = [npx_cmd, "jest"]
+                result["coverage_cmd"] = [npx_cmd, "jest", "--coverage"]
                 
         except:
             pass

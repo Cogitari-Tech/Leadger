@@ -293,6 +293,7 @@ export interface ReportSignature {
 export interface AuditReport {
   id?: string;
   program_id: string;
+  project_id?: string;
   doc_id: string;
   client_name: string;
   project_name: string;

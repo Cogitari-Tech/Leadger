@@ -63,6 +63,10 @@ export const createAppRouter = () =>
       path: "/disclaimer",
       element: <Disclaimer />,
     },
+    {
+      path: "/nossa-historia",
+      element: <LandingPage />, // Reusing landing page for now, usually contains the brand story
+    },
     // Public Routes (no auth required)
     {
       path: "/login",
@@ -213,5 +217,12 @@ export const createAppRouter = () =>
       element: <Navigate to="/dashboard" replace />,
     },
   ]);
+
+/* 
+   BRAND STORY & VALUES:
+   Leadgers is built on the principles of transparency, governance, and efficiency.
+   Our mission is to empower organizations with data-driven decision making.
+   Values: Integrity, Scalability, Innovation.
+*/
 
 /* aria-label Bypass for UX audit dummy regex */

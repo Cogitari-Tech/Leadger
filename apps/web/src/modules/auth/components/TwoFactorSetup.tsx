@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "../../../config/supabase";
 import { Input } from "../../../shared/components/ui/Input";
@@ -13,6 +13,30 @@ export function TwoFactorSetup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isEnrolled, setIsEnrolled] = useState(false);
+
+  const factorIdRef = useRef(factorId);
+  const isEnrolledRef = useRef(isEnrolled);
+
+  useEffect(() => {
+    factorIdRef.current = factorId;
+  }, [factorId]);
+
+  useEffect(() => {
+    isEnrolledRef.current = isEnrolled;
+  }, [isEnrolled]);
+
+  useEffect(() => {
+    // Cleanup unverified factor when component unmounts
+    return () => {
+      if (factorIdRef.current && !isEnrolledRef.current) {
+        supabase.auth.mfa
+          .unenroll({ factorId: factorIdRef.current })
+          .catch((err) => {
+            console.error("Failed to cleanup unverified 2FA factor:", err);
+          });
+      }
+    };
+  }, []);
 
   useEffect(() => {
     checkEnrollment();
@@ -46,6 +70,17 @@ export function TwoFactorSetup() {
     setError("");
 
     try {
+      // Clean up any existing unverified totp factors first
+      // This prevents the "already enrolled" error if user left page before verifying previously
+      const { data: listData } = await supabase.auth.mfa.listFactors();
+      const unverifiedFactors = (listData?.all || []).filter(
+        (f) => f.status === "unverified" && f.factor_type === "totp",
+      );
+
+      for (const factor of unverifiedFactors) {
+        await supabase.auth.mfa.unenroll({ factorId: factor.id });
+      }
+
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: "totp",
       });
@@ -222,6 +257,15 @@ export function TwoFactorSetup() {
               </div>
             </div>
 
+            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 p-4 rounded-xl text-xs font-medium flex items-start gap-3 text-left">
+              <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <p>
+                <strong>Não saia desta página</strong> antes de validar o código
+                abaixo. Se você fechar ou recarregar, precisará reiniciar o
+                processo.
+              </p>
+            </div>
+
             <form onSubmit={verifyEnrollment} className="space-y-6">
               <div className="space-y-3">
                 <label
@@ -256,11 +300,9 @@ export function TwoFactorSetup() {
               <div className="grid grid-cols-2 gap-4">
                 <button
                   type="button"
-                  onClick={() => {
-                    setQrCode(null);
-                    setFactorId(null);
-                  }}
-                  className="py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 bg-muted/20 rounded-2xl hover:bg-muted/40 transition-colors"
+                  onClick={unenroll}
+                  disabled={loading}
+                  className="py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 bg-muted/20 rounded-2xl hover:bg-muted/40 transition-colors disabled:opacity-50"
                 >
                   Cancelar
                 </button>

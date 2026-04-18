@@ -21,12 +21,9 @@ export function useWeeklyDigest() {
     try {
       setLoading(true);
       setError(null);
-      const res = await apiClient<WeeklyDigestResponse>(
-        "/api/ai/weekly-digest",
-        {
-          method: "POST",
-        },
-      );
+      const res = await apiClient<WeeklyDigestResponse>("/ai/weekly-digest", {
+        method: "POST",
+      });
       setData(res);
     } catch (err: any) {
       setError(

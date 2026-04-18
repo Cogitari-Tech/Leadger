@@ -71,8 +71,23 @@ export function TwoFactorChallenge() {
       // Successfully verified AAL2! Handle device trust
       if (rememberDevice && user) {
         // Trust for 30 days
-        const trustUntil = Date.now() + 30 * 24 * 60 * 60 * 1000;
-        localStorage.setItem(`mfa_trust_${user.id}`, trustUntil.toString());
+        const trustUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        let deviceId = localStorage.getItem("leadgers_device_id");
+        if (!deviceId) {
+          deviceId = crypto.randomUUID();
+          localStorage.setItem("leadgers_device_id", deviceId);
+        }
+
+        await supabase.from("device_trusts").upsert(
+          {
+            user_id: user.id,
+            device_id: deviceId,
+            device_info: { userAgent: navigator.userAgent },
+            expires_at: trustUntil.toISOString(),
+            revoked: false,
+          },
+          { onConflict: "user_id, device_id" },
+        );
       }
 
       // Redirect to their destination

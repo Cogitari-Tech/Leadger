@@ -129,7 +129,7 @@ export default function ComplianceDashboard() {
           className="rounded-2xl px-6 shadow-lg shadow-primary/20"
           onClick={() => navigate("frameworks")}
         >
-          <FileText className="w-4 h-4 mr-2" /> Gerar Relatório
+          <FileText className="w-4 h-4 mr-2" /> Criar Relatório
         </Button>
       </div>
 

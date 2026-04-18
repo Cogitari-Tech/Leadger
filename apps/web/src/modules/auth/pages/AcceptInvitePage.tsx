@@ -24,68 +24,61 @@ export function AcceptInvitePage() {
     if (!token) return;
 
     const fetchInvitation = async () => {
-      // First, try to find in invite_links by hashing the token
-      try {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(token);
-        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const tokenHash = hashArray
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
+      const { data, error: fetchError } = await supabase.rpc(
+        "check_invite_token",
+        {
+          raw_token: token,
+        },
+      );
 
-        const { data: linkData } = await supabase
-          .from("invite_links")
-          .select(
-            "*, role:roles(name, display_name), tenant:tenants(name, slug)",
-          )
-          .eq("token_hash", tokenHash)
-          .eq("revoked", false)
-          .single();
-
-        if (
-          linkData &&
-          new Date(linkData.expires_at) > new Date() &&
-          (linkData.max_uses === null ||
-            linkData.current_uses < linkData.max_uses)
-        ) {
-          setIsInviteLink(true);
-          setInvitation({
-            id: linkData.id,
-            tenant_id: linkData.tenant_id,
-            email: "",
-            role_id: linkData.role_id,
-            invited_by: linkData.created_by,
-            token: token || "",
-            status: "pending",
-            expires_at: linkData.expires_at,
-            created_at: linkData.created_at,
-            accepted_at: null,
-            role: linkData.role,
-            tenant: linkData.tenant,
-          } as Invitation);
-          setLoading(false);
-          return;
-        }
-      } catch {
-        // Not an invite link, try invitations table
-      }
-
-      // Fallback: try invitations table
-      const { data: invData, error: fetchError } = await supabase
-        .from("invitations")
-        .select("*, role:roles(name, display_name), tenant:tenants(name, slug)")
-        .eq("token", token)
-        .eq("status", "pending")
-        .single();
-
-      if (fetchError || !invData) {
+      if (fetchError || !data) {
         setError("Convite inválido ou expirado.");
-      } else if (new Date(invData.expires_at) < new Date()) {
-        setError("Este convite expirou. Solicite um novo ao administrador.");
-      } else {
-        setInvitation(invData as Invitation);
+        setLoading(false);
+        return;
       }
+
+      const inviteData = data as any;
+
+      if (new Date(inviteData.expires_at) < new Date()) {
+        setError("Este convite expirou. Solicite um novo ao administrador.");
+        setLoading(false);
+        return;
+      }
+
+      if (inviteData.type === "link") {
+        setIsInviteLink(true);
+        setInvitation({
+          id: inviteData.id,
+          tenant_id: inviteData.tenant_id,
+          email: "",
+          role_id: inviteData.role_id,
+          invited_by: inviteData.created_by,
+          token: token || "",
+          status: "pending",
+          expires_at: inviteData.expires_at,
+          created_at: new Date().toISOString(),
+          accepted_at: null,
+          role: inviteData.role,
+          tenant: inviteData.tenant,
+        } as Invitation);
+      } else {
+        setIsInviteLink(false);
+        setInvitation({
+          id: inviteData.id,
+          tenant_id: inviteData.tenant_id,
+          email: inviteData.email,
+          role_id: inviteData.role_id,
+          invited_by: inviteData.invited_by,
+          token: token || "",
+          status: "pending",
+          expires_at: inviteData.expires_at,
+          created_at: new Date().toISOString(),
+          accepted_at: null,
+          role: inviteData.role,
+          tenant: inviteData.tenant,
+        } as Invitation);
+      }
+
       setLoading(false);
     };
 
@@ -113,8 +106,20 @@ export function AcceptInvitePage() {
       return;
     }
 
-    if (password.length < 8) {
-      setError("A senha deve ter pelo menos 8 caracteres.");
+    const calculateStrength = (pwd: string) => {
+      let score = 0;
+      if (pwd.length >= 8) score++;
+      if (/[A-Z]/.test(pwd)) score++;
+      if (/[a-z]/.test(pwd)) score++;
+      if (/[0-9]/.test(pwd)) score++;
+      if (/[^A-Za-z0-9]/.test(pwd)) score++;
+      return Math.min(score, 5);
+    };
+
+    if (calculateStrength(password) < 5) {
+      setError(
+        "Sua senha deve conter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos especiais.",
+      );
       return;
     }
 
@@ -333,9 +338,17 @@ export function AcceptInvitePage() {
                   </div>
 
                   <div className="space-y-1.5 flex flex-col">
-                    <label htmlFor="invite-password" className={labelClass}>
-                      Nova Senha de Acesso
-                    </label>
+                    <div className="flex justify-between items-center">
+                      <label htmlFor="invite-password" className={labelClass}>
+                        Nova Senha de Acesso
+                      </label>
+                      <Link
+                        to="/forgot-password"
+                        className="text-[11px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
+                      >
+                        Esqueceu a senha?
+                      </Link>
+                    </div>
                     <div className="relative">
                       <input
                         id="invite-password"
@@ -381,7 +394,7 @@ export function AcceptInvitePage() {
 
                   {/* Turnstile */}
                   {import.meta.env.VITE_TURNSTILE_SITE_KEY && (
-                    <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-hidden">
+                    <div className="flex justify-center mt-2 h-[65px] w-full max-w-[300px] mx-auto overflow-x-hidden">
                       <Turnstile
                         siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
                         onSuccess={(token) => {

@@ -134,6 +134,7 @@ export async function initializeModules(): Promise<void> {
   const complianceModule = await import("./compliance/module.config");
   const adminModule = await import("./admin/module.config");
   const githubModule = await import("./github/module.config");
+  const investorModule = await import("./investor/module.config");
 
   // Registro
   moduleRegistry.register(auditModule.default);
@@ -141,6 +142,7 @@ export async function initializeModules(): Promise<void> {
   moduleRegistry.register(complianceModule.default);
   moduleRegistry.register(adminModule.default);
   moduleRegistry.register(githubModule.default);
+  moduleRegistry.register(investorModule.default);
 
   // Carregamento
   await moduleRegistry.load("audit");
@@ -148,6 +150,7 @@ export async function initializeModules(): Promise<void> {
   await moduleRegistry.load("compliance");
   await moduleRegistry.load("admin");
   await moduleRegistry.load("github");
+  await moduleRegistry.load("investor");
 
   console.log("✅ Todos os módulos foram inicializados");
 }

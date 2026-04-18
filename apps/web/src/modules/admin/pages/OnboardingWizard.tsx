@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../../../config/supabase";
 import { useAuth } from "../../auth/context/AuthContext";
@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   Loader2,
   SkipForward,
+  Github,
 } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +30,186 @@ import {
 } from "../../../shared/components/ui/form";
 import { Input } from "../../../shared/components/ui/Input";
 import { Button } from "../../../shared/components/ui/Button";
+
+function BankAccountFetchingWrapper() {
+  const [accounts, setAccounts] = useState<any[]>([]);
+  const { tenant } = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  const fetchAccounts = useCallback(async () => {
+    if (!tenant) return;
+    try {
+      const { data, error } = await supabase
+        .from("bank_accounts")
+        .select("*")
+        .eq("tenant_id", tenant.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setAccounts(data || []);
+    } catch (err) {
+      console.error("Failed to fetch bank accounts:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [tenant]);
+
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
+
+  if (loading) {
+    return (
+      <div className="p-4 flex items-center justify-center text-muted-foreground">
+        <Loader2 className="w-5 h-5 animate-spin" />
+      </div>
+    );
+  }
+
+  return <BankAccountForm accounts={accounts} onUpdate={fetchAccounts} />;
+}
+
+import { useTeamManagement } from "../hooks/useTeamManagement";
+import { Link2, Copy } from "lucide-react";
+
+function OnboardingInviteWrapper() {
+  const { roles, generateInviteLink } = useTeamManagement();
+  const [linkRoleId, setLinkRoleId] = useState("");
+  const [email, setEmail] = useState("");
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+
+  useEffect(() => {
+    // Definir default role "auditor" ou o primeiro não-owner
+    if (roles.length > 0 && !linkRoleId) {
+      const defaultRole =
+        roles.find((r) => r.name === "auditor") ||
+        roles.find((r) => r.name !== "owner");
+      if (defaultRole) setLinkRoleId(defaultRole.id);
+    }
+  }, [roles, linkRoleId]);
+
+  const handleGenerateLink = async () => {
+    if (!linkRoleId) return;
+    setGenerating(true);
+    setSuccessMsg("");
+
+    // Uses default settings: maxUses=10, expiresDays=7
+    const url = await generateInviteLink(
+      linkRoleId,
+      10,
+      7,
+      "🔗 Link de Onboarding",
+      email || undefined,
+    );
+
+    if (url) {
+      setGeneratedLink(url);
+      if (email) {
+        setSuccessMsg(`Convite gerado e enviado para ${email}.`);
+      }
+    }
+    setGenerating(false);
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setSuccessMsg("Link copiado para a área de transferência!");
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <label className="text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1">
+          E-mail do Convidado (Opcional)
+        </label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="exemplo@empresa.com"
+          className="w-full px-4 py-3 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-50"
+        />
+        <p className="text-[10px] text-muted-foreground ml-1">
+          Se preenchido, um e-mail com o acesso será enviado automaticamente.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        <label className="text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1">
+          Cargo para o novo membro
+        </label>
+        <select
+          value={linkRoleId}
+          onChange={(e) => setLinkRoleId(e.target.value)}
+          className="w-full px-4 py-3 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium appearance-none"
+        >
+          <option value="" disabled>
+            Selecione um cargo...
+          </option>
+          {roles
+            .filter((r) => r.name !== "owner")
+            .map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.display_name}
+              </option>
+            ))}
+        </select>
+      </div>
+
+      <div className="pt-4">
+        <Button
+          type="button"
+          onClick={handleGenerateLink}
+          disabled={generating || !linkRoleId}
+          className="w-full sm:w-auto px-8 py-5 rounded-xl font-bold uppercase tracking-wider text-xs"
+        >
+          {generating ? (
+            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+          ) : (
+            <Link2 className="w-4 h-4 mr-2" />
+          )}
+          Gerar Convite
+        </Button>
+      </div>
+
+      {successMsg && (
+        <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-medium rounded-xl flex items-center gap-2 animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4" />
+          {successMsg}
+        </div>
+      )}
+
+      {generatedLink && (
+        <div className="flex items-center gap-2 p-1.5 bg-muted/30 border border-border/40 rounded-xl animate-in zoom-in-95">
+          <input
+            type="text"
+            readOnly
+            value={generatedLink}
+            className="flex-1 text-xs bg-transparent outline-none font-mono px-3 text-muted-foreground"
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => copyToClipboard(generatedLink)}
+            className="px-4 py-4 rounded-lg bg-background shadow-sm hover:bg-muted"
+            title="Copiar link"
+          >
+            <Copy className="w-4 h-4 mr-2" /> Copiar
+          </Button>
+        </div>
+      )}
+
+      <div className="mt-8 pt-6 border-t border-border/20 text-center">
+        <p className="text-xs text-muted-foreground font-medium">
+          Você poderá adicionar mais membros e configurar acessos complexos
+          depois na etapa de <strong>Equipe</strong> no Painel.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 // Validates Brazilian CNPJ
 const isValidCNPJ = (value: string) => {
@@ -143,7 +324,7 @@ const STEPS: StepConfig[] = [
 export default function OnboardingWizard() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { tenant, user, signOut, refreshProfile } = useAuth();
+  const { tenant, user, signOut, refreshProfile, signInWithGitHub } = useAuth();
   const finalizingRef = useRef(false);
 
   // Sync current step from URL or fallback to draft
@@ -335,31 +516,53 @@ export default function OnboardingWizard() {
 
       console.log("[OnboardingWizard] Member updated. Refreshing profile...");
 
-      // Removed agent log for stability
-
-      // Set session flag for the tour so `AuthGuard` doesn't ping back if the user is a test user
+      // Set session flags BEFORE refreshing so AuthGuard can short-circuit
       sessionStorage.setItem("has_seen_tour", "true");
-      // And also clear any onboarding drafts
+      sessionStorage.setItem("onboarding_just_completed", "true");
+      // Clear any onboarding drafts
       localStorage.removeItem("onboarding_draft");
       localStorage.removeItem("user_onboarding_draft");
       localStorage.removeItem("onboarding_step_draft");
 
+      // Refresh profile and wait for it to complete
       if (refreshProfile) {
         await refreshProfile();
       }
 
-      // Small additional delay to ensure AuthContext state is fully propagated
-      // and RLS caches are invalidated in the edge proxy if applicable.
-      console.log(
-        "[OnboardingWizard] Finalizing... Waiting for state stabilization.",
-      );
+      // Poll to verify the state has propagated to avoid redirect loop
+      // The AuthGuard checks tenant.onboarding_completed, which depends on
+      // the React state being updated after refreshProfile resolves
+      const maxAttempts = 5;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        // Verify directly from Supabase that the update landed
+        const { data: verifyData } = await supabase
+          .from("tenants")
+          .select("onboarding_completed")
+          .eq("id", tenant.id)
+          .single();
 
-      setTimeout(() => {
+        if (verifyData?.onboarding_completed) {
+          console.log(
+            `[OnboardingWizard] Verified onboarding_completed=true (attempt ${attempt + 1})`,
+          );
+          break;
+        }
+
         console.log(
-          "[OnboardingWizard] Executing final navigation to /dashboard.",
+          `[OnboardingWizard] Waiting for state propagation (attempt ${attempt + 1}/${maxAttempts})`,
         );
-        navigate("/dashboard", { replace: true });
-      }, 800);
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Re-trigger profile refresh on each retry
+        if (refreshProfile) {
+          await refreshProfile();
+        }
+      }
+
+      console.log(
+        "[OnboardingWizard] Executing final navigation to /dashboard.",
+      );
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       console.error("Failed to finish onboarding", err);
       alert(
@@ -372,7 +575,7 @@ export default function OnboardingWizard() {
   const step = STEPS[currentStep];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans cursor-default select-none">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-x-hidden font-sans cursor-default select-none">
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>
@@ -634,25 +837,13 @@ export default function OnboardingWizard() {
           {step.key === "invite" && (
             <div className="space-y-5 animate-in fade-in zoom-in-95 duration-200">
               <p className="text-sm text-muted-foreground">
-                Convide membros da equipe enviando links de convite. Você pode
-                pular esta etapa e fazer isso depois em{" "}
+                Convide membros da equipe gerando um link rápido de convite
+                (válido por 7 dias). Você também pode pular esta etapa e fazer
+                isso mais tarde no painel de{" "}
                 <strong>Administração → Equipe</strong>.
               </p>
 
-              <div className="flex items-center justify-center py-8">
-                <div className="text-center space-y-3">
-                  <Users className="w-12 h-12 text-muted-foreground/20 mx-auto" />
-                  <p className="text-sm text-muted-foreground">
-                    Gerencie convites em{" "}
-                    <button
-                      onClick={() => navigate("/admin/team")}
-                      className="text-primary hover:underline font-medium"
-                    >
-                      Equipe
-                    </button>
-                  </p>
-                </div>
-              </div>
+              <OnboardingInviteWrapper />
             </div>
           )}
 
@@ -662,8 +853,7 @@ export default function OnboardingWizard() {
                 Cadastre as contas bancárias da empresa para controle
                 financeiro. Você pode pular e adicionar depois.
               </p>
-              {/* Need to ensure BankAccountForm handles loading state well otherwise it's self contained */}
-              <BankAccountForm accounts={[]} onUpdate={() => {}} />
+              <BankAccountFetchingWrapper />
             </div>
           )}
 
@@ -675,13 +865,35 @@ export default function OnboardingWizard() {
               </p>
 
               <div className="grid gap-3">
+                <div className="flex items-center justify-between p-4 border border-border/20 rounded-xl bg-background/50">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl text-foreground">
+                      <Github className="w-8 h-8" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold">GitHub</p>
+                      <p className="text-xs text-muted-foreground">
+                        Repos, segurança, issues
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="font-bold uppercase tracking-widest text-[10px]"
+                    onClick={async () => {
+                      try {
+                        await signInWithGitHub();
+                      } catch (err) {
+                        console.error("Failed to connect GitHub:", err);
+                        alert("Erro ao conectar com GitHub.");
+                      }
+                    }}
+                  >
+                    Conectar
+                  </Button>
+                </div>
                 {[
-                  {
-                    name: "GitHub",
-                    desc: "Repos, segurança, issues",
-                    icon: "🐙",
-                    available: true,
-                  },
                   {
                     name: "Google Workspace",
                     desc: "Drive, Sheets, relatórios",
