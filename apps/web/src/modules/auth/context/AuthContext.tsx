@@ -37,6 +37,8 @@ interface AuthContextType extends AuthState {
       signup_mode?: SignupMode;
       invite_token?: string;
       captchaToken?: string;
+      join_tenant_id?: string;
+      join_message?: string;
     },
   ) => Promise<{
     error: Error | null;

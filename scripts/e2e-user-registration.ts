@@ -32,7 +32,7 @@ const SSRK = process.env["SUPABASE_SERVICE_R" + "OLE_KEY"] || "";
 const timestamp = Date.now();
 const TEST_NAME = "Usuário E2E Teste";
 const TEST_EMAIL = `e2e.test.${timestamp}@cogitari-test.dev`;
-const TEST_PASSWORD = "Test@Secure2026!";
+const TEST_PASSWORD = process.env.TEST_PASSWORD || "Fallback@Secure2026!";
 const TEST_COMPANY = `E2E TestCo ${timestamp}`;
 
 const OUTPUT_DIR = path.resolve(__dirname, "..", "tmp", "images");

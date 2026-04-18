@@ -218,10 +218,13 @@ export function TenantProvider({ children }: { children: ReactNode }) {
 
   const searchTenants = useCallback(
     async (query: string): Promise<Tenant[]> => {
+      const sanitized = query.replace(/[(),]/g, "");
       const { data } = await supabase
         .from("tenants")
-        .select("*")
-        .or(`slug.ilike.%${query}%,name.ilike.%${query}%`)
+        .select(
+          "id, name, slug, logo_url, industry, domain, created_at, plan, is_private, onboarding_completed, updated_at",
+        )
+        .or(`slug.ilike.%${sanitized}%,name.ilike.%${sanitized}%`)
         .eq("is_private", false)
         .limit(10);
       return (data ?? []) as Tenant[];

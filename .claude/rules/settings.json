@@ -1,0 +1,5 @@
+{
+	"CLAUDE_CODE_USE_OPENAI": "1",
+	"OPENAI_API_KEY": "",
+	"OPENAI_MODEL": "Gemini 3.1 pro"
+}

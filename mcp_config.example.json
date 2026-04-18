@@ -1,71 +1,49 @@
 {
-  "mcpServers": {
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"]
-    },
-    "shadcn": {
-      "command": "npx",
-      "args": ["shadcn@latest", "mcp"]
-    },
-    "supabase": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--access-token",
-        "<SEU_SUPABASE_ACCESS_TOKEN>"
-      ]
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
+  "servers": {
+    "filesystem": {
+      "command": "E:\\cache\\npm-global\\mcp-server-filesystem.cmd",
+      "args": ["E:\\Dev", "D:\\ai-game-factory", "C:\\Users\\morek"]
     },
     "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "command": "E:\\cache\\npm-global\\mcp-server-github.cmd",
+      "args": [],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "<SEU_GITHUB_PAT>"
       }
     },
-    "vercel": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote@0.1.35", "https://mcp.vercel.com"]
+    "supabase": {
+      "command": "E:\\cache\\npm-global\\mcp-server-supabase.cmd",
+      "args": ["--access-token", "<SEU_SUPABASE_ACCESS_TOKEN>"]
     },
-    "brasil": {
-      "command": "npx",
-      "args": ["-y", "@jxnxts/mcp-brasil"]
+    "memory": {
+      "command": "E:\\cache\\npm-global\\mcp-server-memory.cmd",
+      "args": []
     },
-    "sequential_thinking": {
-      "command": "npx",
+    "sequential-thinking": {
+      "command": "C:\\Program Files\\nodejs\\npx.cmd",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
     },
-    "prisma-mcp-server": {
-      "command": "npx",
-      "args": ["-y", "prisma", "mcp"],
-      "env": {}
+    "context7": {
+      "command": "E:\\cache\\npm-global\\context7-mcp.cmd",
+      "args": [],
+      "env": {
+        "CONTEXT7_API_KEY": "<SUA_CONTEXT7_API_KEY>"
+      }
     },
-    "puppeteer": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp"]
-    },
-    "chrome-devtools": {
-      "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp"]
-    },
-    "StitchMCP": {
-      "command": "npx",
+    "vercel": {
+      "command": "C:\\Program Files\\nodejs\\npx.cmd",
       "args": [
         "-y",
         "mcp-remote@0.1.35",
-        "https://stitch.googleapis.com/mcp",
-        "--header",
-        "X-Goog-Api-Key: <SUA_GOOGLE_API_KEY>"
+        "https://mcp.vercel.com?token=<SEU_VERCEL_TOKEN>"
       ]
+    },
+    "stitch": {
+      "command": "E:\\cache\\npm-global\\stitch-mcp.cmd",
+      "args": [],
+      "env": {
+        "GOOGLE_CLOUD_PROJECT": "<SEU_GOOGLE_PROJECT_ID>"
+      }
     }
   }
 }

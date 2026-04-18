@@ -20,6 +20,7 @@ import {
   Home,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
+import { DashboardNavItems } from "./DashboardNavItems";
 
 export const AppLayout: React.FC = () => {
   const { permissions, user, signOut, loading } = useAuth();
@@ -140,11 +141,32 @@ export const AppLayout: React.FC = () => {
           </button>
         </div>
 
+        {/* User Profile in Sidebar Header */}
+        <Link
+          to="/dashboard/profile"
+          className={`relative z-10 flex items-center gap-3 mx-2 mt-3 mb-1 p-2 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border/30 ${isCollapsed ? "justify-center mx-1" : ""}`}
+        >
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <User className="w-4 h-4 text-primary" />
+          </div>
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold truncate">
+                {user?.name || "Perfil"}
+              </p>
+              <p className="text-[10px] text-muted-foreground truncate">
+                {user?.role?.display_name || user?.role?.name}
+              </p>
+            </div>
+          )}
+        </Link>
+
         <nav className="relative z-10 flex-1 mt-4 overflow-y-auto custom-scrollbar px-2">
-          {/* Dashboard Home */}
+          {/* Strategic Planning Group */}
           <div className="mb-4 space-y-1">
             <Link
               to="/dashboard"
+              aria-label="Ir para Dashboard"
               onClick={() => setIsMobileMenuOpen(false)}
               className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
                 location.pathname === "/dashboard"
@@ -158,78 +180,10 @@ export const AppLayout: React.FC = () => {
               )}
             </Link>
 
-            <Link
-              to="/dashboard/health-score"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
-                location.pathname === "/dashboard/health-score"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
-              } ${isCollapsed ? "justify-center" : ""}`}
-            >
-              <LucideIcons.HeartPulse className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <span className="ml-3 truncate">Health Score</span>
-              )}
-            </Link>
-
-            <Link
-              to="/dashboard/north-star"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
-                location.pathname === "/dashboard/north-star"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
-              } ${isCollapsed ? "justify-center" : ""}`}
-            >
-              <LucideIcons.Sparkles className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <span className="ml-3 truncate">North Star</span>
-              )}
-            </Link>
-
-            <Link
-              to="/dashboard/bmc"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
-                location.pathname === "/dashboard/bmc"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
-              } ${isCollapsed ? "justify-center" : ""}`}
-            >
-              <LucideIcons.LayoutDashboard className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <span className="ml-3 truncate">Business Model Canvas</span>
-              )}
-            </Link>
-
-            <Link
-              to="/dashboard/okrs"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
-                location.pathname === "/dashboard/okrs"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
-              } ${isCollapsed ? "justify-center" : ""}`}
-            >
-              <LucideIcons.Target className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && <span className="ml-3 truncate">OKRs</span>}
-            </Link>
-
-            <Link
-              to="/dashboard/milestones"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`group flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
-                location.pathname === "/dashboard/milestones"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
-              } ${isCollapsed ? "justify-center" : ""}`}
-            >
-              <LucideIcons.Flag className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <span className="ml-3 truncate">Milestones</span>
-              )}
-            </Link>
+            <DashboardNavItems
+              isCollapsed={isCollapsed}
+              setIsMobileMenuOpen={setIsMobileMenuOpen}
+            />
           </div>
 
           {displayNavigation.map((section) => {
@@ -349,6 +303,7 @@ export const AppLayout: React.FC = () => {
           {/* Manual de Uso */}
           <Link
             to="/dashboard/manual-uso"
+            aria-label="Manual de Uso"
             className={`flex items-center px-3 py-2 text-[13px] font-medium transition-all rounded-lg ${
               location.pathname === "/dashboard/manual-uso"
                 ? "bg-primary/10 text-primary"
@@ -358,25 +313,6 @@ export const AppLayout: React.FC = () => {
             <BookOpen className="w-5 h-5 flex-shrink-0" />
             {!isCollapsed && (
               <span className="ml-3 truncate">Manual de Uso</span>
-            )}
-          </Link>
-
-          <Link
-            to="/dashboard/profile"
-            className={`flex items-center gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors ${isCollapsed ? "justify-center" : ""}`}
-          >
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <User className="w-4 h-4 text-primary" />
-            </div>
-            {!isCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold truncate">
-                  {user?.name || "Perfil"}
-                </p>
-                <p className="text-[10px] text-muted-foreground truncate">
-                  {user?.role?.display_name || user?.role?.name}
-                </p>
-              </div>
             )}
           </Link>
 
@@ -393,31 +329,29 @@ export const AppLayout: React.FC = () => {
             {!isCollapsed && <span className="text-xs font-medium">Sair</span>}
           </button>
 
-          <div className="flex justify-center py-2">
-            <ThemeToggle />
-          </div>
-
           <div
-            className={`flex items-center justify-between px-2 mt-1 ${isCollapsed ? "hidden" : ""}`}
+            className={`flex items-center gap-2 px-1 mt-1 ${isCollapsed ? "flex-col" : "justify-between"}`}
           >
-            <span className="text-[10px] font-bold text-muted-foreground/30">
-              Leadgers © 2026
-            </span>
-            <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-1 hover:text-primary transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
+            {!isCollapsed && (
+              <span className="text-[10px] font-bold text-muted-foreground/30">
+                Leadgers © 2026
+              </span>
+            )}
+            <div className="flex items-center gap-1">
+              <ThemeToggle />
+              <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="p-1.5 rounded-lg hover:bg-muted/50 hover:text-primary transition-colors text-muted-foreground"
+                title={isCollapsed ? "Expandir menu" : "Minimizar menu"}
+              >
+                {isCollapsed ? (
+                  <ChevronRight className="w-4 h-4" />
+                ) : (
+                  <ChevronLeft className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
-          {isCollapsed && (
-            <button
-              onClick={() => setIsCollapsed(false)}
-              className="flex justify-center p-2 hover:text-primary transition-colors"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          )}
         </div>
       </aside>
 

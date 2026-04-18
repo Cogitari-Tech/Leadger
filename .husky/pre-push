@@ -1,3 +1,10 @@
+#!/usr/bin/env sh
+
+if [ "$SKIP_PRE_PUSH" = "1" ]; then
+  echo "⚠️ Skipping pre-push checks due to SKIP_PRE_PUSH=1"
+  exit 0
+fi
+
 echo "🛡️  Running Pre-Push Verification..."
 
 echo "📝 Analyzing types..."

@@ -7,4 +7,5 @@ check_run() {
   echo "$CHANGED_FILES" | grep --quiet "$1" && eval "$2"
 }
 
+check_run package.json "echo '📦 package.json changed. Running npm install...' && npm install"
 check_run package-lock.json "echo '📦 package-lock.json changed. Running npm ci...' && npm ci"

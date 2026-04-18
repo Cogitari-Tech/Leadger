@@ -64,7 +64,7 @@ export function useRunwayCalculator() {
       setLoading(true);
       try {
         const response = await apiClient<{ results: ScenarioResult[] }>(
-          "/api/finance/runway",
+          "/finance/runway",
           {
             method: "POST",
             body: JSON.stringify({ cashBalance, projectionMonths, scenarios }),

@@ -38,6 +38,8 @@ export interface SessionActions {
       signup_mode?: SignupMode;
       invite_token?: string;
       captchaToken?: string;
+      join_tenant_id?: string;
+      join_message?: string;
     },
   ) => Promise<{
     error: Error | null;
@@ -167,6 +169,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         signup_mode?: SignupMode;
         invite_token?: string;
         captchaToken?: string;
+        join_tenant_id?: string;
+        join_message?: string;
       },
     ) => {
       setState((prev) => ({ ...prev, loading: true }));
@@ -181,13 +185,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
             companyName: metadata?.companyName,
             signup_mode: metadata?.signup_mode || "create",
             invite_token: metadata?.invite_token,
+            join_tenant_id: metadata?.join_tenant_id,
+            join_message: metadata?.join_message,
           },
         },
       });
 
       if (error && error.message.includes("Error sending confirmation email")) {
         setState((prev) => ({ ...prev, loading: false }));
-        return { error: null, data };
+        return {
+          error: new Error(
+            "Sua conta foi criada, mas ocorreu um problema no envio do email de confirmação. Por favor, tente fazer login e utilize a opção de reenviar o email.",
+          ),
+          data,
+        };
       }
 
       setState((prev) => ({ ...prev, loading: false }));
@@ -215,11 +226,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     const userEmail = state.supabaseUser?.email;
+    const isTestCleanupEnabled =
+      import.meta.env.VITE_ENABLE_TEST_CLEANUP === "true";
     if (
-      userEmail === "qa_vibe_test@leadgers.com" ||
-      userEmail === "test_removivel@leadgers.com" ||
-      (userEmail?.startsWith("onboarding-test") &&
-        userEmail?.endsWith("@leadgers.com"))
+      isTestCleanupEnabled &&
+      (userEmail === "qa_vibe_test@leadgers.com" ||
+        userEmail === "test_removivel@leadgers.com" ||
+        (userEmail?.startsWith("onboarding-test") &&
+          userEmail?.endsWith("@leadgers.com")))
     ) {
       try {
         await supabase.rpc("cleanup_test_user", { p_email: userEmail });

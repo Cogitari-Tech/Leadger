@@ -40,6 +40,7 @@ function createEmptyFinding(findingId: string = ""): ReportFinding {
 function createEmptyReport(): AuditReport {
   return {
     program_id: "",
+    project_id: "",
     doc_id: "",
     client_name: "",
     project_name: "",
@@ -103,7 +104,7 @@ function generateTxt(report: AuditReport): string {
   let txt = `RELATÓRIO DE AUDITORIA - LEADGERS TECH\n\n`;
   txt += `DOCUMENTO: ${report.doc_id}\n`;
   txt += `CLIENTE: ${report.client_name}\n`;
-  txt += `PROJETO: ${report.project_name}\n`;
+  txt += `PROJETO: ${report.project_name}${report.project_id ? ` (ID: ${report.project_id})` : ""}\n`;
   txt += `AMBIENTE: ${report.environment}\n`;
   txt += `PERÍODO: ${report.start_date} a ${report.end_date}\n`;
   txt += `AUDITOR LÍDER: ${report.lead_auditor}\n\n`;
@@ -161,131 +162,109 @@ export function useReportGenerator() {
   });
 
   const [unsavedChanges, setUnsavedChanges] = useState(false);
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isFirstRender = useRef(true);
 
-  // Auto-save with debounce
-  const persistReport = useCallback((updatedReport: AuditReport) => {
+  // Auto-save with debounce based on report changes
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     setUnsavedChanges(true);
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedReport));
+    const timer = setTimeout(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(report));
       setUnsavedChanges(false);
     }, SAVE_DEBOUNCE_MS);
-  }, []);
+    return () => clearTimeout(timer);
+  }, [report]);
 
   // Update a top-level field
   const updateField = useCallback(
     <K extends keyof AuditReport>(field: K, value: AuditReport[K]) => {
-      setReport((prev) => {
-        const next = { ...prev, [field]: value };
-        persistReport(next);
-        return next;
-      });
+      setReport((prev) => ({ ...prev, [field]: value }));
     },
-    [persistReport],
+    [],
   );
 
   // Finding CRUD
-  const addFinding = useCallback(
-    (findingId = "") => {
-      setReport((prev) => {
-        const next = {
-          ...prev,
-          findings: [...prev.findings, createEmptyFinding(findingId)],
-        };
-        persistReport(next);
-        return next;
-      });
-    },
-    [persistReport],
-  );
+  const addFinding = useCallback((findingId = "") => {
+    setReport((prev) => ({
+      ...prev,
+      findings: [...prev.findings, createEmptyFinding(findingId)],
+    }));
+  }, []);
+
+  const addBulkFindings = useCallback((count: number) => {
+    setReport((prev) => {
+      const newFindings = Array.from({ length: count }, () =>
+        createEmptyFinding(),
+      );
+      return {
+        ...prev,
+        findings: [...prev.findings, ...newFindings],
+      };
+    });
+  }, []);
 
   const updateFinding = useCallback(
     (id: string, updates: Partial<ReportFinding>) => {
-      setReport((prev) => {
-        const next = {
-          ...prev,
-          findings: prev.findings.map((f) =>
-            f.id === id ? { ...f, ...updates } : f,
-          ),
-        };
-        persistReport(next);
-        return next;
-      });
+      setReport((prev) => ({
+        ...prev,
+        findings: prev.findings.map((f) =>
+          f.id === id ? { ...f, ...updates } : f,
+        ),
+      }));
     },
-    [persistReport],
+    [],
   );
 
   const updateFinding5W2H = useCallback(
     (findingId: string, field: keyof Finding5W2H, value: string) => {
-      setReport((prev) => {
-        const next = {
-          ...prev,
-          findings: prev.findings.map((f) =>
-            f.id === findingId
-              ? { ...f, analysis: { ...f.analysis, [field]: value } }
-              : f,
-          ),
-        };
-        persistReport(next);
-        return next;
-      });
+      setReport((prev) => ({
+        ...prev,
+        findings: prev.findings.map((f) =>
+          f.id === findingId
+            ? { ...f, analysis: { ...f.analysis, [field]: value } }
+            : f,
+        ),
+      }));
     },
-    [persistReport],
+    [],
   );
 
-  const removeFinding = useCallback(
-    (id: string) => {
-      setReport((prev) => {
-        const next = {
-          ...prev,
-          findings: prev.findings.filter((f) => f.id !== id),
-        };
-        persistReport(next);
-        return next;
-      });
-    },
-    [persistReport],
-  );
+  const removeFinding = useCallback((id: string) => {
+    setReport((prev) => ({
+      ...prev,
+      findings: prev.findings.filter((f) => f.id !== id),
+    }));
+  }, []);
 
   // Signatures
-  const addSignature = useCallback(
-    (name: string, role: string) => {
-      const sig: ReportSignature = {
-        name,
-        role,
-        signed_at: new Date().toLocaleString("pt-BR"),
-      };
-      setReport((prev) => {
-        const existing = prev.signatures.findIndex((s) => s.name === name);
-        let sigs: ReportSignature[];
-        if (existing >= 0) {
-          sigs = [...prev.signatures];
-          sigs[existing] = sig;
-        } else {
-          sigs = [...prev.signatures, sig];
-        }
-        const next = { ...prev, signatures: sigs, status: "signed" as const };
-        persistReport(next);
-        return next;
-      });
-    },
-    [persistReport],
-  );
+  const addSignature = useCallback((name: string, role: string) => {
+    const sig: ReportSignature = {
+      name,
+      role,
+      signed_at: new Date().toLocaleString("pt-BR"),
+    };
+    setReport((prev) => {
+      const existing = prev.signatures.findIndex((s) => s.name === name);
+      let sigs: ReportSignature[];
+      if (existing >= 0) {
+        sigs = [...prev.signatures];
+        sigs[existing] = sig;
+      } else {
+        sigs = [...prev.signatures, sig];
+      }
+      return { ...prev, signatures: sigs, status: "signed" as const };
+    });
+  }, []);
 
-  const removeSignature = useCallback(
-    (name: string) => {
-      setReport((prev) => {
-        const next = {
-          ...prev,
-          signatures: prev.signatures.filter((s) => s.name !== name),
-        };
-        persistReport(next);
-        return next;
-      });
-    },
-    [persistReport],
-  );
+  const removeSignature = useCallback((name: string) => {
+    setReport((prev) => ({
+      ...prev,
+      signatures: prev.signatures.filter((s) => s.name !== name),
+    }));
+  }, []);
 
   // Validation
   const validate = useCallback((): ValidationResult => {
@@ -351,6 +330,7 @@ export function useReportGenerator() {
 
     updateField,
     addFinding,
+    addBulkFindings,
     updateFinding,
     updateFinding5W2H,
     removeFinding,
