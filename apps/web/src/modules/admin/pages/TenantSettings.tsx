@@ -1,7 +1,14 @@
-import { useState, useEffect, useRef, type FormEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  type FormEvent,
+} from "react";
 import { supabase } from "../../../config/supabase";
 import { apiClient } from "../../../shared/utils/apiClient";
 import { useAuth } from "../../auth/context/AuthContext";
+import type { BankAccount } from "../../auth/types/auth.types";
 import {
   Building2,
   Save,
@@ -15,12 +22,18 @@ import {
   Link2,
   Camera,
   Brain,
+  Landmark,
+  BellRing,
+  ShieldCheck,
   Sparkles,
+  Mail,
 } from "lucide-react";
 
 import { Link } from "react-router-dom";
 import { TwoFactorSetup } from "../../auth/components/TwoFactorSetup";
 import { GitHubConnect } from "../../github/components/GitHubConnect";
+import { GoogleWorkspaceConnect } from "../components/GoogleWorkspaceConnect";
+import { BankAccountForm } from "../components/BankAccountForm";
 
 interface AiSettings {
   proactivity_level: string;
@@ -68,6 +81,26 @@ export function TenantSettings() {
   });
   const [aiSaving, setAiSaving] = useState(false);
   const [aiSaved, setAiSaved] = useState(false);
+
+  // Open Finance — Bank Accounts
+  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
+  const [bankLoading, setBankLoading] = useState(true);
+
+  const fetchBankAccounts = useCallback(async () => {
+    if (!tenant) return;
+    setBankLoading(true);
+    const { data } = await supabase
+      .from("bank_accounts")
+      .select("*")
+      .eq("tenant_id", tenant.id)
+      .order("is_primary", { ascending: false });
+    setBankAccounts(data ?? []);
+    setBankLoading(false);
+  }, [tenant]);
+
+  useEffect(() => {
+    fetchBankAccounts();
+  }, [fetchBankAccounts]);
 
   useEffect(() => {
     apiClient
@@ -132,6 +165,16 @@ export function TenantSettings() {
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
+  };
+
+  const updateTenantSetting = async (key: string, value: any) => {
+    if (!tenant) return;
+    const newSettings = { ...(tenant.settings || {}), [key]: value };
+    await supabase
+      .from("tenants")
+      .update({ settings: newSettings })
+      .eq("id", tenant.id);
+    // Note: Local state update would be better via context but for now we rely on re-fetch or page reload for simple toggles
   };
 
   return (
@@ -341,18 +384,70 @@ export function TenantSettings() {
         </div>
       </div>
 
+      {/* Google Workspace Integration */}
+      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+        <div className="space-y-1 px-4">
+          <h2 className="text-3xl font-black text-foreground font-display flex items-center gap-4">
+            <Globe className="w-8 h-8 text-[#4285F4]" /> Google Workspace
+          </h2>
+          <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest opacity-60">
+            Integração com Gmail, Calendar e Drive
+          </p>
+        </div>
+        <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden min-h-[320px]">
+          <GoogleWorkspaceConnect />
+        </div>
+      </div>
+
+      {/* Open Finance — Bank Accounts */}
+      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+        <div className="space-y-1 px-4">
+          <h2 className="text-3xl font-black text-foreground font-display flex items-center gap-4">
+            <Landmark className="w-8 h-8 text-primary" /> Open Finance
+          </h2>
+          <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest opacity-60">
+            Contas bancárias vinculadas à organização
+          </p>
+        </div>
+        <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden p-8 md:p-12">
+          {bankLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </div>
+          ) : (
+            <BankAccountForm
+              accounts={bankAccounts}
+              onUpdate={fetchBankAccounts}
+            />
+          )}
+        </div>
+      </div>
+
       {/* AI Intelligence Configuration */}
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
         <div className="space-y-1 px-4">
           <h2 className="text-3xl font-black text-foreground font-display flex items-center gap-4">
             <Brain className="w-8 h-8 text-primary" /> Inteligência Artificial
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[9px] font-black uppercase tracking-widest border border-amber-500/20">
+              Em breve
+            </span>
           </h2>
           <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest opacity-60">
             Configuração Granular de IA — Proatividade, Tom e Foco
           </p>
         </div>
 
-        <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden p-8 md:p-12 space-y-10">
+        <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden p-8 md:p-12 space-y-10 opacity-50 pointer-events-none select-none relative">
+          <div className="absolute inset-0 z-10 flex items-center justify-center">
+            <div className="bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl px-8 py-4 shadow-xl">
+              <p className="text-sm font-black text-foreground uppercase tracking-wider">
+                Funcionalidade em desenvolvimento
+              </p>
+              <p className="text-[10px] text-muted-foreground text-center mt-1">
+                Estará disponível em breve
+              </p>
+            </div>
+          </div>
           {/* Proactivity Level */}
           <div className="space-y-4">
             <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2 flex items-center gap-2">
@@ -485,6 +580,91 @@ export function TenantSettings() {
               )}
               {aiSaving ? "Salvando..." : "Salvar Configuração IA"}
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Global Notification Policies */}
+      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+        <div className="space-y-1 px-4 text-center">
+          <h2 className="text-3xl font-black text-foreground font-display flex items-center justify-center gap-4">
+            <BellRing className="w-8 h-8 text-primary" /> Políticas de
+            Notificação
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[9px] font-black uppercase tracking-widest border border-amber-500/20">
+              Em breve
+            </span>
+          </h2>
+          <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest opacity-60">
+            Governança de comunicação e alertas automáticos
+          </p>
+        </div>
+
+        <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden p-8 md:p-12 opacity-50 pointer-events-none select-none">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[
+              {
+                key: "silence_all_emails",
+                label: "Silenciar E-mails Globais",
+                desc: "Desabilita todos os disparos de e-mail automatizados para membros desta organização.",
+                icon: Mail,
+              },
+              {
+                key: "enforce_mfa_alerts",
+                label: "Alertas de Integridade MFA",
+                desc: "Notificar administradores quando usuários acessarem sem blindagem multi-fator.",
+                icon: ShieldCheck,
+              },
+              {
+                key: "activity_digest",
+                label: "Resumo Diário de Atividade",
+                desc: "Enviar um sumário de todas as ações de auditoria nas últimas 24h para os gestores.",
+                icon: FileText,
+              },
+              {
+                key: "security_anomaly_alerts",
+                label: "Alertas de Anomalia",
+                desc: "IA detecta e notifica acessos ou alterações atípicas no padrão de segurança.",
+                icon: Brain,
+              },
+            ].map((policy) => {
+              const isActive = (tenant?.settings as any)?.[policy.key] ?? false;
+              return (
+                <div
+                  key={policy.key}
+                  className="flex items-center justify-between p-6 rounded-3xl bg-background/30 border border-border/40 hover:bg-background/50 transition-all cursor-pointer group/policy"
+                  onClick={() => updateTenantSetting(policy.key, !isActive)}
+                >
+                  <div className="flex items-center gap-4 pr-6">
+                    <div
+                      className={`p-4 rounded-2xl ${isActive ? "bg-primary/20 text-primary" : "bg-muted/30 text-muted-foreground"} border border-current/10 transition-colors`}
+                    >
+                      <policy.icon className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-black text-foreground uppercase tracking-tighter italic">
+                        {policy.label}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground font-medium leading-relaxed opacity-60">
+                        {policy.desc}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className={`w-12 h-6 rounded-full transition-all relative flex-shrink-0 ${
+                      isActive
+                        ? "bg-primary shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+                        : "bg-muted"
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-1.5 w-3 h-3 rounded-full bg-white transition-all shadow-sm ${
+                        isActive ? "left-7" : "left-2"
+                      }`}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

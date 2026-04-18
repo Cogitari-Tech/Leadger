@@ -18,6 +18,16 @@
 - ✅ **Performance de Render Loop (React Purity):** Identificação e correção cirúrgica de um _deadlock_ render vs state loop na engine do `AuditReportForm/ReportBuilder`. As chamadas síncronas de gravação local foram refatoradas e movidas de dentro de setters funcionais de React para um modelo Observer / `useEffect` focado exclusivamente em gerenciar auto-save através do LocalStorage sem vazar _side-effects_ para a Virtual DOM.
 - ✅ **Limites de Segurança do Frontend (XSS Control):** Introdução de sanitização hard/soft em painéis expostos via input HTML. Atuação forte nos hiperlinks e "Links de Evidências" da matriz 5W2H implementando Regex Filters contra tentativas nativas de XSS via protocolos arbitrários (`javascript:`, `vbscript:`, `data:`). Correção aplicada rigorosamente a tela `ReportFindingCard.tsx` e injetada no Blur Lifecycle.
 
+### 🎨 Refatoração UI/UX e Estrutural (Layout & Preview)
+- ✅ **Nova Modal de Report Preview:** Reconstrução visual completa do `ReportPreviewModal` sob o ecosistema *Shadcn*, implementando estética macOS-like, badges dinâmicas de status/risco e layout limpo.
+- ✅ **Reestruturação Global de Navegação (Sidebar):** Transição do Avatar de usuário e workspace para o Header da aplicação e ancoragem do `ThemeToggle` junto aos controles nativos do footer da sidebar.
+- ✅ **Sanitização de Interface Inativa:** Limpeza da `TenantSettings`, camuflando componentes dependentes de APIs ainda não prontas (AI Config, Notificações) sob a label inativa e segura "Em breve".
+
+### 🔒 Segurança, Hardening & DX
+- ✅ **Supressão de Vazamento de Código (Vercel):** Eliminação de *Source Maps* expostos na build de produção e mitigação pesada de *Hardcoded URLs* que apareciam explodidas nos bundles.
+- ✅ **Padronização e Linting (DX):** Bootstrapping de `.eslintrc.cjs` para a workspace `/apps/web` com enforcing de regras ECMAScript para erradicação de débitos técnicos.
+- ✅ **Virtual Scrolling:** Integração mandatória de `@tanstack/react-virtual` no componente de Report Finding Card, executando offload e ganhos altíssimos de framerate ao popular relatórios volumosos.
+
 ---
 
 ## 🚀 v1.2.1 — Security & Infra Fixes (Abril 2026)

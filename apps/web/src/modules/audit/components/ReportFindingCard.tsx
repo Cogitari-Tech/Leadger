@@ -1,12 +1,15 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect, useCallback, useState } from "react";
 import {
   Trash2,
   ChevronDown,
   Code2,
   Link,
-  Mail,
   AlertTriangle,
   Search,
+  Calendar,
+  Users,
+  Mail,
+  X,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/Button";
 import type {
@@ -17,6 +20,18 @@ import type {
   TaskCategory,
   ImpactArea,
 } from "../types/audit.types";
+import { ExternalLink } from "lucide-react";
+import type { TenantMemberOption } from "../hooks/useTenantMembers";
+
+export function isValidUrl(url: string): boolean {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
 
 interface ReportFindingCardProps {
   finding: ReportFinding;
@@ -24,6 +39,8 @@ interface ReportFindingCardProps {
   onUpdate: (id: string, updates: Partial<ReportFinding>) => void;
   onUpdate5W2H: (id: string, field: keyof Finding5W2H, value: string) => void;
   onRemove: (id: string) => void;
+  tenantMembers?: TenantMemberOption[];
+  membersLoading?: boolean;
 }
 
 const RISK_LEVELS: { value: FindingRiskLevel; label: string; color: string }[] =
@@ -118,7 +135,7 @@ const IMPACT_AREAS: ImpactArea[] = [
   "Recursos Humanos",
 ];
 
-const W2H_FIELDS: {
+const TEXT_5W2H_FIELDS: {
   key: keyof Finding5W2H;
   label: string;
   placeholder: string;
@@ -139,16 +156,6 @@ const W2H_FIELDS: {
     placeholder: "Módulo, repositório, endpoint ou infraestrutura afetada...",
   },
   {
-    key: "when",
-    label: "Cronograma (Quando ocorreu/Prazo)",
-    placeholder: "Data da detecção e estimativa para resolução...",
-  },
-  {
-    key: "who",
-    label: "Responsabilidade (Quem deve agir)",
-    placeholder: "Defina o responsável direto pela remediação...",
-  },
-  {
     key: "how",
     label: "Plano de Ação (Como resolver)",
     placeholder: "Passos detalhados para a correção do problema...",
@@ -161,12 +168,389 @@ const W2H_FIELDS: {
   },
 ];
 
+// ─── Member Selector Component ─────────────────────────────
+function MemberSelector({
+  value,
+  members,
+  loading,
+  onChange,
+  onEmailNotify,
+}: {
+  value: string;
+  members: TenantMemberOption[];
+  loading: boolean;
+  onChange: (name: string) => void;
+  onEmailNotify?: (email: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [notifyEmail, setNotifyEmail] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const selectedMember = members.find((m) => m.name === value);
+
+  const filteredMembers = members.filter(
+    (m) =>
+      m.name.toLowerCase().includes(search.toLowerCase()) ||
+      m.email.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+        setSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1 flex items-center gap-1">
+        <Users className="w-3 h-3" /> Responsabilidade (Quem deve agir)
+      </label>
+      <div
+        className="w-full text-sm font-medium text-foreground bg-muted/40 p-3 rounded-lg border border-border focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all cursor-pointer flex justify-between items-center"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center gap-2 min-w-0">
+          {selectedMember ? (
+            <>
+              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <span className="text-[10px] font-bold text-primary">
+                  {selectedMember.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="min-w-0">
+                <span className="text-foreground text-sm truncate block">
+                  {selectedMember.name}
+                </span>
+                <span className="text-[10px] text-muted-foreground/60 truncate block">
+                  {selectedMember.email}
+                </span>
+              </div>
+            </>
+          ) : (
+            <span className="text-muted-foreground/40 text-sm">
+              {value || "Selecionar responsável..."}
+            </span>
+          )}
+        </div>
+        <ChevronDown
+          className={`w-3.5 h-3.5 text-muted-foreground/40 transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
+        />
+      </div>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl animate-in fade-in zoom-in duration-200">
+          {/* Search */}
+          <div className="p-2 border-b border-border bg-muted/20 flex items-center gap-2">
+            <Search className="w-3.5 h-3.5 text-muted-foreground/40" />
+            <input
+              autoFocus
+              className="bg-transparent border-none outline-none text-xs w-full py-1 placeholder:text-muted-foreground/30"
+              placeholder="Buscar membro..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+
+          {/* Member list */}
+          <div className="max-h-48 overflow-y-auto p-1 custom-scrollbar">
+            {loading ? (
+              <div className="p-4 text-center text-muted-foreground/40 text-xs">
+                Carregando membros...
+              </div>
+            ) : filteredMembers.length > 0 ? (
+              filteredMembers.map((m) => (
+                <div
+                  key={m.id}
+                  className={`p-2.5 text-xs rounded-lg cursor-pointer transition-colors flex items-center gap-3 ${
+                    value === m.name
+                      ? "bg-primary text-white"
+                      : "hover:bg-muted text-foreground"
+                  }`}
+                  onClick={() => {
+                    onChange(m.name);
+                    setIsOpen(false);
+                    setSearch("");
+                  }}
+                >
+                  <div
+                    className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      value === m.name ? "bg-white/20" : "bg-primary/10"
+                    }`}
+                  >
+                    <span
+                      className={`text-[10px] font-bold ${value === m.name ? "text-white" : "text-primary"}`}
+                    >
+                      {m.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium truncate">{m.name}</div>
+                    <div
+                      className={`text-[10px] truncate ${value === m.name ? "text-white/70" : "text-muted-foreground/60"}`}
+                    >
+                      {m.email} • {m.role}
+                    </div>
+                  </div>
+                  {value === m.name && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-white shadow-sm flex-shrink-0" />
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="p-4 text-center text-muted-foreground/40 text-[10px] uppercase font-bold italic">
+                Nenhum membro encontrado
+              </div>
+            )}
+          </div>
+
+          {/* Manual input option */}
+          <div className="border-t border-border/50 p-2">
+            <input
+              className="bg-transparent border-none outline-none text-xs w-full py-1.5 px-2 placeholder:text-muted-foreground/30"
+              placeholder="Ou digite manualmente..."
+              value={!selectedMember ? value : ""}
+              onChange={(e) => {
+                onChange(e.target.value);
+              }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Email notification toggle */}
+      {selectedMember && (
+        <div className="mt-2 flex items-center gap-2">
+          <label className="flex items-center gap-1.5 cursor-pointer text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider">
+            <input
+              type="checkbox"
+              className="accent-primary w-3 h-3"
+              checked={notifyEmail}
+              onChange={(e) => {
+                setNotifyEmail(e.target.checked);
+                if (e.target.checked && onEmailNotify && selectedMember) {
+                  onEmailNotify(selectedMember.email);
+                }
+              }}
+            />
+            <Mail className="w-3 h-3" />
+            Notificar por e-mail
+          </label>
+          {notifyEmail && selectedMember && (
+            <span className="text-[10px] text-muted-foreground/40 truncate">
+              → {selectedMember.email}
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Schedule Picker Component ─────────────────────────────
+function SchedulePicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [detectedDate, setDetectedDate] = useState("");
+  const [deadlineDate, setDeadlineDate] = useState("");
+  const calendarRef = useRef<HTMLDivElement>(null);
+
+  // Parse existing value to extract dates
+  useEffect(() => {
+    if (value) {
+      const dateMatch = value.match(/\d{4}-\d{2}-\d{2}/g);
+      if (dateMatch) {
+        if (dateMatch[0]) setDetectedDate(dateMatch[0]);
+        if (dateMatch[1]) setDeadlineDate(dateMatch[1]);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  const updateValue = (detected: string, deadline: string) => {
+    setDetectedDate(detected);
+    setDeadlineDate(deadline);
+
+    const parts: string[] = [];
+    if (detected) parts.push(`Detecção: ${formatDateBR(detected)}`);
+    if (deadline) parts.push(`Prazo: ${formatDateBR(deadline)}`);
+    onChange(parts.join(" | ") || "");
+  };
+
+  return (
+    <div className="relative" ref={calendarRef}>
+      <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1 flex items-center gap-1">
+        <Calendar className="w-3 h-3" /> Cronograma (Quando ocorreu/Prazo)
+      </label>
+
+      <div
+        className="w-full text-sm font-medium bg-muted/40 p-3 rounded-lg border border-border cursor-pointer hover:border-primary/30 transition-all flex items-center justify-between gap-2"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          {detectedDate || deadlineDate ? (
+            <div className="flex flex-wrap gap-2 text-xs">
+              {detectedDate && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-md border border-blue-500/20">
+                  <Calendar className="w-3 h-3" />
+                  Detecção: {formatDateBR(detectedDate)}
+                </span>
+              )}
+              {deadlineDate && (
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md border ${
+                    isDeadlinePast(deadlineDate)
+                      ? "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
+                      : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                  }`}
+                >
+                  <Calendar className="w-3 h-3" />
+                  Prazo: {formatDateBR(deadlineDate)}
+                </span>
+              )}
+            </div>
+          ) : (
+            <span className="text-muted-foreground/40">
+              Definir datas de detecção e prazo...
+            </span>
+          )}
+        </div>
+        <ChevronDown
+          className={`w-3.5 h-3.5 text-muted-foreground/40 transition-transform flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
+        />
+      </div>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl animate-in fade-in zoom-in duration-200 p-4 space-y-4">
+          {/* Detection date */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-blue-500" />
+              Data de Detecção
+            </label>
+            <input
+              type="date"
+              className="w-full text-sm p-2.5 bg-muted/40 border border-border rounded-lg focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none text-foreground"
+              value={detectedDate}
+              onChange={(e) => updateValue(e.target.value, deadlineDate)}
+            />
+          </div>
+
+          {/* Deadline date */}
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-wider flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-emerald-500" />
+              Prazo para Resolução
+            </label>
+            <input
+              type="date"
+              className="w-full text-sm p-2.5 bg-muted/40 border border-border rounded-lg focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none text-foreground"
+              value={deadlineDate}
+              min={detectedDate || undefined}
+              onChange={(e) => updateValue(detectedDate, e.target.value)}
+            />
+          </div>
+
+          {/* Quick actions */}
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {[
+              { label: "Hoje", days: 0 },
+              { label: "+7 dias", days: 7 },
+              { label: "+15 dias", days: 15 },
+              { label: "+30 dias", days: 30 },
+              { label: "+90 dias", days: 90 },
+            ].map(({ label, days }) => (
+              <button
+                key={label}
+                className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-muted/50 hover:bg-primary/10 hover:text-primary border border-border/50 rounded-md transition-colors"
+                onClick={() => {
+                  const today = new Date().toISOString().split("T")[0];
+                  if (days === 0) {
+                    updateValue(today, deadlineDate);
+                  } else {
+                    const deadline = new Date();
+                    deadline.setDate(deadline.getDate() + days);
+                    updateValue(
+                      detectedDate || today,
+                      deadline.toISOString().split("T")[0],
+                    );
+                  }
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Clear button */}
+          {(detectedDate || deadlineDate) && (
+            <button
+              className="w-full text-[10px] font-bold uppercase tracking-wider text-destructive hover:bg-destructive/5 py-1.5 rounded-lg transition-colors flex items-center justify-center gap-1"
+              onClick={() => {
+                updateValue("", "");
+                setIsOpen(false);
+              }}
+            >
+              <X className="w-3 h-3" /> Limpar Datas
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function formatDateBR(dateStr: string): string {
+  if (!dateStr) return "";
+  const [y, m, d] = dateStr.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+function isDeadlinePast(dateStr: string): boolean {
+  if (!dateStr) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(dateStr) < today;
+}
+
+// ─── Main Component ────────────────────────────────────────
 export default function ReportFindingCard({
   finding,
   index,
   onUpdate,
   onUpdate5W2H,
   onRemove,
+  tenantMembers = [],
+  membersLoading = false,
 }: ReportFindingCardProps) {
   const [search, setSearch] = React.useState("");
   const [isOpen, setIsOpen] = React.useState(false);
@@ -228,12 +612,12 @@ export default function ReportFindingCard({
       </div>
 
       <div className="p-4 space-y-5">
-        {/* 5W2H Fields */}
+        {/* 5W2H Text Fields (what, why, where, how, howMuch) */}
         <div className="space-y-3">
           <p className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-1">
             <ChevronDown className="w-3 h-3" /> Análise 5W2H
           </p>
-          {W2H_FIELDS.map((field) => (
+          {TEXT_5W2H_FIELDS.map((field) => (
             <div key={field.key}>
               <label className="text-[10px] font-bold text-muted-foreground/80 uppercase block mb-1">
                 {field.label}
@@ -249,6 +633,26 @@ export default function ReportFindingCard({
               />
             </div>
           ))}
+
+          {/* Interactive: Schedule Picker (When) */}
+          <SchedulePicker
+            value={finding.analysis.when}
+            onChange={(val) => onUpdate5W2H(finding.id, "when", val)}
+          />
+
+          {/* Interactive: Member Selector (Who) */}
+          <MemberSelector
+            value={finding.analysis.who}
+            members={tenantMembers}
+            loading={membersLoading}
+            onChange={(name) => onUpdate5W2H(finding.id, "who", name)}
+            onEmailNotify={(email) => {
+              onUpdate(finding.id, {
+                should_notify: true,
+                notify_email: email,
+              });
+            }}
+          />
         </div>
 
         {/* Risk + Status + Task Type row */}
@@ -426,6 +830,17 @@ export default function ReportFindingCard({
           <div className="space-y-1.5">
             {finding.evidence_links.map((link, li) => (
               <div key={li} className="flex gap-1.5 items-center">
+                {isValidUrl(link) && (
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1.5 bg-primary/10 text-primary hover:bg-primary/20 rounded transition-colors"
+                    title="Abrir link"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
                 <input
                   type="url"
                   className="text-xs flex-1 border border-border px-2 py-1.5 rounded bg-muted/40 text-foreground placeholder:text-muted-foreground/30 focus:bg-card focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none"
@@ -452,7 +867,7 @@ export default function ReportFindingCard({
                     );
                     onUpdate(finding.id, { evidence_links: links });
                   }}
-                  className="text-red-400 hover:text-red-600 text-xs font-bold"
+                  className="text-red-400 hover:text-red-600 text-xs font-bold px-1"
                 >
                   ×
                 </button>
@@ -469,35 +884,6 @@ export default function ReportFindingCard({
               + Adicionar Link
             </button>
           </div>
-        </div>
-
-        {/* Email Notification */}
-        <div className="border-t border-border pt-4 mt-4">
-          <label className="text-[10px] font-bold text-muted-foreground/80 uppercase flex items-center gap-1.5 cursor-pointer">
-            <input
-              type="checkbox"
-              className="accent-primary"
-              checked={finding.should_notify}
-              onChange={(e) =>
-                onUpdate(finding.id, {
-                  should_notify: e.target.checked,
-                  notify_email: e.target.checked ? finding.notify_email : "",
-                })
-              }
-            />
-            <Mail className="w-3 h-3" /> Automação de E-mail
-          </label>
-          {finding.should_notify && (
-            <input
-              type="email"
-              className="mt-2 text-sm p-2 border border-border rounded w-full bg-muted/40 text-foreground placeholder:text-muted-foreground/30 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all outline-none"
-              placeholder="E-mail do responsável"
-              value={finding.notify_email ?? ""}
-              onChange={(e) =>
-                onUpdate(finding.id, { notify_email: e.target.value })
-              }
-            />
-          )}
         </div>
       </div>
     </div>
