@@ -2,8 +2,7 @@
 
 **Sistema de Auditoria, Compliance e Gestão Financeira**  
 **Cogitari Tech** (CNPJ: 64.460.886/0001-39)
-**Versão Atual:** 1.2.0-beta
-
+**Versão Atual:** 1.2.2-stable
 ---
 
 ## 📚 Índice de Documentação
@@ -99,11 +98,12 @@ npm run dev:all
 ### 🔄 Q2 2026 (Expansão Fase 2)
 - [x] Criação Rota Base `/api/investor` (Issue #188 via Hono, Migration CTE)
 - [x] Refatoração de UI/UX (Split-screen Enterprise) para Fluxos de Autenticação e Onboarding
+- [x] Padronização pesada de UI (Report Builder e Modal) via Shadcn + Virtual Scrolling e offload JS
+- [x] Integração de ESLint e Segurança de Runtime (remoção de source_maps e vazamento de `.env`)
 - [ ] Concluir o Data Room e Investor Updates via Inteligência Artificial (Inngest + AnthropicAdapter)
-- [ ] Construir as Interfaces UI do Data Room através do Shadcn
 - [ ] Módulo completo de Folha de Pagamento e Integração Bancária
 
 ---
 
 **Cogitari Tech** - Construindo o futuro da auditoria e gestão empresarial. 🚀
-_Última atualização: 10 de Abril de 2026_
+_Última atualização: 18 de Abril de 2026_

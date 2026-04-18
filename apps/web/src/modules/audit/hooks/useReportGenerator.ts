@@ -194,6 +194,18 @@ export function useReportGenerator() {
     }));
   }, []);
 
+  const addBulkFindings = useCallback((count: number) => {
+    setReport((prev) => {
+      const newFindings = Array.from({ length: count }, () =>
+        createEmptyFinding(),
+      );
+      return {
+        ...prev,
+        findings: [...prev.findings, ...newFindings],
+      };
+    });
+  }, []);
+
   const updateFinding = useCallback(
     (id: string, updates: Partial<ReportFinding>) => {
       setReport((prev) => ({
@@ -318,6 +330,7 @@ export function useReportGenerator() {
 
     updateField,
     addFinding,
+    addBulkFindings,
     updateFinding,
     updateFinding5W2H,
     removeFinding,

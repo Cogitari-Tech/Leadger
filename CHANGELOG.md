@@ -18,6 +18,16 @@
 - ✅ **Performance de Render Loop (React Purity):** Identificação e correção cirúrgica de um _deadlock_ render vs state loop na engine do `AuditReportForm/ReportBuilder`. As chamadas síncronas de gravação local foram refatoradas e movidas de dentro de setters funcionais de React para um modelo Observer / `useEffect` focado exclusivamente em gerenciar auto-save através do LocalStorage sem vazar _side-effects_ para a Virtual DOM.
 - ✅ **Limites de Segurança do Frontend (XSS Control):** Introdução de sanitização hard/soft em painéis expostos via input HTML. Atuação forte nos hiperlinks e "Links de Evidências" da matriz 5W2H implementando Regex Filters contra tentativas nativas de XSS via protocolos arbitrários (`javascript:`, `vbscript:`, `data:`). Correção aplicada rigorosamente a tela `ReportFindingCard.tsx` e injetada no Blur Lifecycle.
 
+### 🎨 Refatoração UI/UX e Estrutural (Layout & Preview)
+- ✅ **Nova Modal de Report Preview:** Reconstrução visual completa do `ReportPreviewModal` sob o ecosistema *Shadcn*, implementando estética macOS-like, badges dinâmicas de status/risco e layout limpo.
+- ✅ **Reestruturação Global de Navegação (Sidebar):** Transição do Avatar de usuário e workspace para o Header da aplicação e ancoragem do `ThemeToggle` junto aos controles nativos do footer da sidebar.
+- ✅ **Sanitização de Interface Inativa:** Limpeza da `TenantSettings`, camuflando componentes dependentes de APIs ainda não prontas (AI Config, Notificações) sob a label inativa e segura "Em breve".
+
+### 🔒 Segurança, Hardening & DX
+- ✅ **Supressão de Vazamento de Código (Vercel):** Eliminação de *Source Maps* expostos na build de produção e mitigação pesada de *Hardcoded URLs* que apareciam explodidas nos bundles.
+- ✅ **Padronização e Linting (DX):** Bootstrapping de `.eslintrc.cjs` para a workspace `/apps/web` com enforcing de regras ECMAScript para erradicação de débitos técnicos.
+- ✅ **Virtual Scrolling:** Integração mandatória de `@tanstack/react-virtual` no componente de Report Finding Card, executando offload e ganhos altíssimos de framerate ao popular relatórios volumosos.
+
 ---
 
 ## 🚀 v1.2.1 — Security & Infra Fixes (Abril 2026)
@@ -43,19 +53,22 @@
 ## 🚀 v1.2.0 — Sprint 3 Completa (Abril 2026)
 
 ### 📈 Core & Módulos
+
 - ✅ **Sales & MRR:** Novos models do Prisma (`Sales`, `MRR`) e frontend para pipeline de vendas e painel de assinaturas
 - ✅ **Roadmap Estratégico:** Novo model `Roadmap` para tracking estratégico de features
 - ✅ **Stripe (Fase de Planejamento):** Definição arquitetural para Stripe Hosted Checkout com modelo híbrido (Flat Fee + Per-Seat)
 
 ### 🛠️ Correções e Git Hygiene
-- ✅ Resolução definitiva de erros de *Hoisting* no Vitest v4 em `cap-table.test.ts` e `milestones.test.ts` (`vi.hoisted()`)
-- ✅ Mock retificado para tabelas como `headcount_plans` no *PrismaClient*
+
+- ✅ Resolução definitiva de erros de _Hoisting_ no Vitest v4 em `cap-table.test.ts` e `milestones.test.ts` (`vi.hoisted()`)
+- ✅ Mock retificado para tabelas como `headcount_plans` no _PrismaClient_
 - ✅ Compatibilidade multi-plataforma no comando **ESLint** (Windows `cmd.exe`)
 - ✅ Todos os 95 testes (API + Core) operacionais em CI/CD
 
 ### 📚 Documentação e Infraestrutura
+
 - ✅ Atualização da base documental (PRD 1.2.0 e novos ADRs: 005-010)
-- ✅ Confirmação oficial da stack frontend+backend com React+Vite e Hono rodando no Vercel Edge 
+- ✅ Confirmação oficial da stack frontend+backend com React+Vite e Hono rodando no Vercel Edge
 - ✅ Adoção integrada do framework de autenticação nativa do Supabase (GoTrue) no lugar de custom JWT
 
 ---
@@ -63,6 +76,7 @@
 ## 🚀 v1.1.0 — Fase 1 Completa (Março 2026)
 
 ### ⚡ Backend API (Novo)
+
 - ✅ **Hono API** (`apps/api/`) — Backend leve com Node.js e Hono framework
 - ✅ **Prisma ORM** — Schema multiSchema (public + auth) com 16 models
 - ✅ **Inngest** — Background jobs (Health Score, Weekly Digest, Queue)
@@ -70,11 +84,13 @@
 - ✅ **Middlewares** — `authMiddleware` + `tenancyMiddleware` para isolamento multi-tenant
 
 ### 📦 Pacote `@leadgers/ai` (Novo)
+
 - ✅ Abstração de LLMs (Google Gemini 2.0 / OpenAI via adaptadores)
 - ✅ Interface `IAIService` para injeção de dependência
 - ✅ Weekly Digest gerado por IA
 
 ### 📊 Dashboard Executivo (Novo Módulo)
+
 - ✅ `ExecutiveDashboard.tsx` — Visão holística do negócio
 - ✅ `HealthScoreDashboard.tsx` — Score de resiliência 0-100 (5 dimensões ponderadas)
 - ✅ `OkrsPage.tsx` — Objectives & Key Results com progress tracking
@@ -84,6 +100,7 @@
 - ✅ 8 hooks especializados (useHealthScore, useOkrs, useMilestones, useNorthStar, useBMC, useWeeklyDigest, useExecutiveDashboard, useProjectRiskScores)
 
 ### 💰 Finance (Expandido)
+
 - ✅ `BurnRate.tsx` — Análise de taxa de queima de caixa
 - ✅ `RunwayCalculator.tsx` — Calculadora de runway com projeções
 - ✅ `CapTable.tsx` — Tabela de capitalização (Rounds + Shareholders)
@@ -94,25 +111,30 @@
 - ✅ Testes: `burn-rate.test.ts`, `runway.test.ts`, `cap-table.test.ts`, `unit-economics.test.ts`
 
 ### 🔗 GitHub Integration (Novo Módulo)
+
 - ✅ Módulo `github/` no frontend
 - ✅ 8 tabelas Supabase (installations, organizations, repositories, pull_requests, issues, security_alerts, governance_events, governance_snapshots)
 
 ### 📈 Sales Pipeline (Novo Módulo)
+
 - ✅ Módulo `sales/` no frontend
 - ✅ API Route: `deals.ts`
 - ✅ Tabelas: `sales_opportunities`, `mrr_snapshots`
 
 ### 👥 People (Novo Módulo)
+
 - ✅ API Route: `headcount.ts`
 - ✅ Tabela: `headcount_plans`
 
 ### 🏗️ Infraestrutura
+
 - ✅ Rebrand: `Audit-Tool` → `Leadgers-Platform`
 - ✅ Supabase projects renomeados: `leadgers-beta` / `leadgers-prod`
 - ✅ 43 tabelas no Supabase (todas com RLS habilitado)
 - ✅ Módulos registrados via `registry.ts`: audit, finance, compliance, admin, github
 
 ### 🔐 Segurança & Multi-Tenant
+
 - ✅ Autenticação JWT + Supabase GoTrue
 - ✅ RLS em 100% das tabelas
 - ✅ Header `x-tenant-id` obrigatório em todas as rotas
@@ -281,7 +303,7 @@ Documentação completa do CI/CD:
 | Vercel         | Free    | R$ 0      | Projetos ilimitados, 100GB bandwidth |
 | GitHub Actions | Free    | R$ 0      | 2000 min/mês (suficiente)            |
 | npm            | Free    | R$ 0      | Ilimitado                            |
-| Domínio        | Próprio | R$ 40/ano | leadgers.com.br                  |
+| Domínio        | Próprio | R$ 40/ano | leadgers.com.br                      |
 
 **Total MVP:** R$ 0/mês + R$ 40/ano (domínio)
 

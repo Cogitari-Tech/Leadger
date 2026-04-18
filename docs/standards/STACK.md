@@ -19,4 +19,4 @@
 - **Database:** Supabase (PostgreSQL 15+).
 - **Job Orchestrator:** Inngest (Rodando webhooks serverless contatados pelas APIs, responsável por rotinas assíncronas como relatórios PDF e IA semanal).
 - **AI/ML Layer:** Anthropic Claude Models (Haiku para batch/rápido, Sonnet para intermediário, Opus para raciocínio executivo e estratégico). Configurado sob `$ANTHROPIC_API_KEY`.
-- **Ferramentas de Auditoria/Lint:** Biome / ESLint configurado conforme os scripts da matriz base.
+- **Ferramentas de Auditoria/Lint:** ESLint e Prettier configurados estritamente na workspace base para UI, em sintonia com ferramentas de Continuous Security (GitLeaks) para evitar commits de segredos.

@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   FileOutput,
   Plus,
@@ -14,10 +15,13 @@ import { Select } from "@/shared/components/ui/Select";
 import { useReportGenerator } from "../hooks/useReportGenerator";
 import { useAudit } from "../hooks/useAudit";
 import { useProjects } from "../../projects/services/projects.service";
+import { useTenantMembers } from "../hooks/useTenantMembers";
 import ReportFindingCard from "../components/ReportFindingCard";
 import ReportSignatures from "../components/ReportSignatures";
 import ExportModal from "../components/ExportModal";
 import ReportPreviewModal from "../components/ReportPreviewModal";
+
+const DOC_ID_MAX_LENGTH = 32;
 
 export default function ReportBuilder() {
   const {
@@ -25,6 +29,7 @@ export default function ReportBuilder() {
     unsavedChanges,
     updateField,
     addFinding,
+    addBulkFindings,
     updateFinding,
     updateFinding5W2H,
     removeFinding,
@@ -37,11 +42,21 @@ export default function ReportBuilder() {
 
   const { programs } = useAudit();
   const { projects } = useProjects();
+  const { members: tenantMembers, loading: membersLoading } =
+    useTenantMembers();
   const [showExport, setShowExport] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const validation = useMemo(() => validate(), [validate]);
+
+  const virtualizer = useVirtualizer({
+    count: report.findings.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 500, // estimated height of a finding card
+    overscan: 3,
+  });
 
   return (
     <div className="min-h-screen bg-transparent transition-colors">
@@ -146,11 +161,29 @@ export default function ReportBuilder() {
               <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
                 Doc ID <span className="text-destructive">*</span>
               </label>
-              <Input
-                value={report.doc_id}
-                onChange={(e) => updateField("doc_id", e.target.value)}
-                className="bg-card/60 border border-border rounded-2xl px-6 py-4 focus:bg-card transition-all font-medium"
-              />
+              <div className="relative">
+                <Input
+                  value={report.doc_id}
+                  maxLength={DOC_ID_MAX_LENGTH}
+                  onChange={(e) => updateField("doc_id", e.target.value)}
+                  className={`bg-card/60 border rounded-2xl px-6 py-4 focus:bg-card transition-all font-medium ${
+                    report.doc_id.length >= DOC_ID_MAX_LENGTH
+                      ? "border-destructive focus:border-destructive"
+                      : "border-border"
+                  }`}
+                />
+                <span
+                  className={`absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold ${
+                    report.doc_id.length >= DOC_ID_MAX_LENGTH
+                      ? "text-destructive"
+                      : report.doc_id.length > DOC_ID_MAX_LENGTH - 5
+                        ? "text-amber-500"
+                        : "text-muted-foreground/30"
+                  }`}
+                >
+                  {report.doc_id.length}/{DOC_ID_MAX_LENGTH}
+                </span>
+              </div>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">
@@ -238,8 +271,17 @@ export default function ReportBuilder() {
                 placeholder="Ex: Cogitari Tech"
                 value={report.client_name}
                 onChange={(e) => updateField("client_name", e.target.value)}
-                className="bg-card/60 border border-border rounded-2xl px-6 py-4"
+                className={`bg-card/60 border rounded-2xl px-6 py-4 ${
+                  !report.client_name.trim() && validation.errors.length > 0
+                    ? "border-destructive/50"
+                    : "border-border"
+                }`}
               />
+              {!report.client_name.trim() && validation.errors.length > 0 && (
+                <p className="text-[10px] text-destructive font-medium ml-1">
+                  Campo obrigatório
+                </p>
+              )}
             </div>
           </div>
 
@@ -253,7 +295,11 @@ export default function ReportBuilder() {
                 placeholder="Ex: Plataforma Leadgers"
                 value={report.project_name}
                 onChange={(e) => updateField("project_name", e.target.value)}
-                className="bg-card/60 border border-border rounded-2xl px-6 py-4"
+                className={`bg-card/60 border rounded-2xl px-6 py-4 ${
+                  !report.project_name.trim() && validation.errors.length > 0
+                    ? "border-destructive/50"
+                    : "border-border"
+                }`}
               />
             </div>
             <div className="space-y-2">
@@ -264,7 +310,11 @@ export default function ReportBuilder() {
                 type="date"
                 value={report.start_date}
                 onChange={(e) => updateField("start_date", e.target.value)}
-                className="bg-card/60 border border-border rounded-2xl px-6 py-4"
+                className={`bg-card/60 border rounded-2xl px-6 py-4 ${
+                  !report.start_date && validation.errors.length > 0
+                    ? "border-destructive/50"
+                    : "border-border"
+                }`}
               />
             </div>
             <div className="space-y-2">
@@ -275,7 +325,11 @@ export default function ReportBuilder() {
                 type="date"
                 value={report.end_date}
                 onChange={(e) => updateField("end_date", e.target.value)}
-                className="bg-card/60 border border-border rounded-2xl px-6 py-4"
+                className={`bg-card/60 border rounded-2xl px-6 py-4 ${
+                  !report.end_date && validation.errors.length > 0
+                    ? "border-destructive/50"
+                    : "border-border"
+                }`}
               />
             </div>
             <div className="space-y-2">
@@ -300,8 +354,17 @@ export default function ReportBuilder() {
                 placeholder="Nome do Auditor Líder"
                 value={report.lead_auditor}
                 onChange={(e) => updateField("lead_auditor", e.target.value)}
-                className="bg-card/60 border border-border rounded-2xl px-6 py-4"
+                className={`bg-card/60 border rounded-2xl px-6 py-4 ${
+                  !report.lead_auditor.trim() && validation.errors.length > 0
+                    ? "border-destructive/50"
+                    : "border-border"
+                }`}
               />
+              {!report.lead_auditor.trim() && validation.errors.length > 0 && (
+                <p className="text-[10px] text-destructive font-medium ml-1">
+                  Campo obrigatório
+                </p>
+              )}
             </div>
           </div>
         </section>
@@ -326,18 +389,33 @@ export default function ReportBuilder() {
             <div className="space-y-1">
               <h2 className="text-xl font-bold text-foreground font-display tracking-tight">
                 Achados de Auditoria
+                <span className="ml-2 text-xs text-muted-foreground/50">
+                  ({report.findings.length})
+                </span>
               </h2>
               <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">
                 Registro de não conformidades (5W2H)
               </p>
             </div>
-            <Button
-              onClick={() => addFinding()}
-              className="bg-card/40 hover:bg-card text-muted-foreground rounded-2xl px-6 py-3 transition-all flex items-center gap-2 group border border-border"
-            >
-              <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
-              <span>Novo Registro</span>
-            </Button>
+            <div className="flex items-center gap-3">
+              {import.meta.env.DEV && (
+                <Button
+                  id="qa-stress-test-btn"
+                  onClick={() => addBulkFindings(200)}
+                  className="bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-2xl px-6 py-3 transition-all flex items-center gap-2 border border-amber-500/20"
+                >
+                  <AlertCircle className="w-4 h-4" />
+                  <span>Stress Test (200)</span>
+                </Button>
+              )}
+              <Button
+                onClick={() => addFinding()}
+                className="bg-card/40 hover:bg-card text-muted-foreground rounded-2xl px-6 py-3 transition-all flex items-center gap-2 group border border-border"
+              >
+                <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
+                <span>Novo Registro</span>
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-8" key="findings-content">
@@ -363,17 +441,47 @@ export default function ReportBuilder() {
                 </div>
               </div>
             ) : (
-              <div key="findings-list" className="space-y-8">
-                {report.findings.map((finding, i) => (
-                  <ReportFindingCard
-                    key={finding.id}
-                    finding={finding}
-                    index={i}
-                    onUpdate={updateFinding}
-                    onUpdate5W2H={updateFinding5W2H}
-                    onRemove={removeFinding}
-                  />
-                ))}
+              <div
+                key="findings-list"
+                ref={parentRef}
+                className="max-h-[800px] overflow-y-auto w-full custom-scrollbar pr-2 pb-4"
+              >
+                <div
+                  style={{
+                    height: `${virtualizer.getTotalSize()}px`,
+                    width: "100%",
+                    position: "relative",
+                  }}
+                >
+                  {virtualizer.getVirtualItems().map((virtualItem) => {
+                    const finding = report.findings[virtualItem.index];
+                    return (
+                      <div
+                        key={finding.id}
+                        data-index={virtualItem.index}
+                        ref={virtualizer.measureElement}
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          transform: `translateY(${virtualItem.start}px)`,
+                          paddingBottom: "2rem", // gap equivalent
+                        }}
+                      >
+                        <ReportFindingCard
+                          finding={finding}
+                          index={virtualItem.index}
+                          onUpdate={updateFinding}
+                          onUpdate5W2H={updateFinding5W2H}
+                          onRemove={removeFinding}
+                          tenantMembers={tenantMembers}
+                          membersLoading={membersLoading}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
@@ -400,30 +508,17 @@ export default function ReportBuilder() {
           onRemove={removeSignature}
         />
 
-        {/* Validation Summary */}
-        {(validation.errors.length > 0 || validation.warnings.length > 0) && (
-          <div className="glass-card bg-card dark:bg-card/40 rounded-[2.5rem] border border-border p-10 space-y-6 soft-shadow backdrop-blur-md">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">
-              Checklist de Validação do Relatório
-            </h3>
-            <div className="space-y-4">
-              {validation.errors.map((e, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 p-4 bg-destructive/5 rounded-2xl border border-destructive/10 text-xs text-destructive font-medium"
-                >
-                  <AlertCircle className="w-4 h-4" /> {e}
-                </div>
-              ))}
-              {validation.warnings.map((w, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 p-4 bg-amber-500/5 rounded-2xl border border-amber-500/10 text-xs text-amber-500 font-medium"
-                >
-                  <span className="text-base leading-none">⚠</span> {w}
-                </div>
-              ))}
-            </div>
+        {/* Inline Validation Warnings (compact, non-blocking) */}
+        {validation.warnings.length > 0 && (
+          <div className="flex flex-wrap gap-2 px-2">
+            {validation.warnings.map((w, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/5 border border-amber-500/15 rounded-full text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-wider"
+              >
+                ⚠ {w}
+              </span>
+            ))}
           </div>
         )}
       </div>
