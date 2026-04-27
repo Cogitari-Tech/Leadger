@@ -139,13 +139,13 @@ export default function ProfilePage() {
       </div>
 
       {/* Avatar & Name Card */}
-      <div className="glass-panel rounded-[2.5rem] p-10 border border-border/40 shadow-2xl relative overflow-hidden group/card shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
+      <div className="glass-panel rounded-3xl p-10 shadow-2xl relative overflow-hidden group/card shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20 opacity-40" />
 
         <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
           {/* Avatar */}
           <div className="relative group/avatar">
-            <div className="w-32 h-32 rounded-[2.5rem] bg-background/50 border border-border/60 flex items-center justify-center shadow-inner overflow-hidden relative ring-8 ring-primary/5 group-hover/avatar:scale-105 transition-all duration-500">
+            <div className="w-32 h-32 rounded-3xl bg-background/50 border border-border/60 flex items-center justify-center shadow-inner overflow-hidden relative ring-8 ring-primary/5 group-hover/avatar:scale-105 transition-all duration-500">
               {profile.avatarUrl ? (
                 <img
                   src={profile.avatarUrl}
@@ -158,7 +158,7 @@ export default function ProfilePage() {
             </div>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="absolute inset-0 bg-black/60 rounded-[2.5rem] flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-all duration-300 disabled:cursor-not-allowed backdrop-blur-sm"
+              className="absolute inset-0 bg-black/60 rounded-3xl flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-all duration-300 disabled:cursor-not-allowed backdrop-blur-sm"
             >
               <Camera className="w-8 h-8 text-white" />
             </button>
@@ -270,7 +270,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Tenants Info */}
-      <div className="glass-panel rounded-[2.5rem] p-10 border border-border/40 shadow-xl space-y-6">
+      <div className="glass-panel rounded-3xl p-10 shadow-xl space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Building2 className="w-5 h-5 text-primary" />
@@ -332,7 +332,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Connected Projects */}
-      <div className="glass-panel rounded-[2.5rem] p-10 border border-border/40 shadow-xl space-y-8">
+      <div className="glass-panel rounded-3xl p-10 shadow-xl space-y-8">
         <div className="flex items-center gap-3">
           <FolderOpen className="w-5 h-5 text-primary" />
           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
@@ -395,7 +395,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Agent Preferences */}
-      <div className="glass-panel rounded-[2.5rem] p-10 border border-border/40 shadow-xl space-y-10">
+      <div className="glass-panel rounded-3xl p-10 shadow-xl space-y-10">
         <div className="flex items-center gap-3">
           <Globe className="w-5 h-5 text-primary" />
           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
@@ -506,7 +506,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Security Section */}
-      <div className="glass-panel rounded-[2.5rem] p-10 border border-border/40 shadow-2xl space-y-10 mb-12">
+      <div className="glass-panel rounded-3xl p-10 shadow-2xl space-y-10 mb-12">
         <div className="flex items-center gap-3">
           <KeyRound className="w-5 h-5 text-primary" />
           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">

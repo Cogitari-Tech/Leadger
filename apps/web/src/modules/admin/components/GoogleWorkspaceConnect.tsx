@@ -105,7 +105,7 @@ export function GoogleWorkspaceConnect() {
 
       <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-8 relative z-10 flex-1">
         <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left flex-1">
-          <div className="w-16 h-16 rounded-[2rem] bg-white flex items-center justify-center flex-shrink-0 shadow-2xl shadow-black/5 group-hover/connector:scale-105 transition-transform duration-500 border border-border/20">
+          <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center flex-shrink-0 shadow-2xl shadow-black/5 group-hover/connector:scale-105 transition-transform duration-500 border border-border/20">
             {GOOGLE_ICON}
           </div>
           <div className="space-y-2 max-w-lg">

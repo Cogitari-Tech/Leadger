@@ -122,7 +122,7 @@ export function UserOnboardingPage() {
       </div>
 
       <div className="w-full max-w-xl relative z-10">
-        <div className="glass-card shadow-2xl rounded-[2rem] p-10 border border-white/5 space-y-8">
+        <div className="glass-card shadow-2xl rounded-2xl p-10 border-white/5 space-y-8">
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
               Bem-vindo ao Leadgers

@@ -8,6 +8,7 @@ import {
   updateDealSchema,
   createMrrSnapshotSchema,
 } from "../../schemas";
+import { withTransaction } from "../../config/transaction";
 import { AppEnv } from "../../types/env";
 
 const salesRoutes = new Hono<AppEnv>();
@@ -15,7 +16,6 @@ const salesRoutes = new Hono<AppEnv>();
 salesRoutes.use("*", authMiddleware);
 salesRoutes.use("*", tenancyMiddleware);
 
-// List all deals with optional stage filter
 salesRoutes.get("/deals", async (c) => {
   const tenantId = c.get("tenantId");
   const stage = c.req.query("stage");
@@ -35,7 +35,6 @@ salesRoutes.get("/deals", async (c) => {
   }
 });
 
-// Get deal by ID
 salesRoutes.get("/deals/:id", async (c) => {
   const tenantId = c.get("tenantId");
   const dealId = c.req.param("id");
@@ -53,7 +52,6 @@ salesRoutes.get("/deals/:id", async (c) => {
   }
 });
 
-// Create deal
 salesRoutes.post("/deals", validateBody(createDealSchema), async (c) => {
   const tenantId = c.get("tenantId");
   const body = c.get("validatedBody");
@@ -83,53 +81,58 @@ salesRoutes.post("/deals", validateBody(createDealSchema), async (c) => {
   }
 });
 
-// Update deal
+// FIXED: Atomic update with tenant_id in WHERE to prevent IDOR + race conditions
 salesRoutes.patch("/deals/:id", validateBody(updateDealSchema), async (c) => {
   const tenantId = c.get("tenantId");
   const dealId = c.req.param("id");
   const body = c.get("validatedBody");
 
   try {
-    const existing = await prisma.sales_opportunities.findFirst({
-      where: { id: dealId, tenant_id: tenantId },
+    const result = await withTransaction(prisma, async (tx) => {
+      const existing = await tx.sales_opportunities.findFirst({
+        where: { id: dealId, tenant_id: tenantId },
+      });
+
+      if (!existing) return null;
+
+      return tx.sales_opportunities.update({
+        where: { id: dealId, tenant_id: tenantId },
+        data: {
+          ...(body.title !== undefined && { title: body.title }),
+          ...(body.client_name !== undefined && {
+            client_name: body.client_name,
+          }),
+          ...(body.value !== undefined && { value: body.value }),
+          ...(body.mrr_amount !== undefined && { mrr_amount: body.mrr_amount }),
+          ...(body.stage !== undefined && { stage: body.stage }),
+          ...(body.expected_close_date !== undefined && {
+            expected_close_date: body.expected_close_date
+              ? new Date(body.expected_close_date)
+              : null,
+          }),
+          ...(body.probability !== undefined && {
+            probability: body.probability,
+          }),
+          ...(body.type !== undefined && { type: body.type }),
+          ...(body.recurrence !== undefined && { recurrence: body.recurrence }),
+          ...(body.notes !== undefined && { notes: body.notes }),
+          updated_at: new Date(),
+        },
+      });
     });
 
-    if (!existing) {
+    if (!result) {
       return c.json({ error: "Deal not found" }, 404);
     }
 
-    const updated = await prisma.sales_opportunities.update({
-      where: { id: dealId },
-      data: {
-        ...(body.title !== undefined && { title: body.title }),
-        ...(body.client_name !== undefined && {
-          client_name: body.client_name,
-        }),
-        ...(body.value !== undefined && { value: body.value }),
-        ...(body.mrr_amount !== undefined && { mrr_amount: body.mrr_amount }),
-        ...(body.stage !== undefined && { stage: body.stage }),
-        ...(body.expected_close_date !== undefined && {
-          expected_close_date: body.expected_close_date
-            ? new Date(body.expected_close_date)
-            : null,
-        }),
-        ...(body.probability !== undefined && {
-          probability: body.probability,
-        }),
-        ...(body.type !== undefined && { type: body.type }),
-        ...(body.recurrence !== undefined && { recurrence: body.recurrence }),
-        ...(body.notes !== undefined && { notes: body.notes }),
-        updated_at: new Date(),
-      },
-    });
-    return c.json(updated);
+    return c.json(result);
   } catch (err) {
     console.error("Error updating deal:", err);
     return c.json({ error: "Failed to update deal" }, 500);
   }
 });
 
-// Delete deal
+// FIXED: Delete with tenant_id in WHERE clause to prevent IDOR
 salesRoutes.delete("/deals/:id", async (c) => {
   const tenantId = c.get("tenantId");
   const dealId = c.req.param("id");
@@ -143,7 +146,9 @@ salesRoutes.delete("/deals/:id", async (c) => {
       return c.json({ error: "Deal not found" }, 404);
     }
 
-    await prisma.sales_opportunities.delete({ where: { id: dealId } });
+    await prisma.sales_opportunities.delete({
+      where: { id: dealId, tenant_id: tenantId },
+    });
     return c.json({ success: true });
   } catch (err) {
     console.error("Error deleting deal:", err);
@@ -151,7 +156,6 @@ salesRoutes.delete("/deals/:id", async (c) => {
   }
 });
 
-// MRR Snapshots
 salesRoutes.get("/mrr", async (c) => {
   const tenantId = c.get("tenantId");
 

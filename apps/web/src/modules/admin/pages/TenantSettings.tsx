@@ -194,13 +194,13 @@ export function TenantSettings() {
 
         <form
           onSubmit={handleSave}
-          className="glass-panel rounded-[3rem] p-8 md:p-12 space-y-12 border border-border/40 shadow-2xl relative overflow-hidden group/form transition-all"
+          className="glass-panel rounded-3xl p-8 md:p-12 space-y-12 shadow-2xl relative overflow-hidden group/form transition-all"
         >
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/10 via-primary/40 to-primary/10 opacity-40 group-hover/form:opacity-100 transition-opacity" />
 
           <div className="flex flex-col md:flex-row items-center gap-8 pb-12 border-b border-border/40">
             <div className="relative group/logo">
-              <div className="h-32 w-32 rounded-[2.5rem] bg-background/50 border border-border/60 flex items-center justify-center shadow-inner overflow-hidden group-hover/logo:scale-105 transition-all duration-500 relative ring-8 ring-primary/5">
+              <div className="h-32 w-32 rounded-3xl bg-background/50 border border-border/60 flex items-center justify-center shadow-inner overflow-hidden group-hover/logo:scale-105 transition-all duration-500 relative ring-8 ring-primary/5">
                 {logoUrl ? (
                   <img
                     src={logoUrl}
@@ -212,6 +212,7 @@ export function TenantSettings() {
                 )}
                 <button
                   type="button"
+                  aria-label="Fazer upload de logotipo"
                   onClick={() => fileInputRef.current?.click()}
                   className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover/logo:opacity-100 transition-all duration-300 disabled:cursor-not-allowed backdrop-blur-sm"
                   disabled={uploading}
@@ -254,31 +255,39 @@ export function TenantSettings() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-12">
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2">
+              <label
+                htmlFor="companyName"
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2"
+              >
                 Razão Social / Nome Fantasia
               </label>
               <div className="relative group/input">
                 <input
+                  id="companyName"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
                   placeholder="Nome da Organização"
-                  className="w-full rounded-2xl border border-border/40 bg-background/50 px-6 py-5 text-sm font-bold focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all shadow-sm group-hover/input:border-primary/40"
+                  className="glass-input w-full rounded-2xl px-6 py-5 text-sm font-bold text-foreground"
                 />
               </div>
             </div>
 
             <div className="space-y-3 opacity-60 focus-within:opacity-100 transition-opacity">
-              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2">
+              <label
+                htmlFor="companySlug"
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2"
+              >
                 Identificador da Instância (Slug)
               </label>
               <div className="relative">
                 <input
+                  id="companySlug"
                   type="text"
                   value={slug}
                   disabled
-                  className="w-full rounded-2xl border border-border/20 bg-muted/20 px-6 py-5 text-sm font-bold text-muted-foreground cursor-not-allowed italic"
+                  className="glass-input w-full rounded-2xl px-6 py-5 text-sm font-bold text-muted-foreground cursor-not-allowed italic opacity-70"
                 />
                 <Link2 className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/20" />
               </div>
@@ -288,34 +297,42 @@ export function TenantSettings() {
             </div>
 
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2">
+              <label
+                htmlFor="companyDomain"
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2"
+              >
                 Domínio Autorizado
               </label>
               <div className="relative group/input">
                 <input
+                  id="companyDomain"
                   type="text"
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
                   placeholder="empresa.com.br"
-                  className="w-full rounded-2xl border border-border/40 bg-background/50 px-6 py-5 text-sm font-bold focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all shadow-sm group-hover/input:border-primary/40"
+                  className="glass-input w-full rounded-2xl px-6 py-5 text-sm font-bold text-foreground"
                 />
-                <Globe className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/20 group-hover/input:text-primary transition-colors" />
+                <Globe className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-hover/input:text-primary transition-colors" />
               </div>
             </div>
 
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2">
+              <label
+                htmlFor="companyLogoUrl"
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 ml-2"
+              >
                 Logotipo Remoto (CDN)
               </label>
               <div className="relative group/input">
                 <input
+                  id="companyLogoUrl"
                   type="url"
                   value={logoUrl}
                   onChange={(e) => setLogoUrl(e.target.value)}
                   placeholder="https://cdn.empresa.com/logo.png"
-                  className="w-full rounded-2xl border border-border/40 bg-background/50 px-6 py-5 text-sm font-bold focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all shadow-sm group-hover/input:border-primary/40"
+                  className="glass-input w-full rounded-2xl px-6 py-5 text-sm font-bold text-foreground"
                 />
-                <FileText className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/20 group-hover/input:text-primary transition-colors" />
+                <FileText className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-hover/input:text-primary transition-colors" />
               </div>
             </div>
           </div>
@@ -363,7 +380,7 @@ export function TenantSettings() {
               Controle de acesso e redundância de proteção
             </p>
           </div>
-          <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden min-h-[400px]">
+          <div className="glass-panel rounded-3xl shadow-xl overflow-hidden min-h-[400px]">
             <TwoFactorSetup />
           </div>
         </div>
@@ -378,7 +395,7 @@ export function TenantSettings() {
               Integração nativa com Cloud Provider e Repos
             </p>
           </div>
-          <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden min-h-[400px]">
+          <div className="glass-panel rounded-3xl shadow-xl overflow-hidden min-h-[400px]">
             <GitHubConnect />
           </div>
         </div>
@@ -394,7 +411,7 @@ export function TenantSettings() {
             Integração com Gmail, Calendar e Drive
           </p>
         </div>
-        <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden min-h-[320px]">
+        <div className="glass-panel rounded-3xl shadow-xl overflow-hidden min-h-[320px]">
           <GoogleWorkspaceConnect />
         </div>
       </div>
@@ -409,7 +426,7 @@ export function TenantSettings() {
             Contas bancárias vinculadas à organização
           </p>
         </div>
-        <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden p-8 md:p-12">
+        <div className="glass-panel rounded-3xl shadow-xl overflow-hidden p-8 md:p-12">
           {bankLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
@@ -437,7 +454,7 @@ export function TenantSettings() {
           </p>
         </div>
 
-        <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden p-8 md:p-12 space-y-10 opacity-50 pointer-events-none select-none relative">
+        <div className="glass-panel rounded-3xl shadow-xl overflow-hidden p-8 md:p-12 space-y-10 opacity-50 pointer-events-none select-none relative">
           <div className="absolute inset-0 z-10 flex items-center justify-center">
             <div className="bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl px-8 py-4 shadow-xl">
               <p className="text-sm font-black text-foreground uppercase tracking-wider">
@@ -599,7 +616,7 @@ export function TenantSettings() {
           </p>
         </div>
 
-        <div className="glass-panel rounded-[2.5rem] border border-border/40 shadow-xl overflow-hidden p-8 md:p-12 opacity-50 pointer-events-none select-none">
+        <div className="glass-panel rounded-3xl shadow-xl overflow-hidden p-8 md:p-12 opacity-50 pointer-events-none select-none">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
               {
@@ -631,7 +648,7 @@ export function TenantSettings() {
               return (
                 <div
                   key={policy.key}
-                  className="flex items-center justify-between p-6 rounded-3xl bg-background/30 border border-border/40 hover:bg-background/50 transition-all cursor-pointer group/policy"
+                  className="glass-card flex items-center justify-between p-6 rounded-3xl cursor-pointer group/policy hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
                   onClick={() => updateTenantSetting(policy.key, !isActive)}
                 >
                   <div className="flex items-center gap-4 pr-6">
@@ -706,7 +723,7 @@ export function TenantSettings() {
               key={doc.to}
               to={doc.to}
               target="_blank"
-              className="group relative flex flex-col p-10 rounded-[2.5rem] border border-border/40 bg-background/30 hover:bg-background/50 hover:border-primary/40 hover:shadow-2xl transition-all duration-500 glass-panel"
+              className="glass-card group relative flex flex-col p-10 rounded-3xl hover:-translate-y-2 hover:shadow-2xl transition-all duration-500"
             >
               <div className="flex justify-between items-start mb-6">
                 <span className="text-xl font-black text-foreground group-hover:text-primary transition-colors pr-6 leading-tight">

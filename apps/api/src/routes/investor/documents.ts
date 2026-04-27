@@ -1,13 +1,13 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { prisma } from "../../config/prisma";
+import { fileUploadGuard } from "../../middleware/file-upload";
+import { uploadBodyLimit } from "../../middleware/body-limit";
 import { AppEnv } from "../../types/env";
 
-const prisma = new PrismaClient();
 export const documentsRouter = new Hono<AppEnv>();
 
-// GET /investor/documents -> Lista todos os documentos
 documentsRouter.get("/", async (c) => {
   const tenantId = c.get("tenantId");
 
@@ -24,18 +24,19 @@ documentsRouter.get("/", async (c) => {
   }
 });
 
-// POST /investor/documents -> Registra metadados de upload
+// Metadata registration with strict validation
 documentsRouter.post(
   "/",
+  uploadBodyLimit(),
   zValidator(
     "json",
     z.object({
-      name: z.string(),
-      file_path: z.string(),
-      file_size: z.number(),
-      mime_type: z.string(),
-      category: z.string().optional(),
-      description: z.string().optional(),
+      name: z.string().min(1).max(300).trim(),
+      file_path: z.string().min(1).max(1000),
+      file_size: z.number().int().positive().max(10_485_760),
+      mime_type: z.string().min(1).max(100),
+      category: z.string().max(100).optional(),
+      description: z.string().max(2000).optional(),
     }),
   ),
   async (c) => {
@@ -65,12 +66,61 @@ documentsRouter.post(
   },
 );
 
-// DELETE /investor/documents/:id -> Deleta o metadado (o storage delete é feito no front/via supabase rest trigger)
+// Upload endpoint with full file validation (MIME + Magic Bytes)
+documentsRouter.post(
+  "/upload",
+  uploadBodyLimit(),
+  fileUploadGuard(),
+  async (c) => {
+    const tenantId = c.get("tenantId");
+    const user = c.get("user");
+    const validatedFiles = c.get("validatedFiles") as
+      | Array<{ name: string; file: File }>
+      | undefined;
+
+    if (!validatedFiles || validatedFiles.length === 0) {
+      return c.json({ error: "No files provided" }, 400);
+    }
+
+    try {
+      const results = [];
+
+      for (const { file } of validatedFiles) {
+        const newDoc = await prisma.data_room_documents.create({
+          data: {
+            tenant_id: tenantId,
+            name: file.name,
+            file_path: `uploads/${tenantId}/${Date.now()}-${file.name}`,
+            file_size: file.size,
+            mime_type: file.type,
+            category: "general",
+            uploaded_by: user.id,
+          },
+        });
+        results.push(newDoc);
+      }
+
+      return c.json({ documents: results }, 201);
+    } catch (error) {
+      console.error("Error uploading documents:", error);
+      return c.json({ error: "Failed to upload documents" }, 500);
+    }
+  },
+);
+
 documentsRouter.delete("/:id", async (c) => {
   const tenantId = c.get("tenantId");
   const docId = c.req.param("id");
 
   try {
+    const existing = await prisma.data_room_documents.findFirst({
+      where: { id: docId, tenant_id: tenantId },
+    });
+
+    if (!existing) {
+      return c.json({ error: "Document not found" }, 404);
+    }
+
     await prisma.data_room_documents.delete({
       where: { id: docId, tenant_id: tenantId },
     });

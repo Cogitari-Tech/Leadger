@@ -121,15 +121,19 @@ function OnboardingInviteWrapper() {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <label className="text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1">
+        <label
+          htmlFor="inviteEmail"
+          className="text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1"
+        >
           E-mail do Convidado (Opcional)
         </label>
         <input
           type="email"
+          id="inviteEmail"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="exemplo@empresa.com"
-          className="w-full px-4 py-3 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium placeholder:opacity-50"
+          className="w-full glass-input px-4 py-3"
         />
         <p className="text-[10px] text-muted-foreground ml-1">
           Se preenchido, um e-mail com o acesso será enviado automaticamente.
@@ -137,13 +141,17 @@ function OnboardingInviteWrapper() {
       </div>
 
       <div className="space-y-3">
-        <label className="text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1">
+        <label
+          htmlFor="inviteRole"
+          className="text-[10.5px] font-bold uppercase tracking-widest text-muted-foreground/70 ml-1"
+        >
           Cargo para o novo membro
         </label>
         <select
+          id="inviteRole"
           value={linkRoleId}
           onChange={(e) => setLinkRoleId(e.target.value)}
-          className="w-full px-4 py-3 text-sm bg-background/50 border border-border/40 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all rounded-xl font-medium appearance-none"
+          className="w-full glass-input px-4 py-3 appearance-none"
         >
           <option value="" disabled>
             Selecione um cargo...
@@ -187,6 +195,7 @@ function OnboardingInviteWrapper() {
             type="text"
             readOnly
             value={generatedLink}
+            aria-label="Link gerado"
             className="flex-1 text-xs bg-transparent outline-none font-mono px-3 text-muted-foreground"
           />
           <Button
@@ -629,7 +638,7 @@ export default function OnboardingWizard() {
           </div>
         </div>
 
-        <div className="glass-panel p-6 sm:p-8 rounded-2xl soft-shadow border border-white/10 min-h-[300px]">
+        <div className="glass-panel p-6 sm:p-8 rounded-2xl soft-shadow min-h-[300px]">
           {step.key === "company" && (
             <Form {...form}>
               <form
@@ -939,7 +948,7 @@ export default function OnboardingWizard() {
 
           {step.key === "done" && (
             <div className="flex flex-col items-center justify-center py-8 space-y-6 animate-in fade-in zoom-in-95 duration-200">
-              <div className="p-6 bg-primary/10 rounded-[2rem] ring-8 ring-primary/5 shadow-[0_0_30px_rgba(var(--primary),0.1)]">
+              <div className="p-6 bg-primary/10 rounded-2xl ring-8 ring-primary/5 shadow-[0_0_30px_rgba(var(--primary),0.1)]">
                 <CheckCircle2 className="w-16 h-16 text-primary" />
               </div>
               <div className="text-center space-y-2">
